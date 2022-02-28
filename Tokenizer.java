@@ -16,6 +16,11 @@ public class Tokenizer {
         }
     }
 
+    public Token tryTokenizeVariable() {
+        String name = "";
+        return null;        //Temp Placement
+    }
+    
     // If no more tokens left, returns NULL
     public Token tokenizeSingle() throws TokenizerException {
         skipWhiteSpace();
