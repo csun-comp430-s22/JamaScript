@@ -1,3 +1,5 @@
+package com.jamascript;
+
 public class TrueToken implements Token{
     public boolean equals(final Object other){
         return other instanceof TrueToken;

@@ -1,3 +1,5 @@
+package com.jamascript;
+
 public class RightParenthesisToken implements Token {
     public boolean equals(final Object other){
         return other instanceof RightParenthesisToken;
