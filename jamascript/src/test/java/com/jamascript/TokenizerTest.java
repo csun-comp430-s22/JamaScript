@@ -36,9 +36,34 @@ public class TokenizerTest {
         assertTokenizes("true", new Token[] {new TrueToken()});
     }
 
+    //foo
+    public void testVariable() {
+        assertTokenizes("foo", new Token[] {new VariableToken("foo")});
+    }
+
+    //truetrue
+    @Test
+    public void testTrueTrueIsVariable() {
+        assertTokenizes("truetrue", new Token[] {new VariableToken("truetrue")});
+    }
+
     //true true
     @Test
     public void testTrueSpaceTrueAreTrueTokens() {
         assertTokenizes("true true", new Token[] {new TrueToken(), new TrueToken()});
+    }
+
+    @Test
+    public void testAllRemaining() {
+        assertTokenizes("(){}else if false", 
+                        new Token[] {
+                            new LeftParenthesisToken(),
+                            new RightParenthesisToken(),
+                            new LeftCurlyBracketToken(),
+                            new RightCurlyBracketToken(),
+                            new ElseToken(),
+                            new IfToken(),
+                            new FalseToken()
+                        });
     }
 }

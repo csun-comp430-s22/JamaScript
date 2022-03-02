@@ -1,4 +1,7 @@
 -------------------------------------------------------------------------------
 Test set: com.jamascript.TokenizerTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.044 s - in com.jamascript.TokenizerTest
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.042 s <<< FAILURE! - in com.jamascript.TokenizerTest
+initializationError(com.jamascript.TokenizerTest)  Time elapsed: 0.006 s  <<< ERROR!
+java.lang.Exception: Method assertTokenizes should have no parameters
+

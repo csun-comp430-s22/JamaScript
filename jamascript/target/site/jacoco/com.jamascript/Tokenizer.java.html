@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Tokenizer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jamascript</a> &gt; <a href="index.source.html" class="el_package">com.jamascript</a> &gt; <span class="el_source">Tokenizer.java</span></div><h1>Tokenizer.java</h1><pre class="source lang-java linenums">package com.jamascript;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -6,62 +7,82 @@ public class Tokenizer {
     private final String input;
     private int offset;
 
-<span class="fc" id="L9">    public Tokenizer(final String input) {</span>
-<span class="fc" id="L10">        this.input = input;</span>
-<span class="fc" id="L11">        offset = 0;</span>
-<span class="fc" id="L12">    }</span>
+<span class="nc" id="L10">    public Tokenizer(final String input) {</span>
+<span class="nc" id="L11">        this.input = input;</span>
+<span class="nc" id="L12">        offset = 0;</span>
+<span class="nc" id="L13">    }</span>
 
     public void skipWhiteSpace() {
-<span class="pc bpc" id="L15" title="1 of 4 branches missed.">        while (offset &lt; input.length() &amp;&amp; Character.isWhitespace(input.charAt(offset))) {</span>
-<span class="fc" id="L16">            offset++;</span>
+<span class="nc bnc" id="L16" title="All 4 branches missed.">        while ((offset &lt; input.length()) &amp;&amp; Character.isWhitespace(input.charAt(offset))) {</span>
+<span class="nc" id="L17">            offset++;</span>
         }
-<span class="fc" id="L18">    }</span>
+<span class="nc" id="L19">    }</span>
 
-    // If no more tokens left, returns NULL
-    public Token tokenizeSingle() throws TokenizerException {
-<span class="fc" id="L22">        skipWhiteSpace();</span>
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        if(offset &lt; input.length()) {</span>
-<span class="nc bnc" id="L24" title="All 2 branches missed.">            if(input.startsWith(&quot;true&quot;, offset)) {</span>
-<span class="nc" id="L25">                offset += 4;</span>
-<span class="nc" id="L26">                return new TrueToken();</span>
-<span class="nc bnc" id="L27" title="All 2 branches missed.">            } else if(input.startsWith(&quot;false&quot;, offset)) {</span>
-<span class="nc" id="L28">                offset += 5;</span>
-<span class="nc" id="L29">                return new FalseToken();</span>
-<span class="nc bnc" id="L30" title="All 2 branches missed.">            } else if(input.startsWith(&quot;(&quot;, offset)) {</span>
-<span class="nc" id="L31">                offset += 1;</span>
-<span class="nc" id="L32">                return new LeftParenthesisToken();</span>
-<span class="nc bnc" id="L33" title="All 2 branches missed.">            } else if (input.startsWith(&quot;)&quot;, offset)) {</span>
-<span class="nc" id="L34">                offset += 1;</span>
-<span class="nc" id="L35">                return new RightParenthesisToken();</span>
-<span class="nc bnc" id="L36" title="All 2 branches missed.">            } else if(input.startsWith(&quot;if&quot;, offset)) {</span>
-<span class="nc" id="L37">                offset += 2;</span>
+    public Token tryTokenizeVariableOrKeyword() {
+<span class="nc" id="L22">        String name = &quot;&quot;;</span>
+
+<span class="nc bnc" id="L24" title="All 4 branches missed.">        if((offset &lt; input.length()) &amp;&amp; Character.isLetter(input.charAt(offset))) {</span>
+<span class="nc" id="L25">            name += input.charAt(offset);</span>
+<span class="nc" id="L26">            offset++;</span>
+
+<span class="nc bnc" id="L28" title="All 4 branches missed.">            while((offset &lt; input.length()) &amp;&amp; Character.isLetterOrDigit(input.charAt(offset))) {</span>
+<span class="nc" id="L29">                name += input.charAt(offset);</span>
+<span class="nc" id="L30">                offset++;</span>
+            }
+
+<span class="nc bnc" id="L33" title="All 2 branches missed.">            if(name.equals(&quot;true&quot;)) {</span>
+<span class="nc" id="L34">                return new TrueToken();</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">            } else if(name.equals(&quot;false&quot;)) {</span>
+<span class="nc" id="L36">                return new FalseToken();</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">            } else if(name.equals(&quot;if&quot;)) {</span>
 <span class="nc" id="L38">                return new IfToken();</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">            } else if(input.startsWith(&quot;else&quot;, offset)) {</span>
-<span class="nc" id="L40">                offset += 4;</span>
-<span class="nc" id="L41">                return new ElseToken();</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">            }  else if(input.startsWith(&quot;{&quot;, offset)) {</span>
-<span class="nc" id="L43">                offset += 1;</span>
-<span class="nc" id="L44">                return new LeftCurlyBracketToken();</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">            } else if(input.startsWith(&quot;}&quot;, offset)) {</span>
-<span class="nc" id="L46">                offset += 1;</span>
-<span class="nc" id="L47">                return new RightCurlyBracketToken();</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">            } else if(name.equals(&quot;else&quot;)) {</span>
+<span class="nc" id="L40">                return new ElseToken();</span>
             } else {
-<span class="nc" id="L49">                throw new TokenizerException();</span>
+<span class="nc" id="L42">                return new VariableToken(name);</span>
             }
         } else {
-<span class="fc" id="L52">            return null;</span>
+<span class="nc" id="L45">            return null;</span>
         }
+    }
+    
+    // If no more tokens left, returns NULL
+    public Token tokenizeSingle() throws TokenizerException {
+<span class="nc" id="L51">        Token retval = null;</span>
+<span class="nc" id="L52">        skipWhiteSpace();</span>
+
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if(offset &lt; input.length()) {</span>
+<span class="nc" id="L55">            retval = tryTokenizeVariableOrKeyword();</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            if(retval == null) {</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">                if(input.startsWith(&quot;(&quot;, offset)) {</span>
+<span class="nc" id="L58">                    offset += 1;</span>
+<span class="nc" id="L59">                    retval = new LeftParenthesisToken();</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                } else if(input.startsWith(&quot;)&quot;, offset)) {</span>
+<span class="nc" id="L61">                    offset += 1;</span>
+<span class="nc" id="L62">                    retval = new RightParenthesisToken();</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">                } else if(input.startsWith(&quot;{&quot;, offset)) {</span>
+<span class="nc" id="L64">                    offset += 1;</span>
+<span class="nc" id="L65">                    retval = new RightCurlyBracketToken();</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                } else if(input.startsWith(&quot;}&quot;, offset)) {</span>
+<span class="nc" id="L67">                    offset += 1;</span>
+<span class="nc" id="L68">                    retval = new LeftCurlyBracketToken();</span>
+<span class="nc" id="L69">                } else {</span>
+<span class="nc" id="L70">                    throw new TokenizerException();</span>
+                }
+            }
+        }
+<span class="nc" id="L74">        return retval;</span>
     }
 
     public List&lt;Token&gt; tokenize() throws TokenizerException {
-<span class="fc" id="L57">        final List&lt;Token&gt; tokens = new ArrayList&lt;Token&gt;();</span>
-<span class="fc" id="L58">        Token token = tokenizeSingle();</span>
+<span class="nc" id="L78">        final List&lt;Token&gt; tokens = new ArrayList&lt;Token&gt;();</span>
+<span class="nc" id="L79">        Token token = tokenizeSingle();</span>
 
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        while(token != null) {</span>
-<span class="nc" id="L61">            tokens.add(token);</span>
-<span class="nc" id="L62">            token = tokenizeSingle();</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        while(token != null) {</span>
+<span class="nc" id="L82">            tokens.add(token);</span>
+<span class="nc" id="L83">            token = tokenizeSingle();</span>
         }
-<span class="fc" id="L64">        return tokens;</span>
+<span class="nc" id="L85">        return tokens;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
