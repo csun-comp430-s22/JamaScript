@@ -22,7 +22,7 @@ public class TokenizerTest {
     //Checks for empty strings
     @Test
     public void testEmptyString() {
-        assertTokenizes("", new Token[0]);
+        assertTokenizes("", new Token[1]);
     }
 
     //checks for white spaces
