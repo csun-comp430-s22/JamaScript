@@ -8,7 +8,7 @@ import org.junit.Test;
 
 public class TokenizerTest {
 
-    @Test
+    
     public void assertTokenizes(final String input, final Token[] expected) {
         try {
             final Tokenizer tokenizer = new Tokenizer(input);
