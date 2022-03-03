@@ -19,6 +19,7 @@ public class Tokenizer {
     }
 
     public Token tryTokenizeVariableOrKeyword() {
+        skipWhiteSpace();
         String name = "";
 
         if((offset < input.length()) && Character.isLetter(input.charAt(offset))) {
@@ -62,10 +63,10 @@ public class Tokenizer {
                     retval = new RightParenthesisToken();
                 } else if(input.startsWith("{", offset)) {
                     offset += 1;
-                    retval = new RightCurlyBracketToken();
+                    retval = new LeftCurlyBracketToken();
                 } else if(input.startsWith("}", offset)) {
                     offset += 1;
-                    retval = new LeftCurlyBracketToken();
+                    retval = new RightCurlyBracketToken();
                 } else {
                     throw new TokenizerException();
                 }

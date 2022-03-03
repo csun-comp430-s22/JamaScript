@@ -2,13 +2,13 @@ package com.jamascript;
 
 import java.util.List;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 
 public class TokenizerTest {
-
-    @Test
     public void assertTokenizes(final String input, final Token[] expected) {
         try {
             final Tokenizer tokenizer = new Tokenizer(input);
@@ -18,25 +18,25 @@ public class TokenizerTest {
             fail("Tokenizer threw exception");
         }
     }
-
-    //Checks for empty strings
+    
+    //Check for empty string
     @Test
     public void testEmptyString() {
         assertTokenizes("", new Token[0]);
     }
 
-    //checks for white spaces
     @Test
-    public void testOnlyWhiteSpace() {
+    public void testOnlyWhitespace() {
         assertTokenizes("    ", new Token[0]);
     }
-    
+
     @Test
     public void testTrueByItself() {
         assertTokenizes("true", new Token[] {new TrueToken()});
     }
 
     //foo
+    @Test
     public void testVariable() {
         assertTokenizes("foo", new Token[] {new VariableToken("foo")});
     }
