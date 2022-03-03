@@ -65,4 +65,5 @@ public class TokenizerTest {
                             new FalseToken()
                         });
     }
+
 }
