@@ -1,12 +1,13 @@
 package com.jamascript;
-public class PlusToken implements Token {
+
+public class DotToken implements Token{
     public boolean equals(final Object other){
-        return other instanceof PlusToken;
+        return other instanceof DotToken;
     }
     public int hashCode(){
-        return 13;
+        return 25;
     }
     public String toString(){
-        return "+";
+        return ".";
     }
 }

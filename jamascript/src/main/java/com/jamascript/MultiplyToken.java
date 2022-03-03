@@ -1,6 +1,6 @@
 package com.jamascript;
 
-public class MultiplyToken {
+public class MultiplyToken implements Token{
     public boolean equals(final Object other){
         return other instanceof MultiplyToken;
     }

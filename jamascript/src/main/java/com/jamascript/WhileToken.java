@@ -1,6 +1,6 @@
 package com.jamascript;
 
-public class WhileToken {
+public class WhileToken implements Token{
     public boolean equals(final Object other){
         return other instanceof WhileToken;
     }
