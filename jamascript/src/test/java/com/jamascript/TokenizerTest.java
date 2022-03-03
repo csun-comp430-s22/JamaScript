@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 
 public class TokenizerTest {
+
     public void assertTokenizes(final String input, final Token[] expected) {
         try {
             final Tokenizer tokenizer = new Tokenizer(input);
