@@ -12,7 +12,7 @@ public class VariableToken implements Token {
     }
 
     public String toString() {
-        return ("Variable(" + name + ")");
+        return "Variable(" + name + ")";
     }
 
     public boolean equals(final Object other) {
