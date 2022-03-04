@@ -5,7 +5,6 @@ public class NumberToken implements Token{
    
     public NumberToken(String number)
     {
-        // this.number = number;
         this.number = number;
     }
 

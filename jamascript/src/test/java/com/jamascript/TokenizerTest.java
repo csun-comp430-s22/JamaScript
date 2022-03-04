@@ -118,7 +118,7 @@ public class TokenizerTest {
     //Test all single symbol token
     @Test
     public void testAllRemainingSymbols() {
-        assertTokenizes(", / . > < - * ! + \" ;", 
+        assertTokenizes(", / . > < - * ! + \" ; =", 
                         new Token[] {
                             new CommaToken(),
                             new DivideToken(),
@@ -130,7 +130,8 @@ public class TokenizerTest {
                             new NotToken(),
                             new PlusToken(), 
                             new QuotationMarkToken(),
-                            new SemicolonToken()
+                            new SemicolonToken(),
+                            new EqualToken()
                         });
     }
 
@@ -149,6 +150,32 @@ public class TokenizerTest {
                             new WhileToken()
                         });
     }
+
+    @Test
+    public void testNumbers() {
+        assertTokenizes("12312 123123", 
+                new Token[] {
+                    new NumberToken("12312"), 
+                    new NumberToken("123123")
+                });
+    }
+
+    @Test
+    public void testNumbersAndLetters() {
+        assertTokenizes(" true 12312 123123 222  { } [ ] Boolean", 
+                new Token[] {
+                    new TrueToken(),
+                    new NumberToken("12312"), 
+                    new NumberToken("123123"),
+                    new NumberToken("222"),
+                    new LeftCurlyBracketToken(),
+                    new RightCurlyBracketToken(),
+                    new LeftSquaredBracketToken(),
+                    new RightSquaredBracketToken(),
+                    new BooleanToken()
+                });
+    }
+
 
     /* Tests Needed:
     Single Number, and any new Tokens added

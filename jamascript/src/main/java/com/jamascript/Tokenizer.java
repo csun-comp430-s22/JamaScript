@@ -20,18 +20,7 @@ public class Tokenizer {
         }
     }
 
-
-    public boolean isNumber(String number) {
-        boolean isANumber = true;
-        for(char c : number.toCharArray()) {
-            if(!Character.isDigit(c)) {
-                isANumber = false;
-            }
-        }
-        return isANumber;
-    }
-
-    public Token tryTokenizeVariableOrKeyword() throws TokenizerException {
+    public Token tryTokenizeVariableOrKeyword() {
         skipWhiteSpace();
         String name = "";
 
@@ -43,15 +32,11 @@ public class Tokenizer {
         if(offset < input.length() && Character.isDigit(input.charAt(offset))) {
 
             // Parse through the string until something that isn't a Letter or a Letter is encountered
-            while(Character.isDigit(input.charAt(offset)) && !Character.isWhitespace(input.charAt(offset))) {
+            while(offset < input.length() && Character.isDigit(input.charAt(offset))) {
                 name += input.charAt(offset);
+                System.out.println("offset: " + offset);
                 offset++;
             }
-            if(Character.isLetter(input.charAt(offset))) {
-                // might need to throw error if I encounter anything that's not a digit in this case
-                throw new TokenizerException();
-            }
-
 
             return new NumberToken(name);
         }
