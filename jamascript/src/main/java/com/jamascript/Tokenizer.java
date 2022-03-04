@@ -31,7 +31,7 @@ public class Tokenizer {
         return isANumber;
     }
 
-    public Token tryTokenizeVariableOrKeyword() {
+    public Token tryTokenizeVariableOrKeyword() throws TokenizerException {
         skipWhiteSpace();
         String name = "";
 
@@ -47,8 +47,11 @@ public class Tokenizer {
                 name += input.charAt(offset);
                 offset++;
             }
+            if(Character.isLetter(input.charAt(offset))) {
+                // might need to throw error if I encounter anything that's not a digit in this case
+                throw new TokenizerException();
+            }
 
-            // might need to throw error if I encounter anything that's not a digit in this case
 
             return new NumberToken(name);
         }
@@ -73,7 +76,23 @@ public class Tokenizer {
                 return new IfToken();
             } else if(name.equals("else")) {
                 return new ElseToken();
-            }  else {
+            } else if(name.equals("Boolean")) {
+                return new BooleanToken();
+            } else if(name.equals("class")) {
+                return new ClassToken();
+            } else if(name.equals("extends")) {
+                return new ExtendsToken();
+            } else if(name.equals("Int")) {
+                return new IntToken();
+            } else if(name.equals("new")) {
+                return new NewToken();
+            } else if(name.equals("return")) {
+                return new ReturnToken();
+            } else if(name.equals("String")) {
+                return new StringToken();
+            } else if(name.equals("while")) {
+                return new WhileToken();
+            } else {
                 return new VariableToken(name);
             }
         } else {
@@ -101,6 +120,48 @@ public class Tokenizer {
                 } else if(input.startsWith("}", offset)) {
                     offset += 1;
                     retval = new RightCurlyBracketToken();
+                } else if(input.startsWith("[", offset)) {
+                    offset += 1;
+                    retval = new LeftSquaredBracketToken();
+                } else if(input.startsWith("]", offset)) {
+                    offset += 1;
+                    retval = new RightSquaredBracketToken();
+                } else if(input.startsWith("/", offset)) {
+                    offset += 1;
+                    retval = new DivideToken();
+                } else if(input.startsWith(",", offset)) {
+                    offset += 1;
+                    retval = new CommaToken();
+                } else if(input.startsWith(".", offset)) {
+                    offset += 1;
+                    retval = new DotToken();
+                } else if(input.startsWith(">", offset)) {
+                    offset += 1;
+                    retval = new GreaterThanToken();
+                } else if(input.startsWith("<", offset)) {
+                    offset += 1;
+                    retval = new LessThanToken();
+                } else if(input.startsWith("=", offset)) {
+                    offset += 1;
+                    retval = new EqualToken();
+                } else if(input.startsWith("-", offset)) {
+                    offset += 1;
+                    retval = new MinusToken();
+                } else if(input.startsWith("*", offset)) {
+                    offset += 1;
+                    retval = new MultiplyToken();
+                } else if(input.startsWith("!", offset)) {
+                    offset += 1;
+                    retval = new NotToken();
+                } else if(input.startsWith("+", offset)) {
+                    offset += 1;
+                    retval = new PlusToken();
+                } else if(input.startsWith("\"", offset)) {
+                    offset += 1;
+                    retval = new QuotationMarkToken();
+                } else if(input.startsWith(";", offset)) {
+                    offset += 1;
+                    retval = new SemicolonToken();
                 } else {
                     throw new TokenizerException();
                 }
