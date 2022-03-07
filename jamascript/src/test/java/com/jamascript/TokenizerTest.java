@@ -100,7 +100,7 @@ public class TokenizerTest {
 
     //test ALL brackets/parantheses, if, else, false
     @Test
-    public void testAllRemainingBasics() {
+    public void testAllRemainingBasics() throws TokenizerException {
         assertTokenizes("(){}[] else if false", 
                         new Token[] {
                             new LeftParenthesisToken(),
@@ -155,8 +155,8 @@ public class TokenizerTest {
     public void testNumbers() {
         assertTokenizes("12312 123123", 
                 new Token[] {
-                    new NumberToken("12312"), 
-                    new NumberToken("123123")
+                    new NumberToken(12312), 
+                    new NumberToken(123123)
                 });
     }
 
@@ -165,9 +165,9 @@ public class TokenizerTest {
         assertTokenizes(" true 12312 123123 222  { } [ ] Boolean", 
                 new Token[] {
                     new TrueToken(),
-                    new NumberToken("12312"), 
-                    new NumberToken("123123"),
-                    new NumberToken("222"),
+                    new NumberToken(12312), 
+                    new NumberToken(123123),
+                    new NumberToken(222),
                     new LeftCurlyBracketToken(),
                     new RightCurlyBracketToken(),
                     new LeftSquaredBracketToken(),

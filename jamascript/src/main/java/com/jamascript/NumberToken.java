@@ -1,9 +1,9 @@
 package com.jamascript;
 
 public class NumberToken implements Token{
-    public final String number;
+    public final int number;
    
-    public NumberToken(String number)
+    public NumberToken(final int number)
     {
         this.number = number;
     }
@@ -11,7 +11,7 @@ public class NumberToken implements Token{
     public boolean equals(final Object other){
         if(other instanceof NumberToken) {
             final NumberToken otherNumber = (NumberToken) other;
-            return number.equals(otherNumber.number);
+            return number == otherNumber.number;
         } else {
             return false;
         }
@@ -19,7 +19,7 @@ public class NumberToken implements Token{
 
     public int hashCode()
     {
-        return number.hashCode();
+        return number;
     }
 
     public String toString()

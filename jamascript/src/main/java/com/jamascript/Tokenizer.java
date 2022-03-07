@@ -20,26 +20,30 @@ public class Tokenizer {
         }
     }
 
+    // returns null if it wasn't an integer token
+    public NumberToken tryTokenizeNumber() {
+        skipWhiteSpace();
+
+        // 12345
+        String number = "";
+
+        while (offset < input.length() &&
+               Character.isDigit(input.charAt(offset))) {
+            number += input.charAt(offset);
+            offset++;
+        }
+
+        if (number.length() > 0) {
+            // convert string to an integer
+            return new NumberToken(Integer.parseInt(number));
+        } else {
+            return null;
+        }
+    }
+
     public Token tryTokenizeVariableOrKeyword() {
         skipWhiteSpace();
         String name = "";
-
-        // if the offset is less than length of string
-        // and if the current character in the string starts with a digit, it must be a digit
-        // EX: 1212321 OK
-        // EX: 1abc NOT OK
-        // EX: 12312a NOT OK
-        if(offset < input.length() && Character.isDigit(input.charAt(offset))) {
-
-            // Parse through the string until something that isn't a Letter or a Letter is encountered
-            while(offset < input.length() && Character.isDigit(input.charAt(offset))) {
-                name += input.charAt(offset);
-                System.out.println("offset: " + offset);
-                offset++;
-            }
-
-            return new NumberToken(name);
-        }
 
         // if the offset is less than length of string
         // and if the current character in the string is a letter
@@ -84,73 +88,80 @@ public class Tokenizer {
             return null;
         }
     }
-    
+
+    // returns null if it couldn't read in a symbol
+    public Token tryTokenizeSymbol() {
+        skipWhiteSpace();
+        Token retval = null;
+ 
+        if (input.startsWith("(", offset)) {
+            offset += 1;
+            retval = new LeftParenthesisToken();
+        } else if (input.startsWith(")", offset)) {
+            offset += 1;
+            retval = new RightParenthesisToken();
+        }  else if (input.startsWith("{", offset)) {
+            offset += 1;
+            retval = new LeftCurlyBracketToken();
+        } else if (input.startsWith("}", offset)) {
+            offset += 1;
+            retval = new RightCurlyBracketToken();
+        } else if(input.startsWith("[", offset)) {
+            offset += 1;
+            retval = new LeftSquaredBracketToken();
+        } else if(input.startsWith("]", offset)) {
+            offset += 1;
+            retval = new RightSquaredBracketToken();
+        } else if(input.startsWith("/", offset)) {
+            offset += 1;
+            retval = new DivideToken();
+        } else if(input.startsWith(",", offset)) {
+            offset += 1;
+            retval = new CommaToken();
+        } else if(input.startsWith(".", offset)) {
+            offset += 1;
+            retval = new DotToken();
+        } else if(input.startsWith(">", offset)) {
+            offset += 1;
+            retval = new GreaterThanToken();
+        } else if(input.startsWith("<", offset)) {
+            offset += 1;
+            retval = new LessThanToken();
+        } else if(input.startsWith("-", offset)) {
+            offset += 1;
+            retval = new MinusToken();
+        } else if(input.startsWith("*", offset)) {
+            offset += 1;
+            retval = new MultiplyToken();
+        } else if(input.startsWith("!", offset)) {
+            offset += 1;
+            retval = new NotToken();
+        } else if(input.startsWith("+", offset)) {
+            offset += 1;
+            retval = new PlusToken();
+        } else if(input.startsWith("\"", offset)) {
+            offset += 1;
+            retval = new QuotationMarkToken();
+        } else if(input.startsWith(";", offset)) {
+            offset += 1;
+            retval = new SemicolonToken();
+        } else if(input.startsWith("=", offset)) {
+            offset += 1;
+            retval = new EqualToken();
+        }
+        return retval;
+}
+
     // If no more tokens left, returns NULL
     public Token tokenizeSingle() throws TokenizerException {
         Token retval = null;
         skipWhiteSpace();
 
-        if(offset < input.length()) {
-            retval = tryTokenizeVariableOrKeyword();
-            if(retval == null) {
-                if(input.startsWith("(", offset)) {
-                    offset += 1;
-                    retval = new LeftParenthesisToken();
-                } else if(input.startsWith(")", offset)) {
-                    offset += 1;
-                    retval = new RightParenthesisToken();
-                } else if(input.startsWith("{", offset)) {
-                    offset += 1;
-                    retval = new LeftCurlyBracketToken();
-                } else if(input.startsWith("}", offset)) {
-                    offset += 1;
-                    retval = new RightCurlyBracketToken();
-                } else if(input.startsWith("[", offset)) {
-                    offset += 1;
-                    retval = new LeftSquaredBracketToken();
-                } else if(input.startsWith("]", offset)) {
-                    offset += 1;
-                    retval = new RightSquaredBracketToken();
-                } else if(input.startsWith("/", offset)) {
-                    offset += 1;
-                    retval = new DivideToken();
-                } else if(input.startsWith(",", offset)) {
-                    offset += 1;
-                    retval = new CommaToken();
-                } else if(input.startsWith(".", offset)) {
-                    offset += 1;
-                    retval = new DotToken();
-                } else if(input.startsWith(">", offset)) {
-                    offset += 1;
-                    retval = new GreaterThanToken();
-                } else if(input.startsWith("<", offset)) {
-                    offset += 1;
-                    retval = new LessThanToken();
-                } else if(input.startsWith("=", offset)) {
-                    offset += 1;
-                    retval = new EqualToken();
-                } else if(input.startsWith("-", offset)) {
-                    offset += 1;
-                    retval = new MinusToken();
-                } else if(input.startsWith("*", offset)) {
-                    offset += 1;
-                    retval = new MultiplyToken();
-                } else if(input.startsWith("!", offset)) {
-                    offset += 1;
-                    retval = new NotToken();
-                } else if(input.startsWith("+", offset)) {
-                    offset += 1;
-                    retval = new PlusToken();
-                } else if(input.startsWith("\"", offset)) {
-                    offset += 1;
-                    retval = new QuotationMarkToken();
-                } else if(input.startsWith(";", offset)) {
-                    offset += 1;
-                    retval = new SemicolonToken();
-                } else {
-                    throw new TokenizerException();
-                }
-            }
+        if(offset < input.length() &&
+            (retval = tryTokenizeVariableOrKeyword()) == null &&
+            (retval = tryTokenizeNumber()) == null &&
+            (retval = tryTokenizeSymbol()) == null) {
+                throw new TokenizerException();
         }
         return retval;
     }
