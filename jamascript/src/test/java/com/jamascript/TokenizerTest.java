@@ -100,7 +100,7 @@ public class TokenizerTest {
 
     //test ALL brackets/parantheses, if, else, false
     @Test
-    public void testAllRemainingBasics() {
+    public void testAllRemainingBasics() throws TokenizerException {
         assertTokenizes("(){}[] else if false", 
                         new Token[] {
                             new LeftParenthesisToken(),
@@ -154,37 +154,37 @@ public class TokenizerTest {
     @Test
     public void testNumbers() {
         assertTokenizes("12312 123123", 
-                        new Token[] {
-                            new NumberToken("12312"), 
-                            new NumberToken("123123")
-                        });
+                new Token[] {
+                    new NumberToken(12312), 
+                    new NumberToken(123123)
+                });
     }
 
     @Test
     public void testNumbersAndLetters() {
-        assertTokenizes(" true 12312 123123 2  { } [ ] Boolean", 
-                        new Token[] {
-                            new TrueToken(),
-                            new NumberToken("12312"), 
-                            new NumberToken("123123"),
-                            new NumberToken("2"),
-                            new LeftCurlyBracketToken(),
-                            new RightCurlyBracketToken(),
-                            new LeftSquaredBracketToken(),
-                            new RightSquaredBracketToken(),
-                            new BooleanToken()
-                        });
+        assertTokenizes(" true 12312 123123 222  { } [ ] Boolean", 
+                new Token[] {
+                    new TrueToken(),
+                    new NumberToken(12312), 
+                    new NumberToken(123123),
+                    new NumberToken(222),
+                    new LeftCurlyBracketToken(),
+                    new RightCurlyBracketToken(),
+                    new LeftSquaredBracketToken(),
+                    new RightSquaredBracketToken(),
+                    new BooleanToken()
+                });
     }
     
     @Test
     public void testSingleNumber() {
         assertTokenizes("0 1 2 3 4 5 6 7 8 9", 
             new Token[] {
-                new NumberToken("0"),
-                new NumberToken("1"),
-                new NumberToken("2"),
-                new NumberToken("3"),
-                new NumberToken("4"),
+                new NumberToken(0),
+                new NumberToken(1),
+                new NumberToken(2),
+                new NumberToken(3),
+                new NumberToken(4),
                 new NumberToken("5"),
                 new NumberToken("6"),
                 new NumberToken("7"),
