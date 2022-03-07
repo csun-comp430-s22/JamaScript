@@ -154,28 +154,74 @@ public class TokenizerTest {
     @Test
     public void testNumbers() {
         assertTokenizes("12312 123123", 
-                new Token[] {
-                    new NumberToken("12312"), 
-                    new NumberToken("123123")
-                });
+                        new Token[] {
+                            new NumberToken("12312"), 
+                            new NumberToken("123123")
+                        });
     }
 
     @Test
     public void testNumbersAndLetters() {
-        assertTokenizes(" true 12312 123123 222  { } [ ] Boolean", 
-                new Token[] {
-                    new TrueToken(),
-                    new NumberToken("12312"), 
-                    new NumberToken("123123"),
-                    new NumberToken("222"),
-                    new LeftCurlyBracketToken(),
-                    new RightCurlyBracketToken(),
-                    new LeftSquaredBracketToken(),
-                    new RightSquaredBracketToken(),
-                    new BooleanToken()
-                });
+        assertTokenizes(" true 12312 123123 2  { } [ ] Boolean", 
+                        new Token[] {
+                            new TrueToken(),
+                            new NumberToken("12312"), 
+                            new NumberToken("123123"),
+                            new NumberToken("2"),
+                            new LeftCurlyBracketToken(),
+                            new RightCurlyBracketToken(),
+                            new LeftSquaredBracketToken(),
+                            new RightSquaredBracketToken(),
+                            new BooleanToken()
+                        });
+    }
+    
+    @Test
+    public void testSingleNumber() {
+        assertTokenizes("0 1 2 3 4 5 6 7 8 9", 
+            new Token[] {
+                new NumberToken("0"),
+                new NumberToken("1"),
+                new NumberToken("2"),
+                new NumberToken("3"),
+                new NumberToken("4"),
+                new NumberToken("5"),
+                new NumberToken("6"),
+                new NumberToken("7"),
+                new NumberToken("8"),
+                new NumberToken("9"), 
+            });
     }
 
+    @Test
+    public void testSingleNumberAndMultiNumbers() {
+        assertTokenizes("0123423 1 2 234233 4 5 6 7234 8 9", 
+            new Token[] {
+                new NumberToken("0123423"),
+                new NumberToken("1"),
+                new NumberToken("2"),
+                new NumberToken("234233"),
+                new NumberToken("4"),
+                new NumberToken("5"),
+                new NumberToken("6"),
+                new NumberToken("7234"),
+                new NumberToken("8"),
+                new NumberToken("9"), 
+            });
+    }
+
+    // WORKING ON IT
+    // @Test
+    // public void testNumberFollowedByLetter() throws TokenizerException {
+    
+    //     assertTokenizes("1abc", 
+    //     new Token[] {
+    //         new NumberToken("1abc"),
+            
+    //     });
+       
+        
+    // }
 
     /* Tests Needed:
     Single Number, and any new Tokens added

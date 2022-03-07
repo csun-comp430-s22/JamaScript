@@ -20,7 +20,7 @@ public class Tokenizer {
         }
     }
 
-    public Token tryTokenizeVariableOrKeyword() {
+    public Token tryTokenizeVariableOrKeyword() throws TokenizerException {
         skipWhiteSpace();
         String name = "";
 
@@ -29,14 +29,21 @@ public class Tokenizer {
         // EX: 1212321 OK
         // EX: 1abc NOT OK
         // EX: 12312a NOT OK
+        // EX: 123123 a
         if(offset < input.length() && Character.isDigit(input.charAt(offset))) {
 
             // Parse through the string until something that isn't a Letter or a Letter is encountered
             while(offset < input.length() && Character.isDigit(input.charAt(offset))) {
                 name += input.charAt(offset);
                 System.out.println("offset: " + offset);
+                if(Character.isLetter(input.charAt(offset))) {
+                    throw new TokenizerException();
+                }
                 offset++;
             }
+            
+            System.out.println("Name: " + name);
+            
 
             return new NumberToken(name);
         }
