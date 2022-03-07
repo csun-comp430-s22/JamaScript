@@ -5,7 +5,7 @@ public class NumberToken implements Token{
    
     public NumberToken(final String num)
     {
-        this.number = Integer.parseInt(num)
+        this.number = Integer.parseInt(num);
     }
 
     public boolean equals(final Object other){
