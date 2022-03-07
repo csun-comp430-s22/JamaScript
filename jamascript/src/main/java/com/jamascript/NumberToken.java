@@ -3,9 +3,9 @@ package com.jamascript;
 public class NumberToken implements Token{
     public final int number;
    
-    public NumberToken(final int number)
+    public NumberToken(final String num)
     {
-        this.number = number;
+        this.number = Integer.parseInt(num)
     }
 
     public boolean equals(final Object other){
