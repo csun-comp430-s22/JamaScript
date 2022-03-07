@@ -1,3 +1,7 @@
-# CompilerProject
-Jonathan Gomez
-Meg~
+# JamaScript
+| Members|
+|-|
+|Alan Hernandez|
+|Jonathan Gomez|
+|Angelica De Leon|
+|Megan Ngo|
