@@ -35,7 +35,7 @@ public class Tokenizer {
 
         if (number.length() > 0) {
             // convert string to an integer
-            return new NumberToken(Integer.parseInt(number));
+            return new NumberToken(number);
         } else {
             return null;
         }
