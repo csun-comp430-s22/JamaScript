@@ -44,24 +44,29 @@ import org.junit.Test;
 
 public class TokenizerTest {
 
-    public void assertTokenizes(final String input, final Token[] expected) {
-        try {
+    public void assertTokenizes(final String input, final Token[] expected) throws TokenizerException{
+        final Tokenizer tokenizer = new Tokenizer(input);
+        final List<Token> received = tokenizer.tokenize();
+        assertArrayEquals(expected, received.toArray(new Token[received.size()]));
+
+        // Can use this instead of we remove the testInvalid function later on
+        /*try {
             final Tokenizer tokenizer = new Tokenizer(input);
             final List<Token> received = tokenizer.tokenize();
             assertArrayEquals(expected, received.toArray(new Token[received.size()]));
         } catch(final TokenizerException e) {
             fail("Tokenizer threw exception");
-        }
+        }*/
     }
     
     //Check for empty string
     @Test
-    public void testEmptyString() {
+    public void testEmptyString() throws TokenizerException {
         assertTokenizes("", new Token[0]);
     }
 
     @Test
-    public void testOnlyWhitespace() {
+    public void testOnlyWhitespace() throws TokenizerException {
         assertTokenizes("    ", new Token[0]);
     }
 
@@ -76,61 +81,61 @@ public class TokenizerTest {
      */
     
     @Test
-    public void testTrueByItself() {
+    public void testTrueByItself() throws TokenizerException {
         assertTokenizes("true", new Token[] {new TrueToken()});
     }
 
     //space before
     @Test
-    public void test_True() {
+    public void test_True() throws TokenizerException {
         assertTokenizes(" true", new Token[] {new TrueToken()});
     }
 
     //space after
     @Test
-    public void testTrue_() {
+    public void testTrue_() throws TokenizerException {
         assertTokenizes("true ", new Token[] {new TrueToken()});
     }
 
     //space before and after
     @Test
-    public void test_True_() {
+    public void test_True_() throws TokenizerException {
         assertTokenizes(" true ", new Token[] {new TrueToken()});
     }
 
     //truetrue
     @Test
-    public void testTrueTrueIsVariable() {
+    public void testTrueTrueIsVariable() throws TokenizerException {
         assertTokenizes("truetrue", new Token[] {new VariableToken("truetrue")});
     }
 
     //true true
     @Test
-    public void testTrue_TrueAreTrueTokens() {
+    public void testTrue_TrueAreTrueTokens() throws TokenizerException {
         assertTokenizes("true true", new Token[] {new TrueToken(), new TrueToken()});
     }
 
     //test "true false"
     @Test
-    public void testTrue_False() {
+    public void testTrue_False() throws TokenizerException {
         assertTokenizes("true false", new Token[] {new TrueToken(), new FalseToken()});
     }
     
     //tests "(true)"
     @Test
-    public void testTrueWithBothParantheses() {
+    public void testTrueWithBothParantheses() throws TokenizerException {
         assertTokenizes("(true)", new Token[] {new LeftParenthesisToken(), new TrueToken(), new RightParenthesisToken()});
     }
 
     //tests "(true"
     @Test
-    public void testTrueWithLeftParanthesis() {
+    public void testTrueWithLeftParanthesis() throws TokenizerException {
         assertTokenizes("(true", new Token[] {new LeftParenthesisToken(), new TrueToken()});
     }
 
     //tests "true)"
     @Test
-    public void testTrueWithRightParanthesis() {
+    public void testTrueWithRightParanthesis() throws TokenizerException {
         assertTokenizes("true)", new Token[] {new TrueToken(), new RightParenthesisToken()});
     }
 
@@ -153,7 +158,7 @@ public class TokenizerTest {
 
     //Test all single symbol token
     @Test
-    public void testAllRemainingSymbols() {
+    public void testAllRemainingSymbols() throws TokenizerException {
         assertTokenizes(", / . > < - * ! + \" ; =", 
                         new Token[] {
                             new CommaToken(),
@@ -173,7 +178,7 @@ public class TokenizerTest {
 
     //test all the words
     @Test
-    public void testAllRemainingWords() {
+    public void testAllRemainingWords() throws TokenizerException {
         assertTokenizes("Boolean class extends Int new return String while", 
                         new Token[] {
                             new BooleanToken(),
@@ -188,7 +193,7 @@ public class TokenizerTest {
     }
 
     @Test
-    public void testNumbers() {
+    public void testNumbers() throws TokenizerException {
         assertTokenizes("12312 123123", 
                 new Token[] {
                     new NumberToken("12312"), 
@@ -197,7 +202,7 @@ public class TokenizerTest {
     }
 
     @Test
-    public void testNumbersAndLetters() {
+    public void testNumbersAndLetters() throws TokenizerException {
         assertTokenizes(" true 12312 123123 222  { } [ ] Boolean", 
                 new Token[] {
                     new TrueToken(),
@@ -213,7 +218,7 @@ public class TokenizerTest {
     }
     
     @Test
-    public void testSingleNumber() {
+    public void testSingleNumber() throws TokenizerException {
         assertTokenizes("0 1 2 3 4 5 6 7 8 9", 
             new Token[] {
                 new NumberToken("0"),
@@ -230,7 +235,7 @@ public class TokenizerTest {
     }
 
     @Test
-    public void testSingleNumberAndMultiNumbers() {
+    public void testSingleNumberAndMultiNumbers() throws TokenizerException {
         assertTokenizes("0123423 1 2 234233 4 5 6 7234 8 9", 
             new Token[] {
                 new NumberToken("0123423"),
@@ -244,6 +249,11 @@ public class TokenizerTest {
                 new NumberToken("8"),
                 new NumberToken("9"), 
             });
+    }
+
+    @Test(expected = TokenizerException.class)
+    public void testInvalid() throws TokenizerException {
+        assertTokenizes("$", null);
     }
 
     // WORKING ON IT
