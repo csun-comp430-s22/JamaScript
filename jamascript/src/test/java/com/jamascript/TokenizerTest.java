@@ -2,44 +2,10 @@ package com.jamascript;
 
 import java.util.List;
 
-import com.jamascript.Tokens.BooleanToken;
-import com.jamascript.Tokens.ClassToken;
-import com.jamascript.Tokens.CommaToken;
-import com.jamascript.Tokens.DivideToken;
-import com.jamascript.Tokens.DotToken;
-import com.jamascript.Tokens.ElseToken;
-import com.jamascript.Tokens.EqualToken;
-import com.jamascript.Tokens.ExtendsToken;
-import com.jamascript.Tokens.FalseToken;
-import com.jamascript.Tokens.GreaterThanToken;
-import com.jamascript.Tokens.IfToken;
-import com.jamascript.Tokens.IntToken;
-import com.jamascript.Tokens.LeftCurlyBracketToken;
-import com.jamascript.Tokens.LeftParenthesisToken;
-import com.jamascript.Tokens.LeftSquaredBracketToken;
-import com.jamascript.Tokens.LessThanToken;
-import com.jamascript.Tokens.MinusToken;
-import com.jamascript.Tokens.MultiplyToken;
-import com.jamascript.Tokens.NewToken;
-import com.jamascript.Tokens.NotToken;
-import com.jamascript.Tokens.NumberToken;
-import com.jamascript.Tokens.PlusToken;
-import com.jamascript.Tokens.QuotationMarkToken;
-import com.jamascript.Tokens.ReturnToken;
-import com.jamascript.Tokens.RightCurlyBracketToken;
-import com.jamascript.Tokens.RightParenthesisToken;
-import com.jamascript.Tokens.RightSquaredBracketToken;
-import com.jamascript.Tokens.SemicolonToken;
-import com.jamascript.Tokens.StringToken;
-import com.jamascript.Tokens.Token;
-import com.jamascript.Tokens.Tokenizer;
-import com.jamascript.Tokens.TokenizerException;
-import com.jamascript.Tokens.TrueToken;
-import com.jamascript.Tokens.VariableToken;
-import com.jamascript.Tokens.WhileToken;
+import com.jamascript.Tokens.*;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.fail;
+//import static org.junit.Assert.fail;
 import org.junit.Test;
 
 public class TokenizerTest {
