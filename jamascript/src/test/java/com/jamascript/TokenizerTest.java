@@ -125,13 +125,16 @@ public class TokenizerTest {
     //Test all single symbol token
     @Test
     public void testAllRemainingSymbols() throws TokenizerException {
-        assertTokenizes(", / . > < - * ! + \" ; =", 
+        assertTokenizes(", / . > >= < <= == - * ! + \" ; =", 
                         new Token[] {
                             new CommaToken(),
                             new DivideToken(),
                             new DotToken(),
                             new GreaterThanToken(),
+                            new GreaterThanEqualToken(),
                             new LessThanToken(),
+                            new LessThanEqualToken(),
+                            new EqualEqualToken(),
                             new MinusToken(),
                             new MultiplyToken(),
                             new NotToken(),

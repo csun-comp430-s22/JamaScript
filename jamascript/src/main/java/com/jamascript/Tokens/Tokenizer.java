@@ -124,9 +124,18 @@ public class Tokenizer {
         } else if(input.startsWith(">", offset)) {
             offset += 1;
             retval = new GreaterThanToken();
+        } else if(input.startsWith(">=", offset)) {
+            offset += 1;
+            retval = new GreaterThanEqualToken();
         } else if(input.startsWith("<", offset)) {
             offset += 1;
             retval = new LessThanToken();
+        } else if(input.startsWith("<=", offset)) {
+            offset += 1;
+            retval = new LessThanEqualToken();
+        } else if(input.startsWith("==", offset)) {
+            offset += 1;
+            retval = new EqualEqualToken();
         } else if(input.startsWith("-", offset)) {
             offset += 1;
             retval = new MinusToken();
