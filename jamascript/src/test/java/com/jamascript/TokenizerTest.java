@@ -1,7 +1,6 @@
 package com.jamascript;
 
 import java.util.List;
-
 import com.jamascript.lexer.*;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -129,13 +128,16 @@ public class TokenizerTest {
     // Test all single symbol token
     @Test
     public void testAllRemainingSymbols() throws TokenizerException {
-        assertTokenizes(", / . = > < - * ! + \" ;",
+        assertTokenizes(", / . == = >= > <= < - * ! + \" ;",
                 new Token[] {
                         new CommaToken(),
                         new DivideToken(),
                         new DotToken(),
+                        new EqualEqualToken(),
                         new EqualToken(),
+                        new GreaterThanEqualToken(),
                         new GreaterThanToken(),
+                        new LessThanEqualToken(),
                         new LessThanToken(),
                         new MinusToken(),
                         new MultiplyToken(),
@@ -144,22 +146,6 @@ public class TokenizerTest {
                         new QuotationMarkToken(),
                         new SemicolonToken()
                 });
-    }
-
-    // Test all double symbol tokens
-    @Test
-    public void testGreaterThanEqualTo() throws TokenizerException {
-        assertTokenizes(">=", new Token[] { new GreaterThanEqualToken() });
-    }
-
-    @Test
-    public void testLesserThanEqualTo() throws TokenizerException {
-        assertTokenizes("<=", new Token[] { new LessThanEqualToken() });
-    }
-
-    @Test
-    public void testEqualEqualTo() throws TokenizerException {
-        assertTokenizes("==", new Token[] { new EqualEqualToken() });
     }
 
     // test all the words
