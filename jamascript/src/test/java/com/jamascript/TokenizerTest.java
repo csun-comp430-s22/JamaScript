@@ -2,7 +2,7 @@ package com.jamascript;
 
 import java.util.List;
 
-import com.jamascript.Tokens.*;
+import com.jamascript.lexer.*;
 
 import static org.junit.Assert.assertArrayEquals;
 //import static org.junit.Assert.fail;
