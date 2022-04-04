@@ -1,16 +1,17 @@
 package com.jamascript.lexer;
 
-public class WhileToken implements Token {
+public class PrintlnToken implements Token 
+{
     public boolean equals(final Object other) {
-        return other instanceof WhileToken;
+        return other instanceof PrintlnToken;
     }
 
     public int hashCode() {
-        return 33;
+        return 24;
     }
 
     public String toString() {
-        return "while";
+        return "println";
     }
-
+    
 }
