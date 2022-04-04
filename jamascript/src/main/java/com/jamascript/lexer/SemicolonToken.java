@@ -6,7 +6,7 @@ public class SemicolonToken implements Token {
     }
 
     public int hashCode() {
-        return 30;
+        return 29;
     }
 
     public String toString() {

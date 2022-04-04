@@ -228,8 +228,6 @@ public class TokenizerTest {
         assertTokenizes("$", null);
     }
 
-    
-
     // WORKING ON IT
     // @Test
     // public void testNumberFollowedByLetter() throws TokenizerException {

@@ -6,7 +6,7 @@ public class RightSquaredBracketToken implements Token {
     }
 
     public int hashCode() {
-        return 29;
+        return 28;
     }
 
     public String toString() {

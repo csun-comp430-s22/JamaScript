@@ -6,7 +6,7 @@ public class QuotationMarkToken implements Token {
     }
 
     public int hashCode() {
-        return 25;
+        return 24;
     }
 
     public String toString() {

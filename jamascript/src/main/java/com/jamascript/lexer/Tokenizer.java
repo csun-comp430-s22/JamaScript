@@ -81,8 +81,6 @@ public class Tokenizer {
                 return new StringToken();
             } else if (name.equals("while")) {
                 return new WhileToken();
-            } else if (name.equals("println")) {
-                return new PrintlnToken();
             } else {
                 return new VariableToken(name);
             }

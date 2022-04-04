@@ -6,7 +6,7 @@ public class WhileToken implements Token {
     }
 
     public int hashCode() {
-        return 33;
+        return 32;
     }
 
     public String toString() {
