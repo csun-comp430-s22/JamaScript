@@ -7,7 +7,7 @@ public class ReturnToken implements Token {
     }
 
     public int hashCode() {
-        return 25;
+        return 26;
     }
 
     public String toString() {

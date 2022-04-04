@@ -6,7 +6,7 @@ public class RightParenthesisToken implements Token {
     }
 
     public int hashCode() {
-        return 27;
+        return 28;
     }
 
     public String toString() {
