@@ -3,9 +3,7 @@ import com.jamascript.lexer.*;
 import com.jamascript.parser.*;
 import com.jamascript.parser.expressions.*;
 import com.jamascript.parser.operators.*;
-import com.jamascript.parser.statements.*;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -30,7 +28,7 @@ public class ParserTest {
     @Test
     public void testPrimaryVariable() throws ParseException {
         List<Token> tokens = new ArrayList<Token>();
-        tokens.add(new VariableToken("123"));
+        tokens.add(new VariableToken("x"));
 
         final Parser parser = new Parser(tokens);
         assertEquals(new ParseResult<Exp>(new VariableExp(new Variable("x")),
