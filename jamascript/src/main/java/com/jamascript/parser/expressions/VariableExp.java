@@ -1,22 +1,23 @@
 package com.jamascript.parser.expressions;
+import com.jamascript.parser.*;
 
 public class VariableExp implements Exp {
-    public final String name;
+    public final Variable variable;
 
-    public VariableExp(final String name) {
-        this.name = name;
+    public VariableExp(final Variable variable) {
+        this.variable = variable;
     }
 
     public boolean equals(final Object other) {
         return (other instanceof VariableExp &&
-                name.equals(((VariableExp) other).name));
+                variable.equals(((VariableExp)other).variable));
     }
 
     public int hashCode() {
-        return name.hashCode();
+        return variable.hashCode();
     }
 
     public String toString() {
-        return "VariableExp(" + name + ")";
+        return "VariableExp(" + variable.toString() + ")";
     }
 }
