@@ -6,7 +6,7 @@ public class PlusOp implements Op {
     }
 
     public int hashCode() {
-        return 0;
+        return 11;
     }
 
     public String toString() {
