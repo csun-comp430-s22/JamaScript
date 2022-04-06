@@ -9,6 +9,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -27,7 +29,10 @@ public class ParserTest {
 
     @Test
     public void testPrimaryVariable() throws ParseException {
-        final Parser parser = new Parser(Arrays.asList(new VariableToken("x")));
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new VariableToken("123"));
+
+        final Parser parser = new Parser(tokens);
         assertEquals(new ParseResult<Exp>(new VariableExp(new Variable("x")),
                                           1),
                      parser.parsePrimaryExp(0));
@@ -35,7 +40,10 @@ public class ParserTest {
 
     @Test
     public void testPrimaryInteger() throws ParseException {
-        final Parser parser = new Parser(Arrays.asList(new NumberToken("123")));
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new NumberToken("123"));
+
+        final Parser parser = new Parser(tokens);
         assertEquals(new ParseResult<Exp>(new IntegerExp(123), 1),
                      parser.parsePrimaryExp(0));
     }
@@ -51,21 +59,30 @@ public class ParserTest {
 
     @Test
     public void testAdditiveOpPlus() throws ParseException {
-        final Parser parser = new Parser(Arrays.asList(new PlusToken()));
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new PlusToken());
+
+        final Parser parser = new Parser(tokens);
         assertEquals(new ParseResult<Op>(new PlusOp(), 1),
                      parser.parseAdditiveOp(0));
     }
                                                        
     @Test
     public void testAdditiveOpMinus() throws ParseException {
-        final Parser parser = new Parser(Arrays.asList(new MinusToken()));
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new MinusToken());
+
+        final Parser parser = new Parser(tokens);
         assertEquals(new ParseResult<Op>(new MinusOp(), 1),
                      parser.parseAdditiveOp(0));
     }
 
     @Test
     public void testAdditiveExpOnlyPrimary() throws ParseException {
-        final Parser parser = new Parser(Arrays.asList(new IntegerToken(123)));
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new NumberToken("123"));
+
+        final Parser parser = new Parser(tokens);
         assertEquals(new ParseResult<Exp>(new IntegerExp(123), 1),
                      parser.parseAdditiveExp(0));
     }
@@ -73,9 +90,14 @@ public class ParserTest {
     @Test
     public void testAdditiveExpSingleOperator() throws ParseException {
         // 1 + 2
-        final Parser parser = new Parser(Arrays.asList(new IntegerToken(1),
-                                                       new PlusToken(),
-                                                       new IntegerToken(2)));
+
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new NumberToken("1"));
+        tokens.add(new PlusToken());
+        tokens.add(new NumberToken("2"));
+
+        final Parser parser = new Parser(tokens);
+
         assertEquals(new ParseResult<Exp>(new OpExp(new IntegerExp(1),
                                                     new PlusOp(),
                                                     new IntegerExp(2)),
@@ -86,11 +108,14 @@ public class ParserTest {
     @Test
     public void testAdditiveExpMultiOperator() throws ParseException {
         // 1 + 2 - 3 ==> (1 + 2) - 3
-        final Parser parser = new Parser(Arrays.asList(new IntegerToken(1),
-                                                       new PlusToken(),
-                                                       new IntegerToken(2),
-                                                       new MinusToken(),
-                                                       new IntegerToken(3)));
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new NumberToken("1"));
+        tokens.add(new PlusToken());
+        tokens.add(new NumberToken("2"));
+        tokens.add(new MinusToken());
+        tokens.add(new NumberToken("3"));
+
+        final Parser parser = new Parser(tokens);
         final Exp expected = new OpExp(new OpExp(new IntegerExp(1),
                                                  new PlusOp(),
                                                  new IntegerExp(2)),
@@ -102,7 +127,12 @@ public class ParserTest {
 
     @Test
     public void testLessThanExpOnlyAdditive() throws ParseException {
-        final Parser parser = new Parser(Arrays.asList(new IntegerToken(123)));
+        
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new NumberToken("123"));
+
+        final Parser parser = new Parser(tokens);
+
         assertEquals(new ParseResult<Exp>(new IntegerExp(123), 1),
                      parser.parseLessThanExp(0));
     }
@@ -110,9 +140,13 @@ public class ParserTest {
     @Test
     public void testLessThanSingleOperator() throws ParseException {
         // 1 < 2
-        final Parser parser = new Parser(Arrays.asList(new IntegerToken(1),
-                                                       new LessThanToken(),
-                                                       new IntegerToken(2)));
+
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new NumberToken("1"));
+        tokens.add(new LessThanToken());
+        tokens.add(new NumberToken("2"));
+
+        final Parser parser = new Parser(tokens);
         final Exp expected = new OpExp(new IntegerExp(1),
                                        new LessThanOp(),
                                        new IntegerExp(2));
@@ -123,11 +157,15 @@ public class ParserTest {
     @Test
     public void testLessThanMultiOperator() throws ParseException {
         // 1 < 2 < 3 ==> (1 < 2) < 3
-        final Parser parser = new Parser(Arrays.asList(new IntegerToken(1),
-                                                       new LessThanToken(),
-                                                       new IntegerToken(2),
-                                                       new LessThanToken(),
-                                                       new IntegerToken(3)));
+
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new NumberToken("1"));
+        tokens.add(new LessThanToken());
+        tokens.add(new NumberToken("2"));
+        tokens.add(new LessThanToken());
+        tokens.add(new NumberToken("3"));
+
+        final Parser parser = new Parser(tokens);
         final Exp expected = new OpExp(new OpExp(new IntegerExp(1),
                                                  new LessThanOp(),
                                                  new IntegerExp(2)),
@@ -140,11 +178,16 @@ public class ParserTest {
     @Test
     public void testLessThanMixedOperator() throws ParseException {
         // 1 < 2 + 3 ==> 1 < (2 + 3)
-        final Parser parser = new Parser(Arrays.asList(new IntegerToken(1),
-                                                       new LessThanToken(),
-                                                       new IntegerToken(2),
-                                                       new PlusToken(),
-                                                       new IntegerToken(3)));
+
+        List<Token> tokens = new ArrayList<Token>();
+        tokens.add(new NumberToken("1"));
+        tokens.add(new LessThanToken());
+        tokens.add(new NumberToken("2"));
+        tokens.add(new PlusToken());
+        tokens.add(new NumberToken("3"));
+        
+
+        final Parser parser = new Parser(tokens);
         final Exp expected = new OpExp(new IntegerExp(1),
                                        new LessThanOp(),
                                        new OpExp(new IntegerExp(2),
