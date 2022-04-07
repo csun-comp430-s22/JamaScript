@@ -32,15 +32,30 @@ public class Parser {
 
     // primary_exp ::= x | i | `(` exp `)`
     public ParseResult<Exp> parsePrimaryExp(final int position) throws ParseException {
+
+        // get the current Token from our list of tokens at this position
         final Token token = getToken(position);
+
+        // if the current token is a Variable Token
         if (token instanceof VariableToken) {
+
+            // Get the name of the Variable Token
             final String name = ((VariableToken) token).name;
+
+            // Create and Return a new ParseResult with the variable expression with the variable name and the current position + 1
             return new ParseResult<Exp>(new VariableExp(new Variable(name)),
                     position + 1);
-        } else if (token instanceof NumberToken) {
+        } else if (token instanceof NumberToken) { // if the current token is a Number token
+
+            // Get the number of the Number token
             final int value = ((NumberToken) token).number;
+
+            // Create and return a new ParseResult with the IntegerExpression and the current position + 1
             return new ParseResult<Exp>(new IntegerExp(value), position + 1);
-        } else if (token instanceof LeftParenthesisToken) {
+
+        } else if (token instanceof LeftParenthesisToken) { // if the current token is a Left Parenthesis
+            
+             
             final ParseResult<Exp> inParens = parseExp(position + 1);
             assertTokenHereIs(inParens.position, new RightParenthesisToken());
             return new ParseResult<Exp>(inParens.result,
@@ -86,6 +101,21 @@ public class Parser {
         return current;
     } // parseAdditiveExp
 
+    public ParseResult<Exp> parseClassExp(final int position) throws ParseException {
+        final Token token = getToken(position);
+
+        if (token instanceof NewToken) 
+        {
+            // return new ParseResult<Exp>(new NewToken(), position + 1);
+            return null;
+        } 
+        else 
+        {
+            throw new ParseException("expected + or -; received: " + token);
+        }
+    }
+
+
     // less_than_exp ::= additive_exp (`<` additive_exp)*
     public ParseResult<Exp> parseLessThanExp(final int position) throws ParseException {
         ParseResult<Exp> current = parseAdditiveExp(position);
@@ -114,7 +144,11 @@ public class Parser {
 
         while (shouldRun) {
             try {
+
+                // if the current token we are looking at is an Equals Token '='
                 assertTokenHereIs(current.position, new EqualToken());
+
+
                 final ParseResult<Exp> other = parseLessThanExp(current.position + 1);
                 current = new ParseResult<Exp>(new OpExp(current.result,
                         new EqualsOp(),
@@ -135,11 +169,19 @@ public class Parser {
 
     // stmt ::= if (exp) stmt else stmt | { stmt* } | println(exp);
     public ParseResult<Stmt> parseStmt(final int position) throws ParseException {
+
+        // get the current token at the current position
         final Token token = getToken(position);
-        // if
+
+        // if the token we are looking at is an if Token
         if (token instanceof IfToken) {
+
+            // if the next token is '(' then we have 'if('
             assertTokenHereIs(position + 1, new LeftParenthesisToken());
+
+
             final ParseResult<Exp> guard = parseExp(position + 2);
+
             assertTokenHereIs(guard.position, new RightParenthesisToken());
             final ParseResult<Stmt> trueBranch = parseStmt(guard.position + 1);
             assertTokenHereIs(trueBranch.position, new ElseToken());
@@ -170,7 +212,8 @@ public class Parser {
             assertTokenHereIs(exp.position + 1, new SemicolonToken());
             return new ParseResult<Stmt>(new PrintlnStmt(exp.result),
                     exp.position + 2);
-        } else {
+        } 
+        else {
             throw new ParseException("expected statement; received: " + token);
         }
     } // parseStmt

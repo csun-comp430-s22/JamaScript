@@ -197,4 +197,23 @@ public class ParserTest {
                      parser.parseLessThanExp(0));
     }
 
+    // @Test
+    // public void testClassExpression() throws ParseException {
+    //     // 1 < 2 + 3 ==> 1 < (2 + 3)
+
+    //     List<Token> tokens = new ArrayList<Token>();
+    //     tokens.add(new NewToken());
+        
+        
+
+    //     final Parser parser = new Parser(tokens);
+    //     final Exp expected = new OpExp(new IntegerExp(1),
+    //                                    new LessThanOp(),
+    //                                    new OpExp(new IntegerExp(2),
+    //                                              new PlusOp(),
+    //                                              new IntegerExp(3)));
+    //     assertEquals(new ParseResult<Exp>(expected, 5),
+    //                  parser.parseLessThanExp(0));
+    // }
+
 }
