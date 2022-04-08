@@ -1,15 +1,30 @@
 package com.jamascript.parser.expressions;
-import com.jamascript.parser.ClassName;
+import com.jamascript.parser.classInformation.ClassName;
+import com.jamascript.parser.operators.NewOp;
+import com.jamascript.parser.operators.Op;
+import com.jamascript.parser.ParseException;
 import java.util.List;
 
-public class ClassExpression {
+public class ClassExpression implements Exp{
+    public final Op op;
     public final ClassName cname;
     public final List<Exp> params;
 
-    public ClassExpression(final ClassName cname,
-                           final List<Exp> params) {
+    public ClassExpression(final Op op, 
+                           final ClassName cname,
+                           final List<Exp> params) throws ParseException {
         this.cname = cname;
         this.params = params;
+
+        checkOperatorIsValid(op);
+        this.op = op;
+    }
+
+    public void checkOperatorIsValid(Op op) throws ParseException {
+        if(!(op instanceof NewOp)) {
+            throw new ParseException("Invalid Operator for class: " + op.toString());
+        }
+        
     }
 
     public int hashCode() {

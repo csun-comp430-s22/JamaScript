@@ -1,4 +1,4 @@
-package com.jamascript.parser;
+package com.jamascript.parser.classInformation;
 
 public class ClassName {
     public final String name;
