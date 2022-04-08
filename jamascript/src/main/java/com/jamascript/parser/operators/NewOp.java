@@ -4,7 +4,7 @@ public class NewOp implements Op{
     public NewOp() {}
 
     public int hashCode() {
-        return 32;
+        return 12;
     }
 
     public boolean equals(final Object other) {
