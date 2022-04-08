@@ -3,6 +3,8 @@ import com.jamascript.lexer.*;
 import com.jamascript.parser.*;
 import com.jamascript.parser.expressions.*;
 import com.jamascript.parser.operators.*;
+import com.jamascript.parser.statements.*;
+import com.jamascript.parser.classInformation.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -194,5 +196,37 @@ public class ParserTest {
         assertEquals(new ParseResult<Exp>(expected, 5),
                      parser.parseLessThanExp(0));
     }
+
+    // @Test
+    // public void testClassExpression() throws ParseException {
+    //     // 1 < 2 + 3 ==> 1 < (2 + 3)
+
+    //     List<Token> tokens = new ArrayList<Token>();
+    //     List<Exp> parameters = new ArrayList<Exp>();
+
+    //     tokens.add(new NewToken());
+    //     tokens.add(new ClassNameToken("Test"));
+    //     tokens.add(new LeftParenthesisToken());
+    //     tokens.add(new NumberToken("3"));
+    //     tokens.add(new RightParenthesisToken());
+        
+    //     final Parser parser = new Parser(tokens);
+
+    //     final Exp expected = new ClassExpression(new NewOp(), 
+    //                                              new ClassName("Test"),
+    //                                              parameters);
+        
+    //     assertEquals(new ParseResult<Exp>(expected, 5),
+    //                  parser.parseClassExpression)
+
+    //     // final Parser parser = new Parser(tokens);
+    //     // final Exp expected = new ClassExpression(new IntegerExp(1),
+    //     //                                new LessThanOp(),
+    //     //                                new OpExp(new IntegerExp(2),
+    //     //                                          new PlusOp(),
+    //     //                                          new IntegerExp(3)));
+    //     // assertEquals(new ParseResult<Exp>(expected, 5),
+    //     //              parser.parseLessThanExp(0));
+    // }
 
 }

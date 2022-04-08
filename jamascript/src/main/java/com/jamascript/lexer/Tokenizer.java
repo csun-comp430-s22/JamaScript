@@ -52,6 +52,7 @@ public class Tokenizer {
             name += input.charAt(offset);
             offset++;
 
+            // add to name until you hit whitespace
             while ((offset < input.length()) && Character.isLetterOrDigit(input.charAt(offset))) {
                 name += input.charAt(offset);
                 offset++;
