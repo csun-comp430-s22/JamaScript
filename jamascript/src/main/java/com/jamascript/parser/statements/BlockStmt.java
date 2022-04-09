@@ -23,6 +23,8 @@ public class BlockStmt implements Stmt {
                         return false;
                     }   
                 }
+            } else {
+                return false;
             }
 
             // if we can't find an element that isn't equal in both lists
