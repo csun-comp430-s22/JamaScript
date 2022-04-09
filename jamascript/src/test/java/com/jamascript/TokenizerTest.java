@@ -151,13 +151,14 @@ public class TokenizerTest {
     // test all the words
     @Test
     public void testAllRemainingWords() throws TokenizerException {
-        assertTokenizes("Boolean class extends Int new return String while",
+        assertTokenizes("Boolean class extends Int new println return String while",
                 new Token[] {
                         new BooleanToken(),
                         new ClassToken(),
                         new ExtendsToken(),
                         new IntToken(),
                         new NewToken(),
+                        new PrintlnToken(),
                         new ReturnToken(),
                         new StringToken(),
                         new WhileToken()
@@ -189,6 +190,7 @@ public class TokenizerTest {
                 });
     }
 
+    // test all the numbers
     @Test
     public void testSingleNumber() throws TokenizerException {
         assertTokenizes("0 1 2 3 4 5 6 7 8 9",

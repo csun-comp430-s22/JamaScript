@@ -76,14 +76,14 @@ public class Tokenizer {
                 return new IntToken();
             } else if (name.equals("new")) {
                 return new NewToken();
+            } else if (name.equals("println")) {
+                return new PrintlnToken();
             } else if (name.equals("return")) {
                 return new ReturnToken();
             } else if (name.equals("String")) {
                 return new StringToken();
             } else if (name.equals("while")) {
                 return new WhileToken();
-            } else if (name.equals("println")) {
-                return new PrintlnToken();
             } else {
                 return new VariableToken(name);
             }
