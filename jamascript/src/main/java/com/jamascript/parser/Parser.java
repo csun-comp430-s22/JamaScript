@@ -64,9 +64,6 @@ public class Parser {
                 return new ParseResult<Exp>(new VariableExp(new Variable(name)),
                     position + 1);
             }
-
-            
-            
         } else if (token instanceof StringValToken) { // if the current token is a String Val token
             // Get string val of the StringValToken
             final String value = ((StringValToken) token).value;
@@ -74,6 +71,7 @@ public class Parser {
             // Create and return a new ParseResult with the StringExpression and the
             // current position + 1
             return new ParseResult<Exp>(new StringExp(value), position + 1);
+
         } else if (token instanceof NumberToken) { // if the current token is a Number token
 
             // Get the number of the Number token
@@ -84,11 +82,12 @@ public class Parser {
             return new ParseResult<Exp>(new IntegerExp(value), position + 1);
 
         } else if (token instanceof LeftParenthesisToken) { // if the current token is a Left Parenthesis
-          
+
             final ParseResult<Exp> inParens = parseExp(position + 1);
             assertTokenHereIs(inParens.position, new RightParenthesisToken());
             return new ParseResult<Exp>(inParens.result,
                     inParens.position + 1);
+                    
         } else if (token instanceof NewToken) {
 
             Token nextToken = getToken(position + 1);
@@ -123,9 +122,9 @@ public class Parser {
 
             // call create parseClassExpression which handles commas and expressions
             // parseClassExpression(position+3)
-        } else if(token instanceof TrueToken) {
+        } else if (token instanceof TrueToken) {
             return new ParseResult<Exp>(new BooleanLiteralExp(true), position + 1);
-        } else if(token instanceof FalseToken) {
+        } else if (token instanceof FalseToken) {
             return new ParseResult<Exp>(new BooleanLiteralExp(false), position + 1);
         } else {
             throw new ParseException("Expected primary expression; received: " + token);
@@ -338,7 +337,8 @@ public class Parser {
         return parseEqualsExp(position);
     }
 
-    // stmt ::= if (exp) stmt else stmt | { stmt* } | println(exp);
+    // stmt ::= if (exp) stmt else stmt | { stmt* } | println(exp) | while (exp)
+    // stmt;
     public ParseResult<Stmt> parseStmt(final int position) throws ParseException {
 
         // get the current token at the current position
@@ -395,11 +395,35 @@ public class Parser {
                     curPosition);
         } else if (token instanceof PrintlnToken) { // returns println(evaluated expressions);
             assertTokenHereIs(position + 1, new LeftParenthesisToken());
+
             final ParseResult<Exp> exp = parseExp(position + 2);
+
             assertTokenHereIs(exp.position, new RightParenthesisToken());
+
             assertTokenHereIs(exp.position + 1, new SemicolonToken());
+
             return new ParseResult<Stmt>(new PrintlnStmt(exp.result),
                     exp.position + 2);
+        } else if (token instanceof WhileToken) { // if while token
+
+            // 'while('
+            assertTokenHereIs(position + 1, new LeftParenthesisToken());
+
+            // 'while(exp'
+            final ParseResult<Exp> guard = parseExp(position + 2);
+
+            // 'while(exp)'
+            assertTokenHereIs(guard.position, new RightParenthesisToken());
+
+            // 'while(exp){ evaluate what is in here'
+            final ParseResult<Stmt> body = parseStmt(guard.position + 1);
+
+            // 'while(exp){ evaluate what is in here}'
+            assertTokenHereIs(body.position, new RightCurlyBracketToken());
+
+            return new ParseResult<Stmt>(new WhileStmt(guard.result,
+                    body.result),
+                    body.position);
         } else if (token instanceof IntToken) { // returns}
 
             // Int

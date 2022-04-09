@@ -478,4 +478,35 @@ public class ParserTest {
 
         // }
 
+        @Test
+        public void testWhileStmt() throws ParseException {
+                // while(true){ println("ahhh");}
+
+                List<Token> tokens = new ArrayList<Token>();
+
+                tokens.add(new WhileToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new TrueToken());
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new LeftCurlyBracketToken());
+                tokens.add(new PrintlnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new StringValToken("ahhh"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+                tokens.add(new RightCurlyBracketToken());
+
+                final Parser parser = new Parser(tokens);
+
+                List<Stmt> bodyStmt = new ArrayList<Stmt>();
+                bodyStmt.add(new PrintlnStmt(new StringExp("ahhh")));
+
+                final WhileStmt expected = new WhileStmt(
+                                new BooleanLiteralExp(true),
+                                new BlockStmt(bodyStmt));
+
+                assertEquals(new ParseResult<Stmt>(expected, 10),
+                                parser.parseStmt(0));
+        }
+
 }
