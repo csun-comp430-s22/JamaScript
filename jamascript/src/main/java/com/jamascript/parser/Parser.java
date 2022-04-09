@@ -63,14 +63,43 @@ public class Parser {
             return new ParseResult<Exp>(inParens.result,
                     inParens.position + 1);
         } else if(token instanceof NewToken) {
-            assertTokenHereIs(position + 1, new LeftParenthesisToken());
+            
+            Token nextToken = getToken(position + 1);
+            Token leftParenthesisToken = getToken(position + 2);
+            ClassName className;
 
-            // set the className in class expression: position + 1 should be left paren
-            //                                        position + 2 should be an expression followed by comma
+            // if 'new TestClassName'
+            // get the class name
+            if(nextToken instanceof VariableToken) {
+                VariableToken classNameToken = (VariableToken) nextToken;
+                className = new ClassName(classNameToken.name);
+            } else {
+                throw new ParseException("Invalid class expression. Expected: VariableToken");
+            }
+
+            // if 'new TestClassName('
+            // parse the expressions within the parenthesis and return a new ClassExpression
+
+            
+            if(leftParenthesisToken instanceof LeftParenthesisToken) {
+                System.out.println("pos new token: " + position);
+
+                final ParseResult<Exp> classExpression = parseClassExp(new NewOp(), className, position + 3);
+
+                return classExpression;
+            } else {
+                throw new ParseException("Invalid class expression. Expected: LeftParenthesisToken");
+            }
+
+            
+
+            // set the className in class expression: position + 1 should be variable token
+            //                                        position + 2 should be a parenthesis
+            //                                        poaition + 3 should be a set of expressions followed by commas
+
             // call create parseClassExpression which handles commas and expressions
-
-
-            return null;
+            // parseClassExpression(position+3)
+            
         } else {
             throw new ParseException("Expected primary expression; received: " + token);
         }
@@ -81,53 +110,64 @@ public class Parser {
     //
     // 1 + 2
 
-    public ParseResult<Op> parseNewOp(final int position) throws ParseException {
-        final Token token = getToken(position);
+    // public ParseResult<Op> parseNewOp(final int position) throws ParseException {
+    //     final Token token = getToken(position);
 
-        if(token instanceof NewToken) {
-            return new ParseResult<Op>(new NewOp(), position + 1);
-        } else {
-            throw new ParseException("expected 'new'; received: " + token);
+    //     if(token instanceof NewToken) {
+    //         return new ParseResult<Op>(new NewOp(), position + 1);
+    //     } else {
+    //         throw new ParseException("expected 'new'; received: " + token);
+    //     }
+    // }
+
+    public List<ParseResult<Exp>> getParameters(int position) throws ParseException {
+        List<ParseResult<Exp>> parameters = new ArrayList<ParseResult<Exp>>();
+        boolean commasExist = true;
+
+        // we want format 'exp, exp, exp)'
+        while(commasExist) {
+
+            ParseResult<Exp> currentExpression = parseExp(position);
+
+            System.out.println(currentExpression);
+
+            parameters.add(currentExpression);
+            position = currentExpression.position;
+
+            System.out.println("After evaluate expression in get param: " + position);
+
+            // if the next token after the expression is done identifying is not a comma token
+            Token currentToken = getToken(position);
+            
+            if(!(currentToken instanceof CommaToken)) {
+        
+                // if 'new TestClassName(exp,exp)'
+                if(currentToken instanceof RightParenthesisToken) {
+                    commasExist = false;
+                } else {
+                    throw new ParseException("Expected RightParenthesisToken.");
+                }
+            }
+            position++;
         }
+        return parameters;
     }
 
-    // public List<Exp> getParameters(int position) throws ParseException {
-    //     boolean commasExist = true;
-    //     // Assuming we have identified the classname
-    //     while(commasExist) {
+    public ParseResult<Exp> parseClassExp(final Op newOp, final ClassName className, final int position) throws ParseException {
+        System.out.println("pos class exp: " + position);
+        List<ParseResult<Exp>> parameters = getParameters(position);
 
-    //     }
-    //     return null;
-    // }
-
-    // not connected to parse statement
-    // public ParseResult<Exp> parseClassExp(final int position) throws ParseException {
-    //     //ParseResult<Exp> current = parseExp(position);
-    //     List<Exp> parameters = new ArrayList<Exp>();
-
-    //     boolean commasExist = true;
-
-        
-        
+        try {
+            return new ParseResult<Exp>(new ClassExpression(newOp, className, parameters), 
+                                        parameters.get(parameters.size()-1).position + 1); 
+                                        // position + 1 because we want the token after ')' in 'new TestClassName(exp,exp)'
+            
+        } catch (final ParseException e) {
+            throw new ParseException("Parse Class Expression failed.");
+        }
         
 
-    //     // boolean shouldRun = true;
-
-    //     // while (shouldRun) {
-    //     //     try {
-    //     //         final ParseResult<Op> newOp = parseNewOp(current.position);
-    //     //         // current = new ParseResult<Exp>(new ClassExpression(newOp.result, 
-    //     //         //                                                   new ClassName("Test"), 
-    //     //         //                                                   current.result), current.position);
-
-    //     //         // current = new ParseResult<Exp>(new ClassExpression());
-    //     //     } catch (final ParseException e) {
-    //     //         shouldRun = false;
-    //     //     }
-    //     // }
-
-    //     // return current;
-    // }
+    }
 
     // additive_op ::= + | -
     public ParseResult<Op> parseAdditiveOp(final int position) throws ParseException {
@@ -234,12 +274,27 @@ public class Parser {
             // if the next token is '(' then we have 'if('
             assertTokenHereIs(position + 1, new LeftParenthesisToken());
 
+            // 'if(exp'
             final ParseResult<Exp> guard = parseExp(position + 2);
 
+            // 'if(exp)'
             assertTokenHereIs(guard.position, new RightParenthesisToken());
+
+            // 'if(exp){ evaluate what is in here'
             final ParseResult<Stmt> trueBranch = parseStmt(guard.position + 1);
-            assertTokenHereIs(trueBranch.position, new ElseToken());
-            final ParseResult<Stmt> falseBranch = parseStmt(trueBranch.position + 1);
+            
+            // 'if(exp){ evaluate what is in here }'
+            assertTokenHereIs(trueBranch.position, new RightCurlyBracketToken());
+
+            // 'if(exp){ evaluate what is in here } else'
+            assertTokenHereIs(trueBranch.position + 1, new ElseToken());
+
+
+            // else { evaluate what is in here
+            final ParseResult<Stmt> falseBranch = parseStmt(trueBranch.position + 2);
+
+            assertTokenHereIs(falseBranch.position, new RightCurlyBracketToken());
+
             return new ParseResult<Stmt>(new IfStmt(guard.result,
                     trueBranch.result,
                     falseBranch.result),
@@ -248,18 +303,22 @@ public class Parser {
             final List<Stmt> stmts = new ArrayList<Stmt>();
             int curPosition = position + 1;
             boolean shouldRun = true;
+
             while (shouldRun) {
                 try {
+
+                    // loops through all statements in block
                     final ParseResult<Stmt> stmt = parseStmt(curPosition);
                     stmts.add(stmt.result);
                     curPosition = stmt.position;
+                    
                 } catch (final ParseException e) {
                     shouldRun = false;
                 }
             }
             return new ParseResult<Stmt>(new BlockStmt(stmts),
                     curPosition);
-        } else if (token instanceof PrintlnToken) {
+        } else if (token instanceof PrintlnToken) { // returns println(evaluated expressions);
             assertTokenHereIs(position + 1, new LeftParenthesisToken());
             final ParseResult<Exp> exp = parseExp(position + 2);
             assertTokenHereIs(exp.position, new RightParenthesisToken());

@@ -3,16 +3,17 @@ import com.jamascript.parser.classInformation.ClassName;
 import com.jamascript.parser.operators.NewOp;
 import com.jamascript.parser.operators.Op;
 import com.jamascript.parser.ParseException;
+import com.jamascript.parser.ParseResult;
 import java.util.List;
 
 public class ClassExpression implements Exp{
     public final Op op;
     public final ClassName cname;
-    public final List<Exp> params;
+    public final List<ParseResult<Exp>> params;
 
     public ClassExpression(final Op op, 
                            final ClassName cname,
-                           final List<Exp> params) throws ParseException {
+                           final List<ParseResult<Exp>> params) throws ParseException {
         this.cname = cname;
         this.params = params;
 
@@ -33,7 +34,7 @@ public class ClassExpression implements Exp{
     }
 
     public boolean equals(final Object other) {
-        if (other instanceof MethodCallExp) {
+        if (other instanceof ClassExpression) {
             final ClassExpression asFunc = (ClassExpression) other;
             return (cname.equals(asFunc.cname) &&
                     params.equals(asFunc.params));
