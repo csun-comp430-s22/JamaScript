@@ -48,6 +48,7 @@ public class Parser {
             // variable name and the current position + 1
             return new ParseResult<Exp>(new VariableExp(new Variable(name)),
                     position + 1);
+
         } else if (token instanceof StringValToken) { // if the current token is a String Val token
             // Get string val of the StringValToken
             final String value = ((StringValToken) token).value;
@@ -55,6 +56,7 @@ public class Parser {
             // Create and return a new ParseResult with the StringExpression and the
             // current position + 1
             return new ParseResult<Exp>(new StringExp(value), position + 1);
+
         } else if (token instanceof NumberToken) { // if the current token is a Number token
 
             // Get the number of the Number token
@@ -70,6 +72,7 @@ public class Parser {
             assertTokenHereIs(inParens.position, new RightParenthesisToken());
             return new ParseResult<Exp>(inParens.result,
                     inParens.position + 1);
+                    
         } else if (token instanceof NewToken) {
 
             Token nextToken = getToken(position + 1);
