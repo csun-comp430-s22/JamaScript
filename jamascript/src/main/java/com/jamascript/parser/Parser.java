@@ -56,7 +56,6 @@ public class Parser {
             return new ParseResult<Exp>(new IntegerExp(value), position + 1);
 
         } else if (token instanceof LeftParenthesisToken) { // if the current token is a Left Parenthesis
-            
              
             final ParseResult<Exp> inParens = parseExp(position + 1);
             assertTokenHereIs(inParens.position, new RightParenthesisToken());
@@ -91,8 +90,6 @@ public class Parser {
                 throw new ParseException("Invalid class expression. Expected: LeftParenthesisToken");
             }
 
-            
-
             // set the className in class expression: position + 1 should be variable token
             //                                        position + 2 should be a parenthesis
             //                                        poaition + 3 should be a set of expressions followed by commas
@@ -100,7 +97,12 @@ public class Parser {
             // call create parseClassExpression which handles commas and expressions
             // parseClassExpression(position+3)
             
-        } else {
+        } else if(token instanceof TrueToken) {
+            return new ParseResult<Exp>(new BooleanLiteralExp(true), position + 1);
+        } else if(token instanceof FalseToken) {
+            return new ParseResult<Exp>(new BooleanLiteralExp(false), position + 1);
+        }
+        else {
             throw new ParseException("Expected primary expression; received: " + token);
         }
     } // parsePrimaryExp
@@ -241,12 +243,11 @@ public class Parser {
             try {
 
                 // if the current token we are looking at is an Equals Token '='
-                assertTokenHereIs(current.position, new EqualToken());
-
+                assertTokenHereIs(current.position, new EqualEqualToken());
 
                 final ParseResult<Exp> other = parseLessThanExp(current.position + 1);
                 current = new ParseResult<Exp>(new OpExp(current.result,
-                        new EqualsOp(),
+                        new EqualsEqualsOp(),
                         other.result),
                         other.position);
             } catch (final ParseException e) {

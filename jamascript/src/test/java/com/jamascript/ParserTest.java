@@ -197,6 +197,25 @@ public class ParserTest {
                 parser.parseLessThanExp(0));
     }
 
+    @Test
+    public void testTrueFalseExpression() throws ParseException {
+        // 1 < 2 + 3 ==> 1 < (2 + 3)
+
+        List<Token> tokens = new ArrayList<Token>();
+
+        tokens.add(new FalseToken());
+        tokens.add(new EqualEqualToken());
+        tokens.add(new FalseToken());
+
+        final Parser parser = new Parser(tokens);
+        final Exp expected = new OpExp(new BooleanLiteralExp(false),
+                                      new EqualsEqualsOp(),
+                                      new BooleanLiteralExp(false));
+        assertEquals(new ParseResult<Exp>(expected, 3),
+                parser.parseEqualsExp(0));
+    }
+
+
     // if(2>1){println("yup")} else{"nah"}
     @Test
     public void testIfStmt() throws ParseException {
@@ -234,7 +253,6 @@ public class ParserTest {
 
     @Test
     public void testClassExpression() throws ParseException {
-        // 1 < 2 + 3 ==> 1 < (2 + 3)
 
         List<Token> tokens = new ArrayList<Token>();
         List<ParseResult<Exp>> parameters = new ArrayList<ParseResult<Exp>>();
