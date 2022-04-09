@@ -227,7 +227,7 @@ public class ParserTest {
     }
 
     @Test
-    public void testParseStmt() throws ParseException {
+    public void testParseStmtPrintln() throws ParseException {
         List<Token> tokens = new ArrayList<Token>();
 
         // if(1 < 2){println(1);} else {println(2);}
@@ -252,7 +252,6 @@ public class ParserTest {
         tokens.add(new RightParenthesisToken());
         tokens.add(new SemicolonToken());
         tokens.add(new RightCurlyBracketToken());
-
         
 
         final Parser parser = new Parser(tokens);
@@ -264,13 +263,77 @@ public class ParserTest {
         final List<Stmt> trueBranchResultStatements = new ArrayList<Stmt>();
         trueBranchResultStatements.add(new PrintlnStmt(new IntegerExp(1)));
 
-        Stmt trueBranchResult = new BlockStmt(trueBranchResultStatements); // 12
+        Stmt trueBranchResult = new BlockStmt(trueBranchResultStatements); 
 
         
         final List<Stmt> falseBranchResultStatements = new ArrayList<Stmt>();
         falseBranchResultStatements.add(new PrintlnStmt(new IntegerExp(2)));
 
-        Stmt falseBranchResult = new BlockStmt(falseBranchResultStatements); // 20
+        Stmt falseBranchResult = new BlockStmt(falseBranchResultStatements); 
+
+        final ParseResult<Stmt> expected = new ParseResult<Stmt>(
+            new IfStmt(expression, trueBranchResult, falseBranchResult), 20);
+
+
+        assertEquals(expected, parser.parseStmt(0));
+    }
+
+    @Test
+    public void testParseStmtVariableDeclaration() throws ParseException {
+        List<Token> tokens = new ArrayList<Token>();
+
+        // if(1 < 2){println(1);} else {println(2);}
+        tokens.add(new IfToken());
+
+        tokens.add(new LeftParenthesisToken());
+        tokens.add(new NumberToken("1"));
+        tokens.add(new LessThanToken());
+        tokens.add(new NumberToken("2"));
+        tokens.add(new RightParenthesisToken());
+
+        tokens.add(new LeftCurlyBracketToken());
+
+        tokens.add(new IntToken());
+        tokens.add(new VariableToken("test"));
+        tokens.add(new EqualToken());
+        tokens.add(new NumberToken("3"));
+        tokens.add(new SemicolonToken());
+
+        tokens.add(new RightCurlyBracketToken());
+
+        tokens.add(new ElseToken());
+        tokens.add(new LeftCurlyBracketToken());
+        tokens.add(new PrintlnToken());
+        tokens.add(new LeftParenthesisToken());
+        tokens.add(new NumberToken("2"));
+        tokens.add(new RightParenthesisToken());
+        tokens.add(new SemicolonToken());
+        tokens.add(new RightCurlyBracketToken());
+        
+
+        final Parser parser = new Parser(tokens);
+
+        final Exp expression = new OpExp(new IntegerExp(1),
+                                       new LessThanOp(),
+                                       new IntegerExp(2));
+
+        final List<Stmt> trueBranchResultStatements = new ArrayList<Stmt>();
+
+        final Vardec variableDeclaration = new Vardec(
+                                            new IntType(), 
+                                            new Variable("test"));
+        
+        final VardecStmt variableDeclarationStatement = new VardecStmt(variableDeclaration, new ParseResult<Exp>(new IntegerExp(3), 11));
+
+        trueBranchResultStatements.add(variableDeclarationStatement);
+
+        Stmt trueBranchResult = new BlockStmt(trueBranchResultStatements); 
+
+        
+        final List<Stmt> falseBranchResultStatements = new ArrayList<Stmt>();
+        falseBranchResultStatements.add(new PrintlnStmt(new IntegerExp(2)));
+
+        Stmt falseBranchResult = new BlockStmt(falseBranchResultStatements); 
 
         final ParseResult<Stmt> expected = new ParseResult<Stmt>(
             new IfStmt(expression, trueBranchResult, falseBranchResult), 20);
