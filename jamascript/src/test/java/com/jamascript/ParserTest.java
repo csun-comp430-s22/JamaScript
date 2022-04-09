@@ -429,22 +429,54 @@ public class ParserTest {
 
                 assertEquals(expected, parser.parseStmt(0));
         }
-    @Test
-      public void testTrueFalseExpression() throws ParseException {
-          // false == false
 
-          List<Token> tokens = new ArrayList<Token>();
+        @Test
+        public void testTrueFalseExpression() throws ParseException {
+                // false == false
 
-          tokens.add(new FalseToken());
-          tokens.add(new EqualEqualToken());
-          tokens.add(new FalseToken());
+                List<Token> tokens = new ArrayList<Token>();
 
-          final Parser parser = new Parser(tokens);
-          final Exp expected = new OpExp(new BooleanLiteralExp(false),
-                                        new EqualsEqualsOp(),
-                                        new BooleanLiteralExp(false));
-          assertEquals(new ParseResult<Exp>(expected, 3),
-                  parser.parseEqualsExp(0));
-      }
+                tokens.add(new FalseToken());
+                tokens.add(new EqualEqualToken());
+                tokens.add(new FalseToken());
+
+                final Parser parser = new Parser(tokens);
+                final Exp expected = new OpExp(new BooleanLiteralExp(false),
+                                new EqualsEqualsOp(),
+                                new BooleanLiteralExp(false));
+                assertEquals(new ParseResult<Exp>(expected, 3),
+                                parser.parseEqualsExp(0));
+        }
+
+        @Test
+        public void testWhileStmt() throws ParseException {
+                // while(true){ println("ahhh");}
+
+                List<Token> tokens = new ArrayList<Token>();
+
+                tokens.add(new WhileToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new TrueToken());
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new LeftCurlyBracketToken());
+                tokens.add(new PrintlnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new StringValToken("ahhh"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+                tokens.add(new RightCurlyBracketToken());
+
+                final Parser parser = new Parser(tokens);
+
+                List<Stmt> bodyStmt = new ArrayList<Stmt>();
+                bodyStmt.add(new PrintlnStmt(new StringExp("ahhh")));
+
+                final WhileStmt expected = new WhileStmt(
+                                new BooleanLiteralExp(true),
+                                new BlockStmt(bodyStmt));
+
+                assertEquals(new ParseResult<Stmt>(expected, 10),
+                                parser.parseStmt(0));
+        }
 
 }
