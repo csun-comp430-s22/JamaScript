@@ -16,6 +16,7 @@ import java.util.List;
 import org.junit.Test;
 
 public class ParserTest {
+
         @Test
         public void testEqualsOpExp() {
                 // 1 + 1 == 1 + 1
@@ -428,5 +429,22 @@ public class ParserTest {
 
                 assertEquals(expected, parser.parseStmt(0));
         }
+    @Test
+      public void testTrueFalseExpression() throws ParseException {
+          // false == false
+
+          List<Token> tokens = new ArrayList<Token>();
+
+          tokens.add(new FalseToken());
+          tokens.add(new EqualEqualToken());
+          tokens.add(new FalseToken());
+
+          final Parser parser = new Parser(tokens);
+          final Exp expected = new OpExp(new BooleanLiteralExp(false),
+                                        new EqualsEqualsOp(),
+                                        new BooleanLiteralExp(false));
+          assertEquals(new ParseResult<Exp>(expected, 3),
+                  parser.parseEqualsExp(0));
+      }
 
 }

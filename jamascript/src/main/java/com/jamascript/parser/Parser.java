@@ -65,7 +65,7 @@ public class Parser {
             return new ParseResult<Exp>(new IntegerExp(value), position + 1);
 
         } else if (token instanceof LeftParenthesisToken) { // if the current token is a Left Parenthesis
-
+          
             final ParseResult<Exp> inParens = parseExp(position + 1);
             assertTokenHereIs(inParens.position, new RightParenthesisToken());
             return new ParseResult<Exp>(inParens.result,
@@ -104,7 +104,10 @@ public class Parser {
 
             // call create parseClassExpression which handles commas and expressions
             // parseClassExpression(position+3)
-
+        } else if(token instanceof TrueToken) {
+            return new ParseResult<Exp>(new BooleanLiteralExp(true), position + 1);
+        } else if(token instanceof FalseToken) {
+            return new ParseResult<Exp>(new BooleanLiteralExp(false), position + 1);
         } else {
             throw new ParseException("Expected primary expression; received: " + token);
         }

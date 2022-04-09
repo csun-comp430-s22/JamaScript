@@ -13,7 +13,7 @@ public class StringExp implements Exp{
     }
 
     public int hashCode() {
-        return 0;
+        return 2;
     }
 
     public String toString() {
