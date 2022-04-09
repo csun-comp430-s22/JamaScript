@@ -44,10 +44,29 @@ public class Parser {
             // Get the name of the Variable Token
             final String name = ((VariableToken) token).name;
 
-            // Create and Return a new ParseResult with the variable expression with the
-            // variable name and the current position + 1
-            return new ParseResult<Exp>(new VariableExp(new Variable(name)),
+            Token nextToken = getToken(position + 1);
+
+            if(nextToken instanceof DotToken) {
+                MethodName methodName = new MethodName(getMethodName(position + 2));
+                assertTokenHereIs(position + 3, new LeftParenthesisToken());
+
+                ParseResult<Exp> varExp = new ParseResult<Exp>(new VariableExp(new Variable(name)),
+                position + 4);
+
+                ParseResult<Exp> methodCallExpParsed = parseMethodCallExp(methodName, varExp, varExp.position);
+
+                assertTokenHereIs(methodCallExpParsed.position, new SemicolonToken());
+
+                return methodCallExpParsed;
+            } else {
+                // Create and Return a new ParseResult with the variable expression with the
+                // variable name and the current position + 1
+                return new ParseResult<Exp>(new VariableExp(new Variable(name)),
                     position + 1);
+            }
+
+            
+            
         } else if (token instanceof StringValToken) { // if the current token is a String Val token
             // Get string val of the StringValToken
             final String value = ((StringValToken) token).value;
@@ -162,12 +181,36 @@ public class Parser {
         return parameters;
     }
 
+    public String getMethodName(int position) throws ParseException {
+        Token currToken = getToken(position);
+
+        if(currToken instanceof VariableToken) {
+            VariableToken varToken = (VariableToken) currToken;
+            return varToken.name;
+        } else {
+            throw new ParseException("Expected Variable Token; got: " + currToken);
+        }
+    }
+
+    public ParseResult<Exp> parseMethodCallExp(MethodName methodName, ParseResult<Exp> varExp, int position) throws ParseException {
+        List<ParseResult<Exp>> parameters = getParameters(position);
+        
+        // first parameter would have to call an expression
+
+        ParseResult<Exp> result = new ParseResult<Exp>(
+            new ExpDotMethodCallExp((Exp) varExp, new MethodCallExp(methodName, parameters)), 
+                                    parameters.get(parameters.size() - 1).position + 1);
+        
+        return result;
+    }
+
     public ParseResult<Exp> parseClassExp(final Op newOp, final ClassName className, final int position)
             throws ParseException {
         System.out.println("pos class exp: " + position);
         List<ParseResult<Exp>> parameters = getParameters(position);
 
         try {
+            
             return new ParseResult<Exp>(new ClassExpression(newOp, className, parameters),
                     parameters.get(parameters.size() - 1).position + 1);
             // position + 1 because we want the token after ')' in 'new

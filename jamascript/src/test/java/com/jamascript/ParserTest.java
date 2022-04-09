@@ -429,22 +429,53 @@ public class ParserTest {
 
                 assertEquals(expected, parser.parseStmt(0));
         }
-    @Test
-      public void testTrueFalseExpression() throws ParseException {
-          // false == false
 
-          List<Token> tokens = new ArrayList<Token>();
+        @Test
+        public void testTrueFalseExpression() throws ParseException {
+                // false == false
 
-          tokens.add(new FalseToken());
-          tokens.add(new EqualEqualToken());
-          tokens.add(new FalseToken());
+                List<Token> tokens = new ArrayList<Token>();
 
-          final Parser parser = new Parser(tokens);
-          final Exp expected = new OpExp(new BooleanLiteralExp(false),
+                tokens.add(new FalseToken());
+                tokens.add(new EqualEqualToken());
+                tokens.add(new FalseToken());
+
+                final Parser parser = new Parser(tokens);
+                final Exp expected = new OpExp(new BooleanLiteralExp(false),
                                         new EqualsEqualsOp(),
                                         new BooleanLiteralExp(false));
-          assertEquals(new ParseResult<Exp>(expected, 3),
-                  parser.parseEqualsExp(0));
-      }
+                assertEquals(new ParseResult<Exp>(expected, 3),
+                        parser.parseEqualsExp(0));
+        }
+
+        // @Test
+        // public void testMethodExpression() throws ParseException {
+        //         // test.someMethod(exp, exp, ...);
+                
+        //         // exp, methodcallexp
+
+        //         List<Token> tokens = new ArrayList<Token>();
+
+        //         tokens.add(new VariableToken("test"));
+        //         tokens.add(new DotToken());
+        //         tokens.add(new VariableToken("someMethod"));
+        //         tokens.add(new LeftParenthesisToken());
+        //         tokens.add(new NumberToken("3"));
+        //         tokens.add(new RightParenthesisToken());
+        //         tokens.add(new SemicolonToken());
+
+
+        //         // test.
+        //         final Parser parser = new Parser(tokens);
+
+        //         final Exp varExp = new VariableExp(new Variable("test"));
+
+        //         List<ParseResult<Exp>> parameters = new ArrayList<ParseResult<Exp>>();
+        //         parameters.add(new ParseResult<Exp>(new IntegerExp(3), 4));
+
+
+        //         final Exp expected = new MethodCallExp(new MethodName("someMethod"), parameters);
+
+        // }
 
 }
