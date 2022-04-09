@@ -442,11 +442,41 @@ public class ParserTest {
 
                 final Parser parser = new Parser(tokens);
                 final Exp expected = new OpExp(new BooleanLiteralExp(false),
-                                new EqualsEqualsOp(),
-                                new BooleanLiteralExp(false));
+                                        new EqualsEqualsOp(),
+                                        new BooleanLiteralExp(false));
                 assertEquals(new ParseResult<Exp>(expected, 3),
-                                parser.parseEqualsExp(0));
+                        parser.parseEqualsExp(0));
         }
+
+        // @Test
+        // public void testMethodExpression() throws ParseException {
+        //         // test.someMethod(exp, exp, ...);
+                
+        //         // exp, methodcallexp
+
+        //         List<Token> tokens = new ArrayList<Token>();
+
+        //         tokens.add(new VariableToken("test"));
+        //         tokens.add(new DotToken());
+        //         tokens.add(new VariableToken("someMethod"));
+        //         tokens.add(new LeftParenthesisToken());
+        //         tokens.add(new NumberToken("3"));
+        //         tokens.add(new RightParenthesisToken());
+        //         tokens.add(new SemicolonToken());
+
+
+        //         // test.
+        //         final Parser parser = new Parser(tokens);
+
+        //         final Exp varExp = new VariableExp(new Variable("test"));
+
+        //         List<ParseResult<Exp>> parameters = new ArrayList<ParseResult<Exp>>();
+        //         parameters.add(new ParseResult<Exp>(new IntegerExp(3), 4));
+
+
+        //         final Exp expected = new MethodCallExp(new MethodName("someMethod"), parameters);
+
+        // }
 
         @Test
         public void testWhileStmt() throws ParseException {

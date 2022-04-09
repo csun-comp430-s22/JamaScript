@@ -1,13 +1,14 @@
 package com.jamascript.parser.expressions;
 import com.jamascript.parser.MethodName;
+import com.jamascript.parser.ParseResult;
 import java.util.List;
 
 public class MethodCallExp implements Exp {
     public final MethodName mname;
-    public final List<Exp> params;
+    public final List<ParseResult<Exp>> params;
 
     public MethodCallExp(final MethodName mname,
-                           final List<Exp> params) {
+                           final List<ParseResult<Exp>> params) {
         this.mname = mname;
         this.params = params;
     }
