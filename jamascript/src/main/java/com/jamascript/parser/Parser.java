@@ -43,27 +43,28 @@ public class Parser {
 
             // Get the name of the Variable Token
             final String name = ((VariableToken) token).name;
+            Token nextToken;
 
-            Token nextToken = getToken(position + 1);
+            if(tokens.size() >= 2) {
+                nextToken = getToken(position + 1);
+            
+                if(nextToken instanceof DotToken) {
+                    MethodName methodName = new MethodName(getMethodName(position + 2));
+                    assertTokenHereIs(position + 3, new LeftParenthesisToken());
 
-            if(nextToken instanceof DotToken) {
-                MethodName methodName = new MethodName(getMethodName(position + 2));
-                assertTokenHereIs(position + 3, new LeftParenthesisToken());
-
-                ParseResult<Exp> varExp = new ParseResult<Exp>(new VariableExp(new Variable(name)),
-                position + 4);
-
-                ParseResult<Exp> methodCallExpParsed = parseMethodCallExp(methodName, varExp, varExp.position);
-
-                assertTokenHereIs(methodCallExpParsed.position, new SemicolonToken());
-
-                return methodCallExpParsed;
-            } else {
-                // Create and Return a new ParseResult with the variable expression with the
-                // variable name and the current position + 1
-                return new ParseResult<Exp>(new VariableExp(new Variable(name)),
+                    ParseResult<Exp> varExp = new ParseResult<Exp>(new VariableExp(new Variable(name)),
                     position + 1);
+
+                    ParseResult<Exp> methodCallExpParsed = parseMethodCallExp(methodName, varExp, position + 4);
+
+                    return methodCallExpParsed;
+                } else {
+                    return new ParseResult<Exp>(new VariableExp(new Variable(name)),
+                        position + 1);
+                }
             }
+            return new ParseResult<Exp>(new VariableExp(new Variable(name)),
+                        position + 1);
         } else if (token instanceof StringValToken) { // if the current token is a String Val token
             // Get string val of the StringValToken
             final String value = ((StringValToken) token).value;
@@ -194,11 +195,14 @@ public class Parser {
     public ParseResult<Exp> parseMethodCallExp(MethodName methodName, ParseResult<Exp> varExp, int position) throws ParseException {
         List<ParseResult<Exp>> parameters = getParameters(position);
         
-        // first parameter would have to call an expression
+        int currPosition = parameters.get(parameters.size() - 1).position + 1;
+        assertTokenHereIs(currPosition, new SemicolonToken());
 
         ParseResult<Exp> result = new ParseResult<Exp>(
-            new ExpDotMethodCallExp((Exp) varExp, new MethodCallExp(methodName, parameters)), 
-                                    parameters.get(parameters.size() - 1).position + 1);
+            new ExpDotMethodCallExp(varExp, new MethodCallExp(methodName, parameters)), 
+                                    currPosition + 1);
+
+        
         
         return result;
     }

@@ -3,10 +3,10 @@ package com.jamascript.parser;
 import com.jamascript.parser.expressions.*;
 
 public class ExpDotMethodCallExp implements Exp{
-    public final Exp exp;
+    public final ParseResult<Exp> exp;
     public final MethodCallExp method;
 
-    public ExpDotMethodCallExp(Exp exp, MethodCallExp method) {
+    public ExpDotMethodCallExp(ParseResult<Exp> exp, MethodCallExp method) {
         this.exp = exp;
         this.method = method;
     }

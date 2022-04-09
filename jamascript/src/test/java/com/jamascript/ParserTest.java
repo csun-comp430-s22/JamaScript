@@ -448,35 +448,37 @@ public class ParserTest {
                         parser.parseEqualsExp(0));
         }
 
-        // @Test
-        // public void testMethodExpression() throws ParseException {
-        //         // test.someMethod(exp, exp, ...);
+        @Test
+        public void testMethodExpression() throws ParseException {
+                // test.someMethod(exp, exp, ...);
                 
-        //         // exp, methodcallexp
+                // exp, methodcallexp
 
-        //         List<Token> tokens = new ArrayList<Token>();
+                List<Token> tokens = new ArrayList<Token>();
 
-        //         tokens.add(new VariableToken("test"));
-        //         tokens.add(new DotToken());
-        //         tokens.add(new VariableToken("someMethod"));
-        //         tokens.add(new LeftParenthesisToken());
-        //         tokens.add(new NumberToken("3"));
-        //         tokens.add(new RightParenthesisToken());
-        //         tokens.add(new SemicolonToken());
-
-
-        //         // test.
-        //         final Parser parser = new Parser(tokens);
-
-        //         final Exp varExp = new VariableExp(new Variable("test"));
-
-        //         List<ParseResult<Exp>> parameters = new ArrayList<ParseResult<Exp>>();
-        //         parameters.add(new ParseResult<Exp>(new IntegerExp(3), 4));
+                tokens.add(new VariableToken("test"));
+                tokens.add(new DotToken());
+                tokens.add(new VariableToken("someMethod"));
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new NumberToken("3"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
 
 
-        //         final Exp expected = new MethodCallExp(new MethodName("someMethod"), parameters);
+                final Parser parser = new Parser(tokens);
 
-        // }
+                final ParseResult<Exp> varExp = new ParseResult<Exp>(new VariableExp(new Variable("test")), 1);
+
+                List<ParseResult<Exp>> parameters = new ArrayList<ParseResult<Exp>>();
+                parameters.add(new ParseResult<Exp>(new IntegerExp(3), 5));
+
+                final MethodCallExp methodExp = new MethodCallExp(new MethodName("someMethod"), parameters);
+
+                final ExpDotMethodCallExp expected = new ExpDotMethodCallExp(varExp, methodExp);
+
+                assertEquals(new ParseResult<Exp>(expected, 7), parser.parseExp(0));
+
+        }
 
         @Test
         public void testWhileStmt() throws ParseException {
