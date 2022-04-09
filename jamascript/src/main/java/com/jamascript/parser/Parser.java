@@ -458,12 +458,45 @@ public class Parser {
 
                 return new ParseResult<Stmt>(variableDeclarationStatement, exp.position + 1);
 
-            } else {
+                } else {
                 throw new ParseException("Expected Variable Token;");
+             }
+            } else if (token instanceof StringToken) { // returns}
+
+            // String
+            Token nextToken = getToken(position + 1);
+            if (nextToken instanceof VariableToken) {
+
+                // String test
+                VariableToken varToken = (VariableToken) nextToken;
+                String variableName = varToken.name;
+
+                // String test =
+                assertTokenHereIs(position + 2, new EqualToken());
+
+                // String hello = parseHere
+                // we can have:
+                // String hello = 5 + 2;
+                // String hello2 = 3 + hello;
+                final ParseResult<Exp> exp = parseExp(position + 3);
+
+                // String hello = exp;
+                assertTokenHereIs(exp.position, new SemicolonToken());
+
+                final Vardec variableDeclaration = new Vardec(
+                        new StringType(),
+                        new Variable(variableName));
+
+                final VardecStmt variableDeclarationStatement = new VardecStmt(variableDeclaration, exp);
+
+                return new ParseResult<Stmt>(variableDeclarationStatement, exp.position + 1);
+
+                } else {
+                throw new ParseException("Expected Variable Token;");
+             }
+            } else {
+                throw new ParseException("expected statement; received: " + token);
             }
-        } else {
-            throw new ParseException("expected statement; received: " + token);
-        }
     } // parseStmt
 
     // program ::= stmt
