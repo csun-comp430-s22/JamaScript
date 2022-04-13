@@ -1,1 +1,5 @@
+# ignore output folder when running maven
 jamascript/target
+
+#ignore .DS_STORE from MacOS
+.DS_Store
