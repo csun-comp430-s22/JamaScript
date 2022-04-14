@@ -1,15 +1,21 @@
 package com.jamascript.typechecker;
 
+import com.jamascript.parser.*;
+import com.jamascript.parser.expressions.*;
+import com.jamascript.parser.operators.*;
+import com.jamascript.parser.statements.*;
+import com.jamascript.typechecker.types.*;
+
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class Typechecker {
-    /*public final Program program;
-    // if the functions were overloaded:
-    // public final Map<Signature, Fdef> functions;
+public class TypeChecking {
+    public final Program program;
+    // if the methods were overloaded:
+    // public final Map<Signature, Mdef> methods;
     // public class Signature {
-    //   public final FunctionName name;
+    //   public final MethodName name;
     //   public final List<Type> params;
     // }
     //
@@ -19,7 +25,7 @@ public class Typechecker {
     //   public final ClassDef cdef;
     //   public final Map<Signature, MethodDefinition> methods; // may include inherited methods
     // }
-    public final Map<FunctionName, Fdef> functions;
+    public final Map<MethodName, Mdef> methods;
 
     // Signature (usually): name, parameter types
     //
@@ -30,24 +36,24 @@ public class Typechecker {
     // foo(5, true)
     // foo(int, bool)
     //
-    public Typechecker(final Program program) throws TypeErrorException {
+    public TypeChecking(final Program program) throws TypeErrorException {
         this.program = program;
-        functions = new HashMap<FunctionName, Fdef>();
-        for (final Fdef fdef : program.functions) {
-            if (!functions.containsKey(fdef.fname)) {
-                functions.put(fdef.fname, fdef);
+        methods = new HashMap<MethodName, Mdef>();
+        for (final Mdef mdef : program.methods) {
+            if (!methods.containsKey(mdef.mname)) {
+                methods.put(mdef.mname, mdef);
             } else {
-                throw new TypeErrorException("Function with duplicate name: " + fdef.fname);
+                throw new TypeErrorException("Function with duplicate name: " + mdef.mname);
             }
         }
     }
 
-    public Fdef getFunctionByName(final FunctionName fname) throws TypeErrorException {
-        final Fdef fdef = functions.get(fname);
-        if (fdef == null) {
-            throw new TypeErrorException("No such function with name: " + fname);
+    public Mdef getFunctionByName(final MethodName mname) throws TypeErrorException {
+        final Mdef mdef = methods.get(mname);
+        if (mdef == null) {
+            throw new TypeErrorException("No such function with name: " + mname);
         } else {
-            return fdef;
+            return mdef;
         }
     }
     
@@ -58,16 +64,16 @@ public class Typechecker {
     // 1. Is foo a function?
     // 2. Does foo take an integer and a boolean? - (int, bool)
     // 3. Does foo return an integer?
-    public Type typeofFunctionCall(final FunctionCallExp exp,
+    public Type typeofMethodCall(final MethodCallExp exp,
                                    final Map<Variable, Type> typeEnvironment) throws TypeErrorException {
-        // what are functions?  Are they data?  Are they somehow special?
-        final Fdef fdef = getFunctionByName(exp.fname);
-        if (exp.params.size() != fdef.arguments.size()) {
-            throw new TypeErrorException("Wrong number of arguments for function: " + fdef.fname);
+        // what are methods?  Are they data?  Are they somehow special?
+        final Mdef mdef = getFunctionByName(exp.mname);
+        if (exp.params.size() != mdef.arguments.size()) {
+            throw new TypeErrorException("Wrong number of arguments for function: " + mdef.mname);
         }
         for (int index = 0; index < exp.params.size(); index++) {
             final Type receivedArgumentType = typeof(exp.params.get(index), typeEnvironment);
-            final Type expectedArgumentType = fdef.arguments.get(index).type;
+            final Type expectedArgumentType = mdef.arguments.get(index).type;
             // doesn't handle subtyping right now
             //
             // void foo(Animal a) { ... }
@@ -77,7 +83,7 @@ public class Typechecker {
                 throw new TypeErrorException("Type mismatch on function call argument");
             }
         }
-        return fdef.returnType;
+        return mdef.returnType;
     }
     
     // op ::= + | < | &&
@@ -129,8 +135,8 @@ public class Typechecker {
             }
         } else if (exp instanceof OpExp) {
             return typeofOp((OpExp)exp, typeEnvironment);
-        } else if (exp instanceof FunctionCallExp) {
-            return typeofFunctionCall((FunctionCallExp)exp, typeEnvironment);
+        } else if (exp instanceof MethodCallExp) {
+            return typeofMethodCall((MethodCallExp)exp, typeEnvironment);
         } else {
             throw new TypeErrorException("Unsupported expresssion: " + exp);
         }
@@ -138,7 +144,7 @@ public class Typechecker {
 
     // addToMap: O(n) - to add one key/value pair
     // with immutable data structures: O(log(n))
-    public static Map<Variable, Type> addToMap(final Map<Variable, Type> typeEnvironment,
+    public Map<Variable, Type> addToMap(final Map<Variable, Type> typeEnvironment,
                                                final Variable key,
                                                final Type value) {
         final Map<Variable, Type> retval = new HashMap<Variable, Type>();
@@ -213,7 +219,7 @@ public class Typechecker {
         //   int y = x + x;
         //   if (...) { return y; } else { ... } // maybe returns
         // }
-        for (final Stmt stmt : asBlock.body) {
+        for (final Stmt stmt : asBlock.stmts) {
             typeEnvironment = typecheckStmt(stmt, typeEnvironment, returnType);
         }
 
@@ -251,10 +257,10 @@ public class Typechecker {
         }
     }
 
-    // fdef ::= type fname(vardec*) stmt
-    public void typecheckFunction(final Fdef fdef) throws TypeErrorException {
+    // mdef ::= type mname(vardec*) stmt
+    public void typecheckFunction(final Mdef mdef) throws TypeErrorException {
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-        for (final Vardec vardec : fdef.arguments) {
+        for (final Vardec vardec : mdef.arguments) {
             // int foo(int x, bool x)
             if (!typeEnvironment.containsKey(vardec.variable)) {
                 throw new TypeErrorException("Duplicate variable name: " + vardec.variable);
@@ -263,12 +269,12 @@ public class Typechecker {
             }
         }
         
-        typecheckStmt(fdef.body, typeEnvironment, fdef.returnType);
+        typecheckStmt(mdef.body, typeEnvironment, mdef.returnType);
     }
 
     public void typecheckWholeProgram() throws TypeErrorException {
-        for (final Fdef fdef : program.functions) {
-            typecheckFunction(fdef);
+        for (final Mdef mdef : program.methods) {
+            typecheckFunction(mdef);
         }
-    }*/
+    }
 }

@@ -2,10 +2,10 @@ package com.jamascript.parser.statements;
 
 import com.jamascript.parser.Node;
 
-public class Program implements Node {
+public class ProgramStmt implements Node {
     public final Stmt stmt;
 
-    public Program(final Stmt stmt) {
+    public ProgramStmt(final Stmt stmt) {
         this.stmt = stmt;
     }
 }

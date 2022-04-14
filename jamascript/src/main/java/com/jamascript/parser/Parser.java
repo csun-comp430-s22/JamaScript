@@ -72,7 +72,7 @@ public class Parser {
 
             // Create and return a new ParseResult with the StringExpression and the
             // current position + 1
-            return new ParseResult<Exp>(new StringExp(value), position + 1);
+            return new ParseResult<Exp>(new StringLiteralExp(value), position + 1);
 
         } else if (token instanceof NumberToken) { // if the current token is a Number token
 
@@ -81,7 +81,7 @@ public class Parser {
 
             // Create and return a new ParseResult with the IntegerExpression and the
             // current position + 1
-            return new ParseResult<Exp>(new IntegerExp(value), position + 1);
+            return new ParseResult<Exp>(new IntegerLiteralExp(value), position + 1);
 
         } else if (token instanceof LeftParenthesisToken) { // if the current token is a Left Parenthesis
 
@@ -501,15 +501,15 @@ public class Parser {
     } // parseStmt
 
     // program ::= stmt
-    public ParseResult<Program> parseProgram(final int position) throws ParseException {
+    public ParseResult<ProgramStmt> parseProgram(final int position) throws ParseException {
         final ParseResult<Stmt> stmt = parseStmt(position);
-        return new ParseResult<Program>(new Program(stmt.result),
+        return new ParseResult<ProgramStmt>(new ProgramStmt(stmt.result),
                 stmt.position);
     } // parseProgram
 
     // intended to be called on the top-level
-    public Program parseProgram() throws ParseException {
-        final ParseResult<Program> program = parseProgram(0);
+    public ProgramStmt parseProgram() throws ParseException {
+        final ParseResult<ProgramStmt> program = parseProgram(0);
         // make sure all tokens were read in
         // if any tokens remain, then there is something extra at the end
         // of the program, which should be a syntax error
