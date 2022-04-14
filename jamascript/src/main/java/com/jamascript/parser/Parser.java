@@ -4,6 +4,7 @@ import com.jamascript.lexer.*;
 import com.jamascript.parser.operators.*;
 import com.jamascript.parser.expressions.*;
 import com.jamascript.parser.statements.*;
+import com.jamascript.typechecker.types.*;
 import com.jamascript.parser.classInformation.*;
 
 import java.util.List;

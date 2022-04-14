@@ -1,6 +1,7 @@
 package com.jamascript.parser;
 import java.util.List;
-import com.jamascript.parser.statements.Stmt;
+import com.jamascript.parser.statements.*;
+import com.jamascript.typechecker.types.*;
 
 
 public class Mdef {

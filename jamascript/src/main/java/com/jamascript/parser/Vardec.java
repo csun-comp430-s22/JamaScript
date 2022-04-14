@@ -1,5 +1,7 @@
 package com.jamascript.parser;
 
+import com.jamascript.typechecker.types.*;
+
 public class Vardec {
     public final Type type;
     public final Variable variable;
