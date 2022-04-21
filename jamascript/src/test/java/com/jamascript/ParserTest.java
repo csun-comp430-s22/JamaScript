@@ -403,32 +403,20 @@ public class ParserTest {
 
                 final Parser parser = new Parser(tokens);
 
-                final Exp expression = new OpExp(new IntegerLiteralExp(1),
-                                new LessThanOp(),
-                                new IntegerLiteralExp(2));
+                List<Stmt> trueStmts = new ArrayList<Stmt>();
+                trueStmts.add(new PrintlnStmt(new IntegerLiteralExp(1)));
 
-                final List<Stmt> trueBranchResultStatements = new ArrayList<Stmt>();
+                List<Stmt> falseStmts = new ArrayList<Stmt>();
+                falseStmts.add(new PrintlnStmt(new IntegerLiteralExp(2)));
 
-                final Vardec variableDeclaration = new Vardec(
-                                new IntType(),
-                                new Variable("test"));
+                final IfStmt expected = new IfStmt(
+                                new OpExp(new IntegerLiteralExp(1), new LessThanOp(),
+                                                new IntegerLiteralExp(2)),
+                                new BlockStmt(trueStmts),
+                                new BlockStmt(falseStmts));
+                assertEquals(new ParseResult<>(expected, 20),
+                                parser.parseStmt(0));
 
-                final VardecStmt variableDeclarationStatement = new VardecStmt(variableDeclaration,
-                                new ParseResult<Exp>(new IntegerLiteralExp(3), 11));
-
-                trueBranchResultStatements.add(variableDeclarationStatement);
-
-                Stmt trueBranchResult = new BlockStmt(trueBranchResultStatements);
-
-                final List<Stmt> falseBranchResultStatements = new ArrayList<Stmt>();
-                falseBranchResultStatements.add(new PrintlnStmt(new IntegerLiteralExp(2)));
-
-                Stmt falseBranchResult = new BlockStmt(falseBranchResultStatements);
-
-                final ParseResult<Stmt> expected = new ParseResult<Stmt>(
-                                new IfStmt(expression, trueBranchResult, falseBranchResult), 20);
-
-                assertEquals(expected, parser.parseStmt(0));
         }
 
         @Test
@@ -443,16 +431,16 @@ public class ParserTest {
 
                 final Parser parser = new Parser(tokens);
                 final Exp expected = new OpExp(new BooleanLiteralExp(false),
-                                        new EqualsEqualsOp(),
-                                        new BooleanLiteralExp(false));
+                                new EqualsEqualsOp(),
+                                new BooleanLiteralExp(false));
                 assertEquals(new ParseResult<Exp>(expected, 3),
-                        parser.parseEqualsExp(0));
+                                parser.parseEqualsExp(0));
         }
 
         @Test
         public void testMethodExpression() throws ParseException {
                 // test.someMethod(exp, exp, ...);
-                
+
                 // exp, methodcallexp
 
                 List<Token> tokens = new ArrayList<Token>();
@@ -465,19 +453,18 @@ public class ParserTest {
                 tokens.add(new RightParenthesisToken());
                 tokens.add(new SemicolonToken());
 
-
                 final Parser parser = new Parser(tokens);
 
-                final ParseResult<Exp> varExp = new ParseResult<Exp>(new VariableExp(new Variable("test")), 1);
+                List<Exp> params = new ArrayList<Exp>();
+                params.add(new IntegerLiteralExp(3));
 
-                List<ParseResult<Exp>> parameters = new ArrayList<ParseResult<Exp>>();
-                parameters.add(new ParseResult<Exp>(new IntegerLiteralExp(3), 5));
+                final MethodCallExp expected = new MethodCallExp(
+                                new VariableExp(new Variable("test")),
+                                new MethodName("someMethod"),
+                                params);
 
-                final MethodCallExp methodExp = new MethodCallExp(new MethodName("someMethod"), parameters);
-
-                final ExpDotMethodCallExp expected = new ExpDotMethodCallExp(varExp, methodExp);
-
-                assertEquals(new ParseResult<Exp>(expected, 7), parser.parseExp(0));
+                assertEquals(new ParseResult<Exp>(expected, 6),
+                                parser.parseStmt(0));
 
         }
 

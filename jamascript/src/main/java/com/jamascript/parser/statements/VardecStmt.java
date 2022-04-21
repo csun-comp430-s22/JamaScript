@@ -1,14 +1,15 @@
 package com.jamascript.parser.statements;
+
 import com.jamascript.parser.Vardec;
 import com.jamascript.parser.expressions.*;
 import com.jamascript.parser.ParseResult;
 
 public class VardecStmt implements Stmt {
     public final Vardec vardec;
-    public final ParseResult<Exp> exp;
+    public final Exp exp;
 
     public VardecStmt(final Vardec vardec,
-                      final ParseResult<Exp> exp) {
+            final Exp exp) {
         this.vardec = vardec;
         this.exp = exp;
     }
@@ -16,10 +17,15 @@ public class VardecStmt implements Stmt {
     public int hashCode() {
         return vardec.hashCode() + exp.hashCode();
     }
-    
+
     public boolean equals(final Object other) {
-        return (other instanceof VardecStmt &&
-                exp.equals(((VardecStmt) other).exp));
+        if (other instanceof VardecStmt) {
+            final VardecStmt otherVar = (VardecStmt) other;
+            return (vardec.equals(otherVar.vardec) &&
+                    exp.equals(otherVar.exp));
+        } else {
+            return false;
+        }
     }
 
     public String toString() {
