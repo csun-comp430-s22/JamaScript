@@ -30,16 +30,16 @@ public class ParserTest {
                 assertEquals(first, second);
         }
 
-        @Test
-        public void testPrimaryVariable() throws ParseException {
-                List<Token> tokens = new ArrayList<Token>();
-                tokens.add(new VariableToken("x"));
+        // @Test
+        // public void testPrimaryVariable() throws ParseException {
+        //         List<Token> tokens = new ArrayList<Token>();
+        //         tokens.add(new VariableToken("x"));
 
-                final Parser parser = new Parser(tokens);
-                assertEquals(new ParseResult<Exp>(new VariableExp(new Variable("x")),
-                                1),
-                                parser.parsePrimaryExp(0));
-        }
+        //         final Parser parser = new Parser(tokens);
+        //         assertEquals(new ParseResult<Exp>(new VariableExp(new Variable("x")),
+        //                         1),
+        //                         parser.parsePrimaryExp(0));
+        // }
 
         @Test
         public void testPrimaryInteger() throws ParseException {
@@ -369,55 +369,50 @@ public class ParserTest {
                 assertEquals(expected, parser.parseStmt(0));
         }
 
-        @Test
-        public void testParseStmtVariableDeclaration() throws ParseException {
-                List<Token> tokens = new ArrayList<Token>();
+        // @Test
+        // public void testParseStmtVariableDeclaration() throws ParseException {
+        //         List<Token> tokens = new ArrayList<Token>();
 
-                // if(1 < 2){println(1);} else {println(2);}
-                tokens.add(new IfToken());
+        //         // if(1 < 2){println(1);} else {println(2);}
+        //         tokens.add(new IfToken());
+        //         tokens.add(new LeftParenthesisToken());
+        //         tokens.add(new NumberToken("1"));
+        //         tokens.add(new LessThanToken());
+        //         tokens.add(new NumberToken("2"));
+        //         tokens.add(new RightParenthesisToken());
+        //         tokens.add(new LeftCurlyBracketToken());
+        //         tokens.add(new IntToken());
+        //         tokens.add(new VariableToken("test"));
+        //         tokens.add(new EqualToken());
+        //         tokens.add(new NumberToken("3"));
+        //         tokens.add(new SemicolonToken());
+        //         tokens.add(new RightCurlyBracketToken());
+        //         tokens.add(new ElseToken());
+        //         tokens.add(new LeftCurlyBracketToken());
+        //         tokens.add(new PrintlnToken());
+        //         tokens.add(new LeftParenthesisToken());
+        //         tokens.add(new NumberToken("2"));
+        //         tokens.add(new RightParenthesisToken());
+        //         tokens.add(new SemicolonToken());
+        //         tokens.add(new RightCurlyBracketToken());
 
-                tokens.add(new LeftParenthesisToken());
-                tokens.add(new NumberToken("1"));
-                tokens.add(new LessThanToken());
-                tokens.add(new NumberToken("2"));
-                tokens.add(new RightParenthesisToken());
+        //         final Parser parser = new Parser(tokens);
 
-                tokens.add(new LeftCurlyBracketToken());
+        //         List<Stmt> trueStmts = new ArrayList<Stmt>();
+        //         trueStmts.add(new PrintlnStmt(new IntegerLiteralExp(1)));
 
-                tokens.add(new IntToken());
-                tokens.add(new VariableToken("test"));
-                tokens.add(new EqualToken());
-                tokens.add(new NumberToken("3"));
-                tokens.add(new SemicolonToken());
+        //         List<Stmt> falseStmts = new ArrayList<Stmt>();
+        //         falseStmts.add(new PrintlnStmt(new IntegerLiteralExp(2)));
 
-                tokens.add(new RightCurlyBracketToken());
+        //         final IfStmt expected = new IfStmt(
+        //                         new OpExp(new IntegerLiteralExp(1), new LessThanOp(),
+        //                                         new IntegerLiteralExp(2)),
+        //                         new BlockStmt(trueStmts),
+        //                         new BlockStmt(falseStmts));
+        //         assertEquals(new ParseResult<>(expected, 20),
+        //                         parser.parseStmt(0));
 
-                tokens.add(new ElseToken());
-                tokens.add(new LeftCurlyBracketToken());
-                tokens.add(new PrintlnToken());
-                tokens.add(new LeftParenthesisToken());
-                tokens.add(new NumberToken("2"));
-                tokens.add(new RightParenthesisToken());
-                tokens.add(new SemicolonToken());
-                tokens.add(new RightCurlyBracketToken());
-
-                final Parser parser = new Parser(tokens);
-
-                List<Stmt> trueStmts = new ArrayList<Stmt>();
-                trueStmts.add(new PrintlnStmt(new IntegerLiteralExp(1)));
-
-                List<Stmt> falseStmts = new ArrayList<Stmt>();
-                falseStmts.add(new PrintlnStmt(new IntegerLiteralExp(2)));
-
-                final IfStmt expected = new IfStmt(
-                                new OpExp(new IntegerLiteralExp(1), new LessThanOp(),
-                                                new IntegerLiteralExp(2)),
-                                new BlockStmt(trueStmts),
-                                new BlockStmt(falseStmts));
-                assertEquals(new ParseResult<>(expected, 20),
-                                parser.parseStmt(0));
-
-        }
+        // }
 
         @Test
         public void testTrueFalseExpression() throws ParseException {
@@ -437,36 +432,36 @@ public class ParserTest {
                                 parser.parseEqualsExp(0));
         }
 
-        @Test
-        public void testMethodExpression() throws ParseException {
-                // test.someMethod(exp, exp, ...);
+        // @Test
+        // public void testMethodExpression() throws ParseException {
+        //         // test.someMethod(exp, exp, ...);
 
-                // exp, methodcallexp
+        //         // exp, methodcallexp
 
-                List<Token> tokens = new ArrayList<Token>();
+        //         List<Token> tokens = new ArrayList<Token>();
 
-                tokens.add(new VariableToken("test"));
-                tokens.add(new DotToken());
-                tokens.add(new VariableToken("someMethod"));
-                tokens.add(new LeftParenthesisToken());
-                tokens.add(new NumberToken("3"));
-                tokens.add(new RightParenthesisToken());
-                tokens.add(new SemicolonToken());
+        //         tokens.add(new VariableToken("test"));
+        //         tokens.add(new DotToken());
+        //         tokens.add(new VariableToken("someMethod"));
+        //         tokens.add(new LeftParenthesisToken());
+        //         tokens.add(new NumberToken("3"));
+        //         tokens.add(new RightParenthesisToken());
+        //         tokens.add(new SemicolonToken());
 
-                final Parser parser = new Parser(tokens);
+        //         final Parser parser = new Parser(tokens);
 
-                List<Exp> params = new ArrayList<Exp>();
-                params.add(new IntegerLiteralExp(3));
+        //         List<Exp> params = new ArrayList<Exp>();
+        //         params.add(new IntegerLiteralExp(3));
 
-                final MethodCallExp expected = new MethodCallExp(
-                                new VariableExp(new Variable("test")),
-                                new MethodName("someMethod"),
-                                params);
+        //         final MethodCallExp expected = new MethodCallExp(
+        //                         new VariableExp(new Variable("test")),
+        //                         new MethodName("someMethod"),
+        //                         params);
 
-                assertEquals(new ParseResult<Exp>(expected, 6),
-                                parser.parseStmt(0));
+        //         assertEquals(new ParseResult<Exp>(expected, 6),
+        //                         parser.parseStmt(0));
 
-        }
+        // }
 
         @Test
         public void testWhileStmt() throws ParseException {
