@@ -1,8 +1,8 @@
 package com.jamascript.parser.expressions;
 
-import com.jamascript.parser.MethodName;
-
 import java.util.List;
+
+import com.jamascript.parser.methodInformation.MethodName;
 
 public class MethodCallExp implements Exp {
     public final Exp target;

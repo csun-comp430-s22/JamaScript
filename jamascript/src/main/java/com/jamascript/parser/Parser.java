@@ -80,7 +80,20 @@ public class Parser {
         return leftExp;
     }
 
-    // exp ::= var | int | string | exp.methodname(exp*) | new
+    // exp ::= exp.methodname(exp*)
+    /*public ParseResult<Exp> parseMethodCall(final int position) throws ParseException{
+        ParseResult<Exp> variable = parseExp(position);
+        assertTokenHereIs(position + 1, new DotToken());
+        final Token token =  getToken(position + 2);
+        MethodName methodName = (MethodName) token;
+        assertTokenHereIs(position + 3, new LeftParenthesisToken());
+        ParseResult<Exp> parameters = parseExp(position + 4);
+        assertTokenHereIs(parameters.position, new RightParenthesisToken());
+
+        return new ParseResult<Exp>(new MethodCallExp(variable.result, methodName, (List<Exp>)parameters.result), parameters.position);
+    }*/
+
+    // exp ::= var | int | string | new
     // classname(exp*)|
     public ParseResult<Exp> parseExp(final int position) throws ParseException {
         final Token token = getToken(position);
@@ -101,7 +114,7 @@ public class Parser {
             assertTokenHereIs(position + 2, new LeftParenthesisToken());
             final ParseResult<Exp> params = parseExp(position + 3);
             assertTokenHereIs(params.position + 1, new RightParenthesisToken());
-            return new ParseResult<Exp>(new NewExp(className, (List<Exp>) params), params.position);
+            return new ParseResult<Exp>(new NewExp(className, (List<Exp>) params.result), params.position);
             // }
         } else {
             throw new ParseException("Expected expression; received: " + token);

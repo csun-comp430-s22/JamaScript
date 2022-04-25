@@ -324,9 +324,8 @@ public class ParserTest {
           // 1 < 2 + 3 ==> 1 < (2 + 3)
           
           List<Token> tokens = new ArrayList<Token>();
-          List<ParseResult<Exp>> parameters = new ArrayList<ParseResult<Exp>>();
           
-          // 'new Test(3, 4)'
+          // 'new Test(3)'
           tokens.add(new NewToken());
           tokens.add(new VariableToken("Test"));
           tokens.add(new LeftParenthesisToken());
@@ -335,19 +334,17 @@ public class ParserTest {
           tokens.add(new NumberToken("4"));
           tokens.add(new RightParenthesisToken());
           
-          parameters.add(new ParseResult<Exp>(new IntegerLiteralExp(3), 4));
-          parameters.add(new ParseResult<Exp>(new IntegerLiteralExp(4), 6));
-          
           final Parser parser = new Parser(tokens);
+
+          final List<Exp> parameters = new ArrayList<Exp>();
+          parameters.add(new IntegerLiteralExp(3));
           
-          final Exp expected = new ClassExpression(new NewOp(),
-          new ClassName("Test"),
-          parameters);
+          final NewExp expected = new NewExp(new ClassName("Test"), parameters);
           
-          assertEquals(new ParseResult<Exp>(expected, 7), parser.parseExp(0));
+          assertEquals(new ParseResult<Exp>(expected, 6), parser.parseExp(0));
           
-          }*/
-          
+          }
+          */
           @Test
           public void testParseStmtPrintln() throws ParseException {
           List<Token> tokens = new ArrayList<Token>();

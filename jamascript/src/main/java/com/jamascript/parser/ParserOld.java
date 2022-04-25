@@ -17,7 +17,7 @@ public class ParserOld {
         this.tokens = tokens;
     }
 
-    //helper functions
+    // helper functions
     public Token getToken(final int position) throws ParseException {
         if (position >= 0 && position < tokens.size()) {
             return tokens.get(position);
@@ -109,7 +109,7 @@ public class ParserOld {
         }
     } // parseAdditiveOp
 
-    //additive_exp ::= primary_exp (additive_op primary_exp)*
+    // additive_exp ::= primary_exp (additive_op primary_exp)*
     public ParseResult<Exp> parseAdditiveExp(final int position) throws ParseException {
 
         // Parse Exception thrown if primary expression isn't a Number, Variable, or
@@ -377,7 +377,7 @@ public class ParserOld {
     } // parseStmt
 
     // program ::= stmt
-    public ParseResult<ProgramStmt> parseProgram(final int position) throws ParseException {
+    /*public ParseResult<ProgramStmt> parseProgram(final int position) throws ParseException {
         final ParseResult<Stmt> stmt = parseStmt(position);
         return new ParseResult<ProgramStmt>(new ProgramStmt(stmt.result),
                 stmt.position);
@@ -394,7 +394,7 @@ public class ParserOld {
         } else {
             throw new ParseException("Remaining tokens at end");
         }
-    }
+    }*/
     // parseProgram
 }
 
@@ -442,54 +442,57 @@ public class ParserOld {
 // }
 // }
 
-// public List<ParseResult<Exp>> getParameters(int position) throws ParseException {
-//     List<ParseResult<Exp>> parameters = new ArrayList<ParseResult<Exp>>();
-//     boolean commasExist = true;
+// public List<ParseResult<Exp>> getParameters(int position) throws
+// ParseException {
+// List<ParseResult<Exp>> parameters = new ArrayList<ParseResult<Exp>>();
+// boolean commasExist = true;
 
-//     // we want format 'exp, exp, exp)'
-//     while (commasExist) {
+// // we want format 'exp, exp, exp)'
+// while (commasExist) {
 
-//         ParseResult<Exp> currentExpression = parseExp(position);
+// ParseResult<Exp> currentExpression = parseExp(position);
 
-//         System.out.println(currentExpression);
+// System.out.println(currentExpression);
 
-//         parameters.add(currentExpression);
-//         position = currentExpression.position;
+// parameters.add(currentExpression);
+// position = currentExpression.position;
 
-//         System.out.println("After evaluate expression in get param: " + position);
+// System.out.println("After evaluate expression in get param: " + position);
 
-//         // if the next token after the expression is done identifying is not a comma
-//         // token
-//         Token currentToken = getToken(position);
+// // if the next token after the expression is done identifying is not a comma
+// // token
+// Token currentToken = getToken(position);
 
-//         if (!(currentToken instanceof CommaToken)) {
+// if (!(currentToken instanceof CommaToken)) {
 
-//             // if 'new TestClassName(exp,exp)'
-//             if (currentToken instanceof RightParenthesisToken) {
-//                 commasExist = false;
-//             } else {
-//                 throw new ParseException("Expected RightParenthesisToken.");
-//             }
-//         }
-//         position++;
-//     }
-//     return parameters;
+// // if 'new TestClassName(exp,exp)'
+// if (currentToken instanceof RightParenthesisToken) {
+// commasExist = false;
+// } else {
+// throw new ParseException("Expected RightParenthesisToken.");
+// }
+// }
+// position++;
+// }
+// return parameters;
 // }
 
-// public ParseResult<Exp> parseClassExp(final Op newOp, final ClassName className, final int position)
-//             throws ParseException {
-//         System.out.println("pos class exp: " + position);
-//         List<ParseResult<Exp>> parameters = getParameters(position);
+// public ParseResult<Exp> parseClassExp(final Op newOp, final ClassName
+// className, final int position)
+// throws ParseException {
+// System.out.println("pos class exp: " + position);
+// List<ParseResult<Exp>> parameters = getParameters(position);
 
-//         try {
+// try {
 
-//             return new ParseResult<Exp>(new ClassExpression(newOp, className, parameters),
-//                     parameters.get(parameters.size() - 1).position + 1);
-//             // position + 1 because we want the token after ')' in 'new
-//             // TestClassName(exp,exp)'
+// return new ParseResult<Exp>(new ClassExpression(newOp, className,
+// parameters),
+// parameters.get(parameters.size() - 1).position + 1);
+// // position + 1 because we want the token after ')' in 'new
+// // TestClassName(exp,exp)'
 
-//         } catch (final ParseException e) {
-//             throw new ParseException("Parse Class Expression failed.");
-//         }
+// } catch (final ParseException e) {
+// throw new ParseException("Parse Class Expression failed.");
+// }
 
-//     }
+// }

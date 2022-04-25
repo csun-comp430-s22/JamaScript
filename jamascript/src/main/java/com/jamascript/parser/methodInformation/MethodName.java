@@ -1,4 +1,4 @@
-package com.jamascript.parser;
+package com.jamascript.parser.methodInformation;
 
 public class MethodName {
     public final String name;

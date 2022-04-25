@@ -2,6 +2,8 @@ package com.jamascript.typechecker;
 
 import com.jamascript.parser.*;
 import com.jamascript.parser.expressions.*;
+import com.jamascript.parser.methodInformation.MethodDef;
+import com.jamascript.parser.methodInformation.MethodName;
 import com.jamascript.parser.operators.*;
 import com.jamascript.parser.statements.*;
 import com.jamascript.typechecker.types.*;
@@ -79,7 +81,7 @@ public class TypeChecking {
             } else {
                 throw new TypeErrorException("Operand type mismatch for <");
             }
-        } else if (exp.op instanceof EqualsOp) {
+        } else if (exp.op instanceof EqualsEqualsOp) {
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new BoolType();
             } else {
@@ -130,7 +132,7 @@ public class TypeChecking {
             throws TypeErrorException {
         for (final ClassDef candidateClass : classes) {
             if (candidateClass.className.equals(className)) {
-                for (final Mdef candidateMethod : candidateClass.methods) {
+                for (final MethodDef candidateMethod : candidateClass.methods) {
                     if (candidateMethod.mname.equals(mname)) {
                         final List<Type> expectedTypes = new ArrayList<Type>();
                         for (final Vardec vardec : candidateMethod.arguments) {
@@ -348,7 +350,7 @@ public class TypeChecking {
     }
 
     // methoddef ::= type methodname(vardec*) stmt
-    public void isWellTypedMethodDef(final Mdef method,
+    public void isWellTypedMethodDef(final MethodDef method,
             Map<Variable, Type> typeEnvironment, // instance variables
             final ClassName classWeAreIn) throws TypeErrorException {
         // starting type environment: just instance variables
@@ -411,7 +413,7 @@ public class TypeChecking {
         //
         // int foo(int x) { ... }
         // int foo(bool b) { ... }
-        for (final Mdef method : classDef.methods) {
+        for (final MethodDef method : classDef.methods) {
             isWellTypedMethodDef(method,
                     typeEnvironment,
                     classDef.className);

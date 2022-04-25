@@ -1,6 +1,7 @@
 package com.jamascript.parser.classInformation;
 import com.jamascript.parser.*;
 import com.jamascript.parser.expressions.*;
+import com.jamascript.parser.methodInformation.MethodDef;
 import com.jamascript.parser.statements.*;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public class ClassDef {
     public final List<Vardec> constructorArguments;
     public final List<Exp> superParams;
     public final List<Stmt> constructorBody;
-    public final List<Mdef> methods;
+    public final List<MethodDef> methods;
 
     public ClassDef(final ClassName className,
                     final ClassName extendsClassName,
@@ -20,7 +21,7 @@ public class ClassDef {
                     final List<Vardec> constructorArguments,
                     final List<Exp> superParams,
                     final List<Stmt> constructorBody,
-                    final List<Mdef> methods) {
+                    final List<MethodDef> methods) {
         this.className = className;
         this.extendsClassName = extendsClassName;
         this.instanceVariables = instanceVariables;
