@@ -25,9 +25,4 @@ public class Vardec {
             return false;
         }
     }
-
-    public String toString() {
-        return ("Vardec(" + type.toString() + ", " +
-                variable.toString() + ")");
-    }
 }
