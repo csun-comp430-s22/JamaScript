@@ -1,5 +1,7 @@
 package com.jamascript.parser;
 
+import com.jamascript.typechecker.types.*;
+
 public class Vardec {
     public final Type type;
     public final Variable variable;
@@ -22,10 +24,5 @@ public class Vardec {
         } else {
             return false;
         }
-    }
-
-    public String toString() {
-        return ("Vardec(" + type.toString() + ", " +
-                variable.toString() + ")");
     }
 }

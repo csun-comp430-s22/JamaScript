@@ -1,4 +1,4 @@
-package com.jamascript.parser;
+package com.jamascript.typechecker.types;
 
 public class StringType implements Type{
     public StringType() {}

@@ -26,6 +26,18 @@ public class TokenizerTest {
          */
     }
 
+    public void assertClassTokenize(final String input, final Token[] expected) throws TokenizerException {
+        final Tokenizer tokenizer = new Tokenizer(input);
+        final List<Token> received = tokenizer.tokenizeClass();
+        assertArrayEquals(expected, received.toArray(new Token[received.size()]));
+    }
+
+    public void assertMethodTokenize(final String input, final Token[] expected) throws TokenizerException {
+        final Tokenizer tokenizer = new Tokenizer(input);
+        final List<Token> received = tokenizer.tokenizeMethod();
+        assertArrayEquals(expected, received.toArray(new Token[received.size()]));
+    }
+
     // Check for empty string
     @Test
     public void testEmptyString() throws TokenizerException {
@@ -151,10 +163,9 @@ public class TokenizerTest {
     // test all the words
     @Test
     public void testAllRemainingWords() throws TokenizerException {
-        assertTokenizes("Boolean class extends Int new println return String while",
+        assertTokenizes("Boolean extends Int new println return String while",
                 new Token[] {
                         new BooleanToken(),
-                        new ClassToken(),
                         new ExtendsToken(),
                         new IntToken(),
                         new NewToken(),
@@ -230,7 +241,17 @@ public class TokenizerTest {
         assertTokenizes("$", null);
     }
 
-    
+    // Dog Dog
+    @Test
+    public void testDogIsClass() throws TokenizerException {
+        assertClassTokenize("Dog", new Token[] { new ClassNameToken("Dog") });
+    }
+
+    // Cat Cat
+    @Test
+    public void testCatIsMethod() throws TokenizerException {
+        assertMethodTokenize("Cat", new Token[] { new MethodNameToken("Cat") });
+    }
 
     // WORKING ON IT
     // @Test

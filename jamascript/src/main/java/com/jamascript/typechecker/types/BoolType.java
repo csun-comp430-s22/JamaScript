@@ -1,4 +1,4 @@
-package com.jamascript.parser;
+package com.jamascript.typechecker.types;
 
 public class BoolType implements Type {
     public BoolType() {}
