@@ -309,14 +309,14 @@ public class TypeChecking {
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
         // if (functionReturnType == null) {
-        //     throw new TypeErrorException("return in program entry point");
+        // throw new TypeErrorException("return in program entry point");
         // } else {
-        //     return typeEnvironment;
+        // return typeEnvironment;
         // ((PrintlnStmt) stmt).exp
         // }
-        if(typeof(stmt.exp, typeEnvironment, classWeAreIn) instanceof PrintlnStmt){
+        if (typeof(stmt.exp, typeEnvironment, classWeAreIn) instanceof PrintlnStmt) {
             return typeEnvironment;
-        }else {
+        } else {
             throw new TypeErrorException("not println" + stmt);
         }
     }
