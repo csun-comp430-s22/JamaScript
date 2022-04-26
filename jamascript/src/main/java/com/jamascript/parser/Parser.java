@@ -3,6 +3,7 @@ package com.jamascript.parser;
 import com.jamascript.lexer.*;
 import com.jamascript.parser.operators.*;
 import com.jamascript.parser.expressions.*;
+import com.jamascript.parser.methodInformation.MethodName;
 import com.jamascript.parser.statements.*;
 import com.jamascript.typechecker.types.*;
 import com.jamascript.parser.classInformation.*;
@@ -113,21 +114,33 @@ public class Parser {
         }
     }
     // exp ::= exp.methodname(exp*)
-    /*
-     * public ParseResult<Exp> parseMethodCall(final int position) throws
-     * ParseException{
-     * ParseResult<Exp> variable = parseExp(position);
-     * assertTokenHereIs(position + 1, new DotToken());
-     * final Token token = getToken(position + 2);
-     * MethodName methodName = (MethodName) token;
-     * assertTokenHereIs(position + 3, new LeftParenthesisToken());
-     * ParseResult<Exp> parameters = parseExp(position + 4);
-     * assertTokenHereIs(parameters.position, new RightParenthesisToken());
-     * 
-     * return new ParseResult<Exp>(new MethodCallExp(variable.result, methodName,
-     * (List<Exp>)parameters.result), parameters.position);
-     * }
-     */
+
+    public ParseResult<Exp> parseMethodCallExp(final int position) throws ParseException {
+        ParseResult<Exp> variable = parseExp(position);
+        assertTokenHereIs(position + 1, new DotToken());
+        final Token token = getToken(position + 2);
+        MethodNameToken mName = (MethodNameToken) token;
+        MethodName methodName = new MethodName(mName.name);
+
+        assertTokenHereIs(position + 3, new LeftParenthesisToken());
+
+        final List<Exp> params = new ArrayList<Exp>();
+        int curPosition = position + 4;
+        boolean shouldRun = true;
+        while (shouldRun) {
+            try {
+                final ParseResult<Exp> exp = parseExp(curPosition);
+                params.add(exp.result);
+                curPosition = exp.position;
+            } catch (final ParseException e) {
+                shouldRun = false;
+            }
+        }
+
+        return new ParseResult<Exp>(
+                new MethodCallExp(variable.result, methodName, params),
+                curPosition);
+    }
 
     // exp ::= var | int | string | true| false |
     public ParseResult<Exp> parseExp(final int position) throws ParseException {

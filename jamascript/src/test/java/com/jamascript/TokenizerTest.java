@@ -32,6 +32,12 @@ public class TokenizerTest {
         assertArrayEquals(expected, received.toArray(new Token[received.size()]));
     }
 
+    public void assertMethodTokenize(final String input, final Token[] expected) throws TokenizerException {
+        final Tokenizer tokenizer = new Tokenizer(input);
+        final List<Token> received = tokenizer.tokenizeMethod();
+        assertArrayEquals(expected, received.toArray(new Token[received.size()]));
+    }
+
     // Check for empty string
     @Test
     public void testEmptyString() throws TokenizerException {
@@ -235,10 +241,16 @@ public class TokenizerTest {
         assertTokenizes("$", null);
     }
 
-    // truetrue
+    // Dog Dog
     @Test
     public void testDogIsClass() throws TokenizerException {
         assertClassTokenize("Dog", new Token[] { new ClassNameToken("Dog") });
+    }
+
+    // Cat Cat
+    @Test
+    public void testCatIsMethod() throws TokenizerException {
+        assertMethodTokenize("Cat", new Token[] { new MethodNameToken("Cat") });
     }
 
     // WORKING ON IT

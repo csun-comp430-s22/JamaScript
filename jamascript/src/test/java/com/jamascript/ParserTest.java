@@ -3,6 +3,7 @@ package com.jamascript;
 import com.jamascript.lexer.*;
 import com.jamascript.parser.*;
 import com.jamascript.parser.expressions.*;
+import com.jamascript.parser.methodInformation.MethodName;
 import com.jamascript.parser.operators.*;
 import com.jamascript.parser.statements.*;
 import com.jamascript.typechecker.types.*;
@@ -540,7 +541,7 @@ public class ParserTest {
                                 parser.parseVarInit(0));
         }
 
-        // test variable declaration for Class: Dog Test = new Dog("Sparky")
+        // test variable declaration for Class: Dog Test = new Dog("Sparky", 2)
         @Test
         public void vardecClass() throws ParseException {
                 List<Token> tokens = new ArrayList<Token>();
@@ -566,6 +567,28 @@ public class ParserTest {
                 assertEquals(
                                 new ParseResult<Stmt>(expected, 8),
                                 parser.parseVarInit(0));
+        }
+
+        // test new exp: new Dog("Sparky")
+        @Test
+        public void testNewExp() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new NewToken());
+                tokens.add(new ClassNameToken("Dog"));
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new StringValToken("Sparky"));
+                tokens.add(new RightParenthesisToken());
+
+                final Parser parser = new Parser(tokens);
+
+                final List<Exp> params = new ArrayList<Exp>();
+                params.add(new StringLiteralExp("Sparky"));
+
+                final Exp expected = new NewExp(new ClassName("Dog"), params);
+
+                assertEquals(
+                                new ParseResult<Exp>(expected, 4),
+                                parser.parseClassExp(0));
         }
 
         // test return stmt: return(2);
@@ -608,62 +631,31 @@ public class ParserTest {
 
         }
 
-        // need to test under here//////////////////////////////
-        // @Test
-        // public void testMethodExpression() throws ParseException {
-        // // test.someMethod(exp, exp, ...);
+        // test method call exp: test.mCall(3)
+        @Test
+        public void testMethodCall() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new VariableToken("test"));
+                tokens.add(new DotToken());
+                tokens.add(new MethodNameToken("mCall"));
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new NumberToken("3"));
+                tokens.add(new RightParenthesisToken());
 
-        // // exp, methodcallexp
+                final Parser parser = new Parser(tokens);
 
-        // List<Token> tokens = new ArrayList<Token>();
+                final Exp target = new VariableExp(new Variable("test"));
+                final MethodName mname = new MethodName("mCall");
+                final List<Exp> params = new ArrayList<Exp>();
+                params.add(new IntegerLiteralExp(3));
 
-        // tokens.add(new VariableToken("test"));
-        // tokens.add(new DotToken());
-        // tokens.add(new VariableToken("someMethod"));
-        // tokens.add(new LeftParenthesisToken());
-        // tokens.add(new NumberToken("3"));
-        // tokens.add(new RightParenthesisToken());
-        // tokens.add(new SemicolonToken());
+                final Exp expected = new MethodCallExp(
+                                target,
+                                mname,
+                                params);
 
-        // final Parser parser = new Parser(tokens);
-
-        // List<Exp> params = new ArrayList<Exp>();
-        // params.add(new IntegerLiteralExp(3));
-
-        // final MethodCallExp expected = new MethodCallExp(
-        // new VariableExp(new Variable("test")),
-        // new MethodName("someMethod"),
-        // params);
-
-        // assertEquals(new ParseResult<Exp>(expected, 6),
-        // parser.parseStmt(0));
-
-        // }
-
-        // @Test
-        // public void testClassExpression() throws ParseException {
-        // // 1 < 2 + 3 ==> 1 < (2 + 3)
-
-        // List<Token> tokens = new ArrayList<Token>();
-
-        // // 'new Test(3)'
-        // tokens.add(new NewToken());
-        // tokens.add(new VariableToken("Test"));
-        // tokens.add(new LeftParenthesisToken());
-        // tokens.add(new NumberToken("3"));
-        // tokens.add(new CommaToken());
-        // tokens.add(new NumberToken("4"));
-        // tokens.add(new RightParenthesisToken());
-
-        // final Parser parser = new Parser(tokens);
-
-        // final List<Exp> parameters = new ArrayList<Exp>();
-        // parameters.add(new IntegerLiteralExp(3));
-
-        // final NewExp expected = new NewExp(new ClassName("Test"), parameters);
-
-        // assertEquals(new ParseResult<Exp>(expected, 6), parser.parseExp(0));
-
-        // }
-
+                assertEquals(
+                        new ParseResult<Exp>(expected, 5), 
+                        parser.parseMethodCallExp(0));
+        }
 }

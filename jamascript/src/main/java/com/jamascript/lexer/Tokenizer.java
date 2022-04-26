@@ -63,6 +63,27 @@ public class Tokenizer {
         }
     }
 
+    public Token tryTokenizeMethodName() {
+        skipWhiteSpace();
+        String name = "";
+
+        // if the offset is less than length of string
+        // and if the current character in the string is a letter
+        if ((offset < input.length()) && Character.isLetter(input.charAt(offset))) {
+            name += input.charAt(offset);
+            offset++;
+
+            // add to name until you hit whitespace
+            while ((offset < input.length()) && Character.isLetterOrDigit(input.charAt(offset))) {
+                name += input.charAt(offset);
+                offset++;
+            }
+            return new MethodNameToken(name);
+        } else {
+            return null;
+        }
+    }
+
     public Token tryTokenizeVariableOrKeyword() {
         skipWhiteSpace();
         String name = "";
@@ -208,6 +229,17 @@ public class Tokenizer {
         return retval;
     }
 
+    public Token tokenizeMethodName() throws TokenizerException {
+        Token retval = null;
+        skipWhiteSpace();
+
+        if (offset < input.length() &&
+                (retval = tryTokenizeMethodName()) == null) {
+            throw new TokenizerException();
+        }
+        return retval;
+    }
+
     public List<Token> tokenize() throws TokenizerException {
         final List<Token> tokens = new ArrayList<Token>();
         Token token = tokenizeSingle();
@@ -222,6 +254,17 @@ public class Tokenizer {
     public List<Token> tokenizeClass() throws TokenizerException {
         final List<Token> tokens = new ArrayList<Token>();
         Token token = tokenizeClassName();
+
+        while (token != null) {
+            tokens.add(token);
+            token = tokenizeSingle();
+        }
+        return tokens;
+    }
+
+    public List<Token> tokenizeMethod() throws TokenizerException {
+        final List<Token> tokens = new ArrayList<Token>();
+        Token token = tokenizeMethodName();
 
         while (token != null) {
             tokens.add(token);
