@@ -230,7 +230,7 @@ public class Parser {
         }
     }
 
-    // while (exp) stmt | if (exp)stmt else stmt; | { stmt* } |
+    // stmt ::= while (exp) stmt | if (exp)stmt else stmt; | { stmt* } |
     // println(exp);| return (exp) |
     public ParseResult<Stmt> parseStmt(final int position) throws ParseException {
         final Token token = getToken(position);
@@ -286,5 +286,35 @@ public class Parser {
         }
     }
 
-    // program ::= classDef
+    // program ::= classdef* stmt
+    public ParseResult<Program> parseProgram(final int position) throws ParseException{
+        final ParseResult<Stmt> stmt = parseStmt(position);
+        final List<ClassDef> classes = new ArrayList<ClassDef>();
+        int curPosition = position;
+        boolean shouldRun = true;
+        while (shouldRun) {
+            try {
+                final ParseResult<ClassDef> exp = new ParseResult<ClassDef>(null, curPosition);
+                classes.add(exp.result);
+                curPosition = exp.position;
+                throw new ParseException("no classes");
+            } catch (final ParseException e) {
+                shouldRun = false;
+            }
+        }
+        
+        return new ParseResult<Program>(new Program(classes, stmt.result), stmt.position);
+    }
+
+    public Program parseProgram() throws ParseException {
+        final ParseResult<Program> program = parseProgram(0);
+        // make sure all tokens were read in
+        // if any tokens remain, then there is something extra at the end
+        // of the program, which should be a syntax error
+        if (program.position == tokens.size()) {
+            return program.result;
+        } else {
+            throw new ParseException("Remaining tokens at end");
+        }
+    }
 }

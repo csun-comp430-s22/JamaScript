@@ -655,7 +655,30 @@ public class ParserTest {
                                 params);
 
                 assertEquals(
-                        new ParseResult<Exp>(expected, 5), 
-                        parser.parseMethodCallExp(0));
+                                new ParseResult<Exp>(expected, 5),
+                                parser.parseMethodCallExp(0));
+        }
+
+        // test program: noclass println(1);
+        @Test
+        public void testProgramNoClass() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new PrintlnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new NumberToken("1"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+
+                final Parser parser = new Parser(tokens);
+
+                final List<ClassDef> classes = new ArrayList<ClassDef>();
+                classes.add(null);
+                final Stmt entryPoint = new PrintlnStmt(new IntegerLiteralExp(1));
+
+                final Program expected = new Program(classes, entryPoint);
+
+                assertEquals(
+                                new ParseResult<Program>(expected, 4),
+                                parser.parseProgram(0));
         }
 }
