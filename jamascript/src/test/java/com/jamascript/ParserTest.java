@@ -10,7 +10,6 @@ import com.jamascript.parser.classInformation.*;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -541,7 +540,7 @@ public class ParserTest {
                                 parser.parseVarInit(0));
         }
 
-        //test variable declaration for Class (Dog Test = new Dog("Sparky"))
+        // test variable declaration for Class: Dog Test = new Dog("Sparky")
         @Test
         public void vardecClass() throws ParseException {
                 List<Token> tokens = new ArrayList<Token>();
@@ -563,11 +562,50 @@ public class ParserTest {
 
                 final Exp exp = new NewExp(new ClassName("Dog"), params);
                 final VariableInitializationStmt expected = new VariableInitializationStmt(vardec, exp);
-                
 
                 assertEquals(
                                 new ParseResult<Stmt>(expected, 8),
                                 parser.parseVarInit(0));
+        }
+
+        // test return stmt: return(2);
+        @Test
+        public void testReturnStmt() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new ReturnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new NumberToken("2"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+
+                final Parser parser = new Parser(tokens);
+                final Exp exp = new IntegerLiteralExp(2);
+                final ReturnNonVoidStmt expected = new ReturnNonVoidStmt(exp);
+
+                assertEquals(
+                                new ParseResult<Stmt>(expected, 4),
+                                parser.parseStmt(0));
+
+        }
+
+        // test return stmt: println(2);
+        @Test
+        public void testPrintlnStmt() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new PrintlnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new NumberToken("2"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+
+                final Parser parser = new Parser(tokens);
+                final Exp exp = new IntegerLiteralExp(2);
+                final PrintlnStmt expected = new PrintlnStmt(exp);
+
+                assertEquals(
+                                new ParseResult<Stmt>(expected, 4),
+                                parser.parseStmt(0));
+
         }
 
         // need to test under here//////////////////////////////
