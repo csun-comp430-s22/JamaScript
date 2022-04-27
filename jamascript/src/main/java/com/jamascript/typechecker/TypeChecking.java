@@ -11,7 +11,9 @@ import com.jamascript.parser.classInformation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.ArrayList;
 
 public class TypeChecking {
@@ -410,6 +412,16 @@ public class TypeChecking {
                 method.returnType);
     }
 
+
+    public void checkForDuplicateMethods(List<MethodDef> methods) throws TypeErrorException {
+        Set<String> set = new HashSet<String>();
+        for(MethodDef methodDef : methods) {
+            if(set.add(methodDef.mname.name) == false) {
+                throw new TypeErrorException("Duplicate method.");
+            }
+        }
+    }
+
     // classdef ::= class classname extends classname {
     // vardec*; // comma-separated instance variables
     // constructor(vardec*) {
@@ -454,6 +466,7 @@ public class TypeChecking {
         //
         // int foo(int x) { ... }
         // int foo(bool b) { ... }
+        checkForDuplicateMethods(classDef.methods);
         for (final MethodDef method : classDef.methods) {
             isWellTypedMethodDef(method,
                     typeEnvironment,
