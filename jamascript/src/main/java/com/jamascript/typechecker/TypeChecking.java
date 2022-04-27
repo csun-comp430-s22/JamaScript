@@ -11,7 +11,9 @@ import com.jamascript.parser.classInformation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.ArrayList;
 
 public class TypeChecking {
@@ -92,11 +94,21 @@ public class TypeChecking {
         }
     }
 
+    // Find if the method exists in the class
+    // If the method exists in the given class, return the type
     public Type expectedReturnTypeForClassAndMethod(final ClassName className,
-            final MethodName mname) {
-        // WRONG - needs to find the given class and method, and return the expected
-        // return type for this
-        return null;
+            final MethodName mname) throws TypeErrorException { 
+        
+        for(ClassDef classDef : classes) {
+            if(classDef.className.equals(className)) {
+                for(MethodDef mdef : classDef.methods) {
+                    if(mname.equals(mdef.mname)) {
+                        return mdef.returnType;
+                    }
+                }
+            }
+        }
+        throw new TypeErrorException("Class " + className + " or method " + mname + " does not exist in this context");
     }
 
     // Doesn't handle access modifiers right now; would be to know which class we
@@ -147,9 +159,27 @@ public class TypeChecking {
         throw new TypeErrorException("No method named " + mname + " on class " + className);
     }
 
+    // Animal -> Dog
+    // Is Dog a subtype of Animal?
+    // first -> Dog
+    // second -> Animal
     public boolean isSubtypeOf(final Type first, final Type second) throws TypeErrorException {
-        // WRONG: needs to check this
-        return true;
+        
+        if(first instanceof ClassNameType && second instanceof ClassNameType) {
+            ClassNameType childClassType = (ClassNameType) first;
+            ClassNameType parentClassType = (ClassNameType) second;
+
+            for(ClassDef classDef : classes) {
+                if(childClassType.className.equals(classDef.className)) {
+                    if(classDef.extendsClassName == parentClassType.className) {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        }
+
+        throw new TypeErrorException("First parameter class not found or parameters not instance of ClassNameType.");
     }
 
     public void isEqualOrSubtypeOf(final Type first, final Type second) throws TypeErrorException {
@@ -160,6 +190,7 @@ public class TypeChecking {
 
     // List<Type> - expected types
     // List<Exp> - received expressions
+    // Check if parameters match the recieved expressions
     public void expressionsOk(final List<Type> expectedTypes,
             final List<Exp> receivedExpressions,
             final Map<Variable, Type> typeEnvironment,
@@ -201,9 +232,17 @@ public class TypeChecking {
 
     public List<Type> expectedConstructorTypesForClass(final ClassName className)
             throws TypeErrorException {
-        // WRONG - needs to grab the expected constructor types for this class
-        // throws an exception if this class doesn't exception
-        return null;
+
+        for(ClassDef classDef : classes) {
+            if(classDef.className.equals(className)) {
+                final List<Type> expectedTypes = new ArrayList<Type>();
+                for(Vardec vardec : classDef.constructorArguments) {
+                    expectedTypes.add(vardec.type);
+                }
+                return expectedTypes;
+            }
+        }
+        throw new TypeErrorException("Class not found from expected constructor types: " + className);
     }
 
     // new classname(exp*)
@@ -252,6 +291,10 @@ public class TypeChecking {
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
         final Type expType = typeof(stmt.exp, typeEnvironment, classWeAreIn);
+        
+        // Animal dog -> Vardec
+        // new Dog() -> Exp
+        // Animal dog = new Dog(); -> VariableInitializationStmt
         isEqualOrSubtypeOf(expType, stmt.vardec.type);
         return addToMap(typeEnvironment, stmt.vardec.variable, stmt.vardec.type);
     }
@@ -369,6 +412,16 @@ public class TypeChecking {
                 method.returnType);
     }
 
+
+    public void checkForDuplicateMethods(List<MethodDef> methods) throws TypeErrorException {
+        Set<String> set = new HashSet<String>();
+        for(MethodDef methodDef : methods) {
+            if(set.add(methodDef.mname.name) == false) {
+                throw new TypeErrorException("Duplicate method.");
+            }
+        }
+    }
+
     // classdef ::= class classname extends classname {
     // vardec*; // comma-separated instance variables
     // constructor(vardec*) {
@@ -413,6 +466,7 @@ public class TypeChecking {
         //
         // int foo(int x) { ... }
         // int foo(bool b) { ... }
+        checkForDuplicateMethods(classDef.methods);
         for (final MethodDef method : classDef.methods) {
             isWellTypedMethodDef(method,
                     typeEnvironment,
