@@ -231,9 +231,17 @@ public class TypeChecking {
 
     public List<Type> expectedConstructorTypesForClass(final ClassName className)
             throws TypeErrorException {
-        // WRONG - needs to grab the expected constructor types for this class
-        // throws an exception if this class doesn't exception
-        return null;
+
+        for(ClassDef classDef : classes) {
+            if(classDef.className == className) {
+                final List<Type> expectedTypes = new ArrayList<Type>();
+                for(Vardec vardec : classDef.constructorArguments) {
+                    expectedTypes.add(vardec.type);
+                }
+                return expectedTypes;
+            }
+        }
+        throw new TypeErrorException("Class not found from expected constructor types: " + className);
     }
 
     // new classname(exp*)
