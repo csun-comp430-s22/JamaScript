@@ -96,8 +96,7 @@ public class TypeChecking {
     // If the method exists in the given class, return the type
     public Type expectedReturnTypeForClassAndMethod(final ClassName className,
             final MethodName mname) throws TypeErrorException { 
-        // WRONG - needs to find the given class and method, and return the expected
-        // return type for this
+        
         for(ClassDef classDef : classes) {
             if(classDef.className.equals(className)) {
                 for(MethodDef mdef : classDef.methods) {
@@ -233,7 +232,7 @@ public class TypeChecking {
             throws TypeErrorException {
 
         for(ClassDef classDef : classes) {
-            if(classDef.className == className) {
+            if(classDef.className.equals(className)) {
                 final List<Type> expectedTypes = new ArrayList<Type>();
                 for(Vardec vardec : classDef.constructorArguments) {
                     expectedTypes.add(vardec.type);
