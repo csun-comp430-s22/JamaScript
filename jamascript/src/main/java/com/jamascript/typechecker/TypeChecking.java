@@ -93,10 +93,19 @@ public class TypeChecking {
     }
 
     public Type expectedReturnTypeForClassAndMethod(final ClassName className,
-            final MethodName mname) {
+            final MethodName mname) throws TypeErrorException { 
         // WRONG - needs to find the given class and method, and return the expected
         // return type for this
-        return null;
+        for(ClassDef classDef : classes) {
+            if(classDef.className.equals(className)) {
+                for(MethodDef mdef : classDef.methods) {
+                    if(mname.equals(mdef.mname)) {
+                        return mdef.returnType;
+                    }
+                }
+            }
+        }
+        throw new TypeErrorException("Class " + className + " or method " + mname + " does not exist in this context");
     }
 
     // Doesn't handle access modifiers right now; would be to know which class we
