@@ -164,19 +164,21 @@ public class TypeChecking {
     // second -> Animal
     public boolean isSubtypeOf(final Type first, final Type second) throws TypeErrorException {
         
-        ClassNameType childClassType = (ClassNameType) first;
-        ClassNameType parentClassType = (ClassNameType) second;
+        if(first instanceof ClassNameType && second instanceof ClassNameType) {
+            ClassNameType childClassType = (ClassNameType) first;
+            ClassNameType parentClassType = (ClassNameType) second;
 
-        for(ClassDef classDef : classes) {
-            if(childClassType.className.equals(classDef.className)) {
-                if(classDef.extendsClassName == parentClassType.className) {
-                    return true;
+            for(ClassDef classDef : classes) {
+                if(childClassType.className.equals(classDef.className)) {
+                    if(classDef.extendsClassName == parentClassType.className) {
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
             }
         }
 
-        throw new TypeErrorException("Subtype class " + childClassType.className + " not found.");
+        throw new TypeErrorException("First parameter class not found or parameters not instance of ClassNameType.");
     }
 
     public void isEqualOrSubtypeOf(final Type first, final Type second) throws TypeErrorException {
