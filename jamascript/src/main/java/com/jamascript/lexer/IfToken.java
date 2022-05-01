@@ -6,7 +6,7 @@ public class IfToken implements Token {
     }
 
     public int hashCode() {
-        return 12;
+        return 13;
     }
 
     public String toString() {

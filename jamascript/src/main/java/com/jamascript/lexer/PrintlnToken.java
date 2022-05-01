@@ -7,7 +7,7 @@ public class PrintlnToken implements Token
     }
 
     public int hashCode() {
-        return 24;
+        return 25;
     }
 
     public String toString() {

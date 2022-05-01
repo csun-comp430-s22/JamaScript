@@ -6,7 +6,7 @@ public class FalseToken implements Token {
     }
 
     public int hashCode() {
-        return 9;
+        return 10;
     }
 
     public String toString() {

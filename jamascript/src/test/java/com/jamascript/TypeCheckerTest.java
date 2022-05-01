@@ -15,8 +15,10 @@ import org.junit.Test;
 import java.util.Map;
 
 import com.jamascript.typechecker.TypeChecking;
+import com.jamascript.lexer.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.ArrayList;
 
 public class TypeCheckerTest {
@@ -53,4 +55,6 @@ public class TypeCheckerTest {
     public void testThisNotInClass() throws TypeErrorException {
         emptyTypechecker.typeofThis(null);
     }
+
+    
 }

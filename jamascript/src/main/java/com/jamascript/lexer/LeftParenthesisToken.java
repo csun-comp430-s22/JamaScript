@@ -6,7 +6,7 @@ public class LeftParenthesisToken implements Token {
     }
 
     public int hashCode() {
-        return 15;
+        return 16;
     }
 
     public String toString() {
