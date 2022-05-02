@@ -146,4 +146,48 @@ public class TypeChecking {
         throw new TypeErrorException("message");
     }
 
+    // type of stmt
+    public Map<Variable, Type> typeOfStmt(final Stmt stmt,
+            final Map<Variable, Type> typeEnvironment,
+            final ClassName classWeAreIn,
+            final Type functionReturnType) throws TypeErrorException {
+        if (stmt instanceof VariableInitializationStmt) {
+            return typeOfVarInit((VariableInitializationStmt) stmt,
+                    typeEnvironment, classWeAreIn);
+        }
+        throw new TypeErrorException("message");
+    }
+
+    // helper
+    public void isEqualOrSubtypeOf(final Type first, final Type second) throws TypeErrorException {
+        if (first.equals(second)) {
+            return;
+        } else if (first instanceof ClassNameType &&
+                second instanceof ClassNameType) {
+            final ClassDef parentClassDef = getParent(((ClassNameType) first).className);
+            isEqualOrSubtypeOf(new ClassNameType(parentClassDef.className), second);
+        } else {
+            throw new TypeErrorException("incompatible types: " + first + ", " + second);
+        }
+    }
+
+    // helper
+    public static Map<Variable, Type> addToMap(final Map<Variable, Type> map,
+            final Variable variable,
+            final Type type) {
+        final Map<Variable, Type> result = new HashMap<Variable, Type>();
+        result.putAll(map);
+        result.put(variable, type);
+        return result;
+    }
+
+    // type of var init
+    public Map<Variable, Type> typeOfVarInit(final VariableInitializationStmt stmt,
+            final Map<Variable, Type> typeEnvironment,
+            final ClassName classWeAreIn) throws TypeErrorException {
+        final Type expType = typeofExp(stmt.exp, typeEnvironment, classWeAreIn);
+        isEqualOrSubtypeOf(expType, stmt.vardec.type);
+        return addToMap(typeEnvironment, stmt.vardec.variable, stmt.vardec.type);
+    }
+
 }
