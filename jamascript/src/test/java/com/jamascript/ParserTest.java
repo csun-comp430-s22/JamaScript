@@ -673,7 +673,6 @@ public class ParserTest {
                 final Parser parser = new Parser(tokens);
 
                 final List<ClassDef> classes = new ArrayList<ClassDef>();
-                classes.add(null);
                 final Stmt entryPoint = new PrintlnStmt(new IntegerLiteralExp(1));
 
                 final Program expected = new Program(classes, entryPoint);
