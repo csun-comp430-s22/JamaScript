@@ -6,7 +6,7 @@ public class StringToken implements Token {
     }
 
     public int hashCode() {
-        return 31;
+        return 32;
     }
 
     public String toString() {

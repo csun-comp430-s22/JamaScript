@@ -13,7 +13,12 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import java.util.Map;
+
+import com.jamascript.typechecker.TypeChecking;
+import com.jamascript.lexer.*;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.ArrayList;
 
 public class TypeCheckerTest {
