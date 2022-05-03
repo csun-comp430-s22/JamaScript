@@ -306,6 +306,8 @@ public class TypeCheckerTest {
         assertEquals(expectedType, receivedType);
     }
 
+    // get stmts
+    // checked///////////////////////////////////////////////////////////////////////////////////////////////////////////
     // test var init stmt
     @Test
     public void testVarInitStmt() throws TypeErrorException {
@@ -327,68 +329,96 @@ public class TypeCheckerTest {
     }
 
     // test while stmt
-    // @Test
-    // public void testWhileStmt() throws TypeErrorException {
-    // final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
+    @Test
+    public void testWhileStmt() throws TypeErrorException {
+        final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
+        expectedStmt.put(new Variable("FooWhile"), new IntType());
 
-    // final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-    // final Type type = new BoolType();
+        final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+        final Type type = new BoolType();
 
-    // final List<Stmt> bodyStmts = new ArrayList<Stmt>();
-    // bodyStmts.add(new PrintlnStmt(new StringLiteralExp("ahhh")));
+        final List<Stmt> bodyStmts = new ArrayList<Stmt>();
+        bodyStmts.add(new PrintlnStmt(new StringLiteralExp("ahhh")));
+        bodyStmts.add(new VariableInitializationStmt(new Vardec(new IntType(), new Variable("FooWhile")),
+                new IntegerLiteralExp(1)));
 
-    // final Stmt bodyResult = new BlockStmt(bodyStmts);
+        // final Stmt bodyResult = new BlockStmt(bodyStmts);
 
-    // final Exp guard = new BooleanLiteralExp(true);
+        // final Exp guard = new BooleanLiteralExp(true);
 
-    // final Stmt whileStmt = new WhileStmt(guard, bodyResult);
+        final Stmt whileStmt = new WhileStmt(new BooleanLiteralExp(true), new BlockStmt(bodyStmts));
 
-    // final Map<Variable, Type> receivedStmt =
-    // emptyTypechecker().typeOfStmt(whileStmt,
-    // typeEnvironment,
-    // new ClassName("name"),
-    // type);
+        final Map<Variable, Type> receivedStmt = emptyTypechecker().typeOfStmt(whileStmt,
+                typeEnvironment,
+                new ClassName("name"),
+                type);
 
-    // assertEquals(new IntegerLiteralExp(1), receivedStmt);
-    // }
+        assertEquals(expectedStmt, receivedStmt);
+    }
 
     // test if stmt
-    // @Test
-    // public void testIfStmt() throws TypeErrorException {
-    // List<Stmt> trueStmts = new ArrayList<Stmt>();
-    // trueStmts.add(new PrintlnStmt(new StringLiteralExp("yup")));
+    @Test
+    public void testIfStmt() throws TypeErrorException {
+        final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
+        expectedStmt.put(new Variable("FooTrue"), new IntType());
+        expectedStmt.put(new Variable("FooFalse"), new IntType());
 
-    // List<Stmt> falseStmts = new ArrayList<Stmt>();
-    // falseStmts.add(new PrintlnStmt(new StringLiteralExp("nah")));
+        List<Stmt> trueStmts = new ArrayList<Stmt>();
+        trueStmts.add(new PrintlnStmt(new StringLiteralExp("yup")));
+        trueStmts.add(new VariableInitializationStmt(new Vardec(new IntType(), new Variable("FooTrue")),
+                new IntegerLiteralExp(1)));
 
-    // final Stmt ifStmt = new IfStmt(
-    // new OpExp(new IntegerLiteralExp(1),
-    // new EqualsEqualsOp(), new IntegerLiteralExp(1)),
-    // new BlockStmt(trueStmts),
-    // new BlockStmt(falseStmts));
+        List<Stmt> falseStmts = new ArrayList<Stmt>();
+        falseStmts.add(new PrintlnStmt(new StringLiteralExp("nah")));
+        falseStmts.add(new VariableInitializationStmt(new Vardec(new IntType(), new Variable("FooFalse")),
+                new IntegerLiteralExp(1)));
 
-    // final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+        final Stmt ifStmt = new IfStmt(
+                new OpExp(new IntegerLiteralExp(1),
+                        new EqualsEqualsOp(), new IntegerLiteralExp(1)),
+                new BlockStmt(trueStmts),
+                new BlockStmt(falseStmts));
 
-    // final Map<Variable, Type> expectedStmt =
-    // emptyTypechecker().typeOfStmt(ifStmt, typeEnvironment,
-    // new ClassName("name"), new IntType());
+        final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-    // assertEquals(expectedStmt, new StringLiteralExp("value"));
-    // }
+        final Map<Variable, Type> receivedStmt = emptyTypechecker().typeOfStmt(ifStmt, typeEnvironment,
+                new ClassName("name"), new IntType());
+
+        assertEquals(expectedStmt, receivedStmt);
+    }
 
     // test block stmt
     @Test
     public void testBlockStmt() throws TypeErrorException {
+        final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
+        expectedStmt.put(new Variable("FooBlock"), new IntType());
+
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
         final List<Stmt> stmts = new ArrayList<Stmt>();
         stmts.add(new PrintlnStmt(new IntegerLiteralExp(1)));
+        stmts.add(new VariableInitializationStmt(new Vardec(new IntType(), new Variable("FooBlock")),
+                new IntegerLiteralExp(1)));
         final BlockStmt blockStmt = new BlockStmt(stmts);
-        final Map<Variable, Type> expectedStmt = emptyTypechecker().typeOfBlock(blockStmt,
+        final Map<Variable, Type> receivedStmt = emptyTypechecker().typeOfBlock(blockStmt,
                 typeEnvironment, new ClassName("name"),
-                (Type)new IntType());
-        assertEquals(new IntegerLiteralExp(1), expectedStmt);
+                (Type) new IntType());
+
+        assertEquals(expectedStmt, receivedStmt);
     }
 
+    // test non void stmt
+    @Test
+    public void TestNonVoid() throws TypeErrorException{
+        final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
+        expectedStmt.put(new Variable("FooNonVoid"), new IntType());
+
+        final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+        typeEnvironment.put(new Variable("FooNonVoid"), new IntType());
+        final ReturnNonVoidStmt nonVoid = new ReturnNonVoidStmt(new VariableExp(new Variable("FooNonVoid")));
+        final Map<Variable, Type> receivedStmt = emptyTypechecker().typeOfReturnNonVoid(nonVoid, typeEnvironment, new ClassName("name"), new IntType());
+        
+        assertEquals(expectedStmt, receivedStmt);
+    }
     // @Test
     // public void testVariableInScope() throws TypeErrorException {
     // final Type expectedType = new IntType();
@@ -401,12 +431,13 @@ public class TypeCheckerTest {
     // assertEquals(expectedType, receivedType);
     // }
 
-    // @Test (expected = TypeErrorException.class)
-    // public void testVariableOutOfScope() throws TypeErrorException {
-    // final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-    // emptyTypechecker().typeofVariable(new VariableExp(new Variable("x")),
-    // typeEnvironment);
-    // }
+    // test out of scope variable
+    @Test(expected = TypeErrorException.class)
+    public void testVariableOutOfScope() throws TypeErrorException {
+        final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+        emptyTypechecker().typeofVariable(new VariableExp(new Variable("x")),
+                typeEnvironment);
+    }
 
     // @Test
     // public void testThisInClass() throws TypeErrorException {

@@ -258,8 +258,7 @@ public class TypeChecking {
         } else if (stmt instanceof IfStmt) {
             return typeOfIf((IfStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
         } else if (stmt instanceof PrintlnStmt) {
-            typeofExp(((PrintlnStmt) stmt).exp, typeEnvironment, classWeAreIn);
-            return typeEnvironment;
+            return typeOfPrintln((PrintlnStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
         } else if (stmt instanceof BlockStmt) {
             return typeOfBlock((BlockStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
         } else if (stmt instanceof ReturnNonVoidStmt) {
@@ -307,8 +306,9 @@ public class TypeChecking {
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
         if (typeofExp(stmt.guard, typeEnvironment, classWeAreIn) instanceof BoolType) {
-            typeOfStmt(stmt.body, typeEnvironment, classWeAreIn, functionReturnType);
-            return typeEnvironment;
+            // typeOfStmt(stmt.body, typeEnvironment, classWeAreIn, functionReturnType);
+            // get checked
+            return typeOfStmt(stmt.body, typeEnvironment, classWeAreIn, functionReturnType);
         } else {
             throw new TypeErrorException("guard on while is not a boolean: " + stmt);
         }
@@ -320,12 +320,22 @@ public class TypeChecking {
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
         if (typeofExp(stmt.guard, typeEnvironment, classWeAreIn) instanceof BoolType) {
-            typeOfStmt(stmt.trueBranch, typeEnvironment, classWeAreIn, functionReturnType);
-            typeOfStmt(stmt.falseBranch, typeEnvironment, classWeAreIn, functionReturnType);
-            return typeEnvironment;
+            Map<Variable, Type> branches = new HashMap<Variable, Type>();
+            branches.putAll(typeOfStmt(stmt.trueBranch, typeEnvironment, classWeAreIn, functionReturnType));
+            branches.putAll(typeOfStmt(stmt.falseBranch, typeEnvironment, classWeAreIn, functionReturnType));
+            return branches;
         } else {
             throw new TypeErrorException("guard of if is not a boolean: " + stmt);
         }
+    }
+
+    // type of println stmt
+    public Map<Variable, Type> typeOfPrintln(final PrintlnStmt stmt,
+            final Map<Variable, Type> typeEnvironment,
+            final ClassName classWeAreIn,
+            final Type functionReturnType) throws TypeErrorException {
+        typeofExp(((PrintlnStmt) stmt).exp, typeEnvironment, classWeAreIn);
+        return typeEnvironment;
     }
 
     // type of block stmt
@@ -333,10 +343,10 @@ public class TypeChecking {
             Map<Variable, Type> typeEnvironment,
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
-        for (int i = 0; i < (stmt.stmts).size(); i++) {
-            System.setOut((stmt.stmts).get(i));
-            typeEnvironment = typeOfStmt((stmt.stmts).get(i), typeEnvironment, classWeAreIn, functionReturnType);
+        for (Stmt bodyStmt : stmt.stmts) {
+            typeEnvironment = typeOfStmt(bodyStmt, typeEnvironment, classWeAreIn, functionReturnType);
         }
+        // System.out.println(typeEnvironment);
         return typeEnvironment;
     }
 
