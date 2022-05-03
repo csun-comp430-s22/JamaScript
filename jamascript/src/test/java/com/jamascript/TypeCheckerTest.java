@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class TypeCheckerTest {
-    public static final TypeChecking emptyTypechecker = new TypeChecking(new Program(new ArrayList<ClassDef>(),
-            new ExpStmt(new IntegerLiteralExp(1))));
+    public static TypeChecking emptyTypechecker() throws TypeErrorException {
+        return new TypeChecking(new Program(new ArrayList<ClassDef>(),
+                new ExpStmt(new IntegerLiteralExp(0))));
+    }
 
     // test variable type ClassNameType
     @Test
@@ -32,7 +34,7 @@ public class TypeCheckerTest {
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
         typeEnvironment.put(new Variable("x"), new ClassNameType(new ClassName("Dog")));
 
-        final Type receivedType = emptyTypechecker.typeofExp(new VariableExp(new Variable("x")),
+        final Type receivedType = emptyTypechecker().typeofExp(new VariableExp(new Variable("x")),
                 typeEnvironment, new ClassName(""));
         assertEquals(expectedType, receivedType);
     }
@@ -43,7 +45,7 @@ public class TypeCheckerTest {
         final Type expectedType = new IntType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new IntegerLiteralExp(1),
                 typeEnvironment, new ClassName(""));
         assertEquals(expectedType, receivedType);
     }
@@ -54,7 +56,7 @@ public class TypeCheckerTest {
         final Type expectedType = new StringType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new StringLiteralExp("test"),
+        final Type receivedType = emptyTypechecker().typeofExp(new StringLiteralExp("test"),
                 typeEnvironment, new ClassName(""));
         assertEquals(expectedType, receivedType);
     }
@@ -65,7 +67,7 @@ public class TypeCheckerTest {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new BooleanLiteralExp(true),
+        final Type receivedType = emptyTypechecker().typeofExp(new BooleanLiteralExp(true),
                 typeEnvironment, new ClassName(""));
         assertEquals(expectedType, receivedType);
     }
@@ -76,7 +78,7 @@ public class TypeCheckerTest {
         final Type expectedType = new IntType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new PlusOp(),
                 new IntegerLiteralExp(1)),
                 typeEnvironment, new ClassName(""));
@@ -84,12 +86,12 @@ public class TypeCheckerTest {
     }
 
     // test plus op mismatch
-    @Test (expected = TypeErrorException.class)
+    @Test(expected = TypeErrorException.class)
     public void testPlusOpM() throws TypeErrorException {
         final Type expectedType = new IntType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new PlusOp(),
                 new StringLiteralExp("hey")),
                 typeEnvironment, new ClassName(""));
@@ -102,7 +104,7 @@ public class TypeCheckerTest {
         final Type expectedType = new IntType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new MinusOp(),
                 new IntegerLiteralExp(1)),
                 typeEnvironment, new ClassName(""));
@@ -110,12 +112,12 @@ public class TypeCheckerTest {
     }
 
     // test minus op mismatch
-    @Test (expected = TypeErrorException.class)
+    @Test(expected = TypeErrorException.class)
     public void testMinusOpM() throws TypeErrorException {
         final Type expectedType = new IntType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new MinusOp(),
                 new StringLiteralExp("hey")),
                 typeEnvironment, new ClassName(""));
@@ -128,7 +130,7 @@ public class TypeCheckerTest {
         final Type expectedType = new IntType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new MultiplyOp(),
                 new IntegerLiteralExp(1)),
                 typeEnvironment, new ClassName(""));
@@ -136,12 +138,12 @@ public class TypeCheckerTest {
     }
 
     // test multiply op mismatch
-    @Test (expected = TypeErrorException.class)
+    @Test(expected = TypeErrorException.class)
     public void testMultiplyOpM() throws TypeErrorException {
         final Type expectedType = new IntType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new MultiplyOp(),
                 new StringLiteralExp("hey")),
                 typeEnvironment, new ClassName(""));
@@ -154,7 +156,7 @@ public class TypeCheckerTest {
         final Type expectedType = new IntType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new DivideOp(),
                 new IntegerLiteralExp(1)),
                 typeEnvironment, new ClassName(""));
@@ -162,12 +164,12 @@ public class TypeCheckerTest {
     }
 
     // test divide op
-    @Test (expected = TypeErrorException.class)
+    @Test(expected = TypeErrorException.class)
     public void testDivideOpM() throws TypeErrorException {
         final Type expectedType = new IntType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new DivideOp(),
                 new StringLiteralExp("hey")),
                 typeEnvironment, new ClassName(""));
@@ -180,7 +182,7 @@ public class TypeCheckerTest {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new GreaterThanOp(),
                 new IntegerLiteralExp(1)),
                 typeEnvironment, new ClassName(""));
@@ -188,12 +190,12 @@ public class TypeCheckerTest {
     }
 
     // test greater than op mismatch
-    @Test (expected = TypeErrorException.class)
+    @Test(expected = TypeErrorException.class)
     public void testGreaterThanOpM() throws TypeErrorException {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new GreaterThanOp(),
                 new StringLiteralExp("hey")),
                 typeEnvironment, new ClassName(""));
@@ -206,7 +208,7 @@ public class TypeCheckerTest {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new LessThanOp(),
                 new IntegerLiteralExp(1)),
                 typeEnvironment, new ClassName(""));
@@ -214,12 +216,12 @@ public class TypeCheckerTest {
     }
 
     // test less than op mismatch
-    @Test (expected = TypeErrorException.class)
+    @Test(expected = TypeErrorException.class)
     public void testLessThanOpM() throws TypeErrorException {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new LessThanOp(),
                 new StringLiteralExp("hey")),
                 typeEnvironment, new ClassName(""));
@@ -232,7 +234,7 @@ public class TypeCheckerTest {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new GreaterThanEqualsOp(),
                 new IntegerLiteralExp(1)),
                 typeEnvironment, new ClassName(""));
@@ -240,12 +242,12 @@ public class TypeCheckerTest {
     }
 
     // test greater than equals op mismatch
-    @Test (expected = TypeErrorException.class)
+    @Test(expected = TypeErrorException.class)
     public void testGreaterThanEqualsOpM() throws TypeErrorException {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new GreaterThanEqualsOp(),
                 new StringLiteralExp("hey")),
                 typeEnvironment, new ClassName(""));
@@ -258,7 +260,7 @@ public class TypeCheckerTest {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new LessThanEqualsOp(),
                 new IntegerLiteralExp(1)),
                 typeEnvironment, new ClassName(""));
@@ -266,12 +268,12 @@ public class TypeCheckerTest {
     }
 
     // test less than op mismatch
-    @Test (expected = TypeErrorException.class)
+    @Test(expected = TypeErrorException.class)
     public void testLessThanOpEqualsM() throws TypeErrorException {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new LessThanEqualsOp(),
                 new StringLiteralExp("hey")),
                 typeEnvironment, new ClassName(""));
@@ -284,7 +286,7 @@ public class TypeCheckerTest {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new EqualsEqualsOp(),
                 new IntegerLiteralExp(1)),
                 typeEnvironment, new ClassName(""));
@@ -292,17 +294,101 @@ public class TypeCheckerTest {
     }
 
     // test less than op mismatch
-    @Test (expected = TypeErrorException.class)
+    @Test(expected = TypeErrorException.class)
     public void testEqualsEqualsOpM() throws TypeErrorException {
         final Type expectedType = new BoolType();
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Type receivedType = emptyTypechecker.typeofExp(new OpExp(new IntegerLiteralExp(1),
+        final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
                 new EqualsEqualsOp(),
                 new StringLiteralExp("hey")),
                 typeEnvironment, new ClassName(""));
         assertEquals(expectedType, receivedType);
     }
+
+    // test var init stmt
+    @Test
+    public void testVarInitStmt() throws TypeErrorException {
+        final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
+        expectedStmt.put(new Variable("foo"), new IntType());
+
+        final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+
+        final Stmt varInitStmt = new VariableInitializationStmt(new Vardec(new IntType(), new Variable("foo")),
+                new IntegerLiteralExp(1));
+        final Type type = new IntType();
+
+        final Map<Variable, Type> receivedStmt = emptyTypechecker().typeOfStmt(varInitStmt,
+                typeEnvironment,
+                new ClassName("name"),
+                type);
+
+        assertEquals(expectedStmt, receivedStmt);
+    }
+
+    // test while stmt
+    // @Test
+    // public void testWhileStmt() throws TypeErrorException {
+    // final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
+
+    // final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+    // final Type type = new BoolType();
+
+    // final List<Stmt> bodyStmts = new ArrayList<Stmt>();
+    // bodyStmts.add(new PrintlnStmt(new StringLiteralExp("ahhh")));
+
+    // final Stmt bodyResult = new BlockStmt(bodyStmts);
+
+    // final Exp guard = new BooleanLiteralExp(true);
+
+    // final Stmt whileStmt = new WhileStmt(guard, bodyResult);
+
+    // final Map<Variable, Type> receivedStmt =
+    // emptyTypechecker().typeOfStmt(whileStmt,
+    // typeEnvironment,
+    // new ClassName("name"),
+    // type);
+
+    // assertEquals(new IntegerLiteralExp(1), receivedStmt);
+    // }
+
+    // test if stmt
+    // @Test
+    // public void testIfStmt() throws TypeErrorException {
+    // List<Stmt> trueStmts = new ArrayList<Stmt>();
+    // trueStmts.add(new PrintlnStmt(new StringLiteralExp("yup")));
+
+    // List<Stmt> falseStmts = new ArrayList<Stmt>();
+    // falseStmts.add(new PrintlnStmt(new StringLiteralExp("nah")));
+
+    // final Stmt ifStmt = new IfStmt(
+    // new OpExp(new IntegerLiteralExp(1),
+    // new EqualsEqualsOp(), new IntegerLiteralExp(1)),
+    // new BlockStmt(trueStmts),
+    // new BlockStmt(falseStmts));
+
+    // final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+
+    // final Map<Variable, Type> expectedStmt =
+    // emptyTypechecker().typeOfStmt(ifStmt, typeEnvironment,
+    // new ClassName("name"), new IntType());
+
+    // assertEquals(expectedStmt, new StringLiteralExp("value"));
+    // }
+
+    // test block stmt
+    @Test
+    public void testBlockStmt() throws TypeErrorException {
+        final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+        final List<Stmt> stmts = new ArrayList<Stmt>();
+        stmts.add(new PrintlnStmt(new IntegerLiteralExp(1)));
+        final BlockStmt blockStmt = new BlockStmt(stmts);
+        final Map<Variable, Type> expectedStmt = emptyTypechecker().typeOfBlock(blockStmt,
+                typeEnvironment, new ClassName("name"),
+                (Type)new IntType());
+        assertEquals(new IntegerLiteralExp(1), expectedStmt);
+    }
+
     // @Test
     // public void testVariableInScope() throws TypeErrorException {
     // final Type expectedType = new IntType();
@@ -310,7 +396,7 @@ public class TypeCheckerTest {
     // typeEnvironment.put(new Variable("x"), new IntType());
 
     // final Type receivedType =
-    // emptyTypechecker.typeofVariable(new VariableExp(new Variable("x")),
+    // emptyTypechecker().typeofVariable(new VariableExp(new Variable("x")),
     // typeEnvironment);
     // assertEquals(expectedType, receivedType);
     // }
@@ -318,18 +404,18 @@ public class TypeCheckerTest {
     // @Test (expected = TypeErrorException.class)
     // public void testVariableOutOfScope() throws TypeErrorException {
     // final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-    // emptyTypechecker.typeofVariable(new VariableExp(new Variable("x")),
+    // emptyTypechecker().typeofVariable(new VariableExp(new Variable("x")),
     // typeEnvironment);
     // }
 
     // @Test
     // public void testThisInClass() throws TypeErrorException {
     // assertEquals(new ClassNameType(new ClassName("foo")),
-    // emptyTypechecker.typeofThis(new ClassName("foo")));
+    // emptyTypechecker().typeofThis(new ClassName("foo")));
     // }
 
     // @Test(expected = TypeErrorException.class)
     // public void testThisNotInClass() throws TypeErrorException {
-    // emptyTypechecker.typeofThis(null);
+    // emptyTypechecker().typeofThis(null);
     // }
 }
