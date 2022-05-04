@@ -245,24 +245,24 @@ public class TypeChecking {
     }
 
     // type of stmt
-    public Map<Variable, Type> typeOfStmt(final Stmt stmt,
+    public Map<Variable, Type> returnEnvOfStmt(final Stmt stmt,
             final Map<Variable, Type> typeEnvironment,
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
         if (stmt instanceof VariableInitializationStmt) {
-            return typeOfVarInit((VariableInitializationStmt) stmt,
+            return returnEnvOfVarInit((VariableInitializationStmt) stmt,
                     typeEnvironment, classWeAreIn);
         } else if (stmt instanceof WhileStmt) {
-            return typeOfWhile((WhileStmt) stmt, typeEnvironment,
+            return returnEnvOfWhile((WhileStmt) stmt, typeEnvironment,
                     classWeAreIn, functionReturnType);
         } else if (stmt instanceof IfStmt) {
-            return typeOfIf((IfStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
+            return returnEnvOfIf((IfStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
         } else if (stmt instanceof PrintlnStmt) {
-            return typeOfPrintln((PrintlnStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
+            return returnEnvPrintln((PrintlnStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
         } else if (stmt instanceof BlockStmt) {
-            return typeOfBlock((BlockStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
+            return returnEnvOfBlock((BlockStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
         } else if (stmt instanceof ReturnNonVoidStmt) {
-            return typeOfReturnNonVoid((ReturnNonVoidStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
+            return returnEnvOfReturnNonVoid((ReturnNonVoidStmt) stmt, typeEnvironment, classWeAreIn, functionReturnType);
         } else {
             throw new TypeErrorException("no such stmt" + stmt);
         }
@@ -292,7 +292,7 @@ public class TypeChecking {
     }
 
     // type of var init stmt
-    public Map<Variable, Type> typeOfVarInit(final VariableInitializationStmt stmt,
+    public Map<Variable, Type> returnEnvOfVarInit(final VariableInitializationStmt stmt,
             final Map<Variable, Type> typeEnvironment,
             final ClassName classWeAreIn) throws TypeErrorException {
         final Type expType = typeofExp(stmt.exp, typeEnvironment, classWeAreIn);
@@ -301,12 +301,12 @@ public class TypeChecking {
     }
 
     // type of while stmt
-    public Map<Variable, Type> typeOfWhile(final WhileStmt stmt,
+    public Map<Variable, Type> returnEnvOfWhile(final WhileStmt stmt,
             final Map<Variable, Type> typeEnvironment,
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
         if (typeofExp(stmt.guard, typeEnvironment, classWeAreIn) instanceof BoolType) {
-            typeOfStmt(stmt.body, typeEnvironment, classWeAreIn, functionReturnType);
+            returnEnvOfStmt(stmt.body, typeEnvironment, classWeAreIn, functionReturnType);
             return typeEnvironment;
         } else {
             throw new TypeErrorException("guard on while is not a boolean: " + stmt);
@@ -314,13 +314,13 @@ public class TypeChecking {
     }
 
     // type of if stmt
-    public Map<Variable, Type> typeOfIf(final IfStmt stmt,
+    public Map<Variable, Type> returnEnvOfIf(final IfStmt stmt,
             final Map<Variable, Type> typeEnvironment,
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
         if (typeofExp(stmt.guard, typeEnvironment, classWeAreIn) instanceof BoolType) {
-            typeOfStmt(stmt.trueBranch, typeEnvironment, classWeAreIn, functionReturnType);
-            typeOfStmt(stmt.falseBranch, typeEnvironment, classWeAreIn, functionReturnType);
+            returnEnvOfStmt(stmt.trueBranch, typeEnvironment, classWeAreIn, functionReturnType);
+            returnEnvOfStmt(stmt.falseBranch, typeEnvironment, classWeAreIn, functionReturnType);
 
             return typeEnvironment;
         } else {
@@ -329,7 +329,7 @@ public class TypeChecking {
     }
 
     // type of println stmt
-    public Map<Variable, Type> typeOfPrintln(final PrintlnStmt stmt,
+    public Map<Variable, Type> returnEnvPrintln(final PrintlnStmt stmt,
             final Map<Variable, Type> typeEnvironment,
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
@@ -338,19 +338,19 @@ public class TypeChecking {
     }
 
     // type of block stmt
-    public Map<Variable, Type> typeOfBlock(final BlockStmt stmt,
+    public Map<Variable, Type> returnEnvOfBlock(final BlockStmt stmt,
             final Map<Variable, Type> initialEnvironment,
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
         Map<Variable, Type> typeEnvironment = initialEnvironment;
         for (Stmt bodyStmt : stmt.stmts) {
-            typeEnvironment = typeOfStmt(bodyStmt, typeEnvironment, classWeAreIn, functionReturnType);
+            typeEnvironment = returnEnvOfStmt(bodyStmt, typeEnvironment, classWeAreIn, functionReturnType);
         }
         return initialEnvironment;
     }
 
     // type of Return NON VOID stmt
-    public Map<Variable, Type> typeOfReturnNonVoid(final ReturnNonVoidStmt stmt,
+    public Map<Variable, Type> returnEnvOfReturnNonVoid(final ReturnNonVoidStmt stmt,
             final Map<Variable, Type> typeEnvironment,
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {

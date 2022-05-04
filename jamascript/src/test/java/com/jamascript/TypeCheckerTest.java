@@ -320,7 +320,7 @@ public class TypeCheckerTest {
                 new IntegerLiteralExp(1));
         final Type type = new IntType();
 
-        final Map<Variable, Type> receivedStmt = emptyTypechecker().typeOfStmt(varInitStmt,
+        final Map<Variable, Type> receivedStmt = emptyTypechecker().returnEnvOfStmt(varInitStmt,
                 typeEnvironment,
                 new ClassName("name"),
                 type);
@@ -343,7 +343,7 @@ public class TypeCheckerTest {
 
         final Stmt whileStmt = new WhileStmt(new BooleanLiteralExp(true), new BlockStmt(bodyStmts));
 
-        final Map<Variable, Type> receivedStmt = emptyTypechecker().typeOfStmt(whileStmt,
+        final Map<Variable, Type> receivedStmt = emptyTypechecker().returnEnvOfStmt(whileStmt,
                 typeEnvironment,
                 new ClassName("name"),
                 type);
@@ -374,7 +374,7 @@ public class TypeCheckerTest {
 
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-        final Map<Variable, Type> receivedStmt = emptyTypechecker().typeOfStmt(ifStmt, typeEnvironment,
+        final Map<Variable, Type> receivedStmt = emptyTypechecker().returnEnvOfStmt(ifStmt, typeEnvironment,
                 new ClassName("name"), new IntType());
 
         assertEquals(expectedStmt, receivedStmt);
@@ -392,7 +392,7 @@ public class TypeCheckerTest {
         stmts.add(new VariableInitializationStmt(new Vardec(new IntType(), new Variable("FooBlock")),
                 new IntegerLiteralExp(1)));
         final BlockStmt blockStmt = new BlockStmt(stmts);
-        final Map<Variable, Type> receivedStmt = emptyTypechecker().typeOfBlock(blockStmt,
+        final Map<Variable, Type> receivedStmt = emptyTypechecker().returnEnvOfBlock(blockStmt,
                 typeEnvironment, new ClassName("name"),
                 (Type) new IntType());
 
@@ -408,7 +408,7 @@ public class TypeCheckerTest {
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
         typeEnvironment.put(new Variable("FooNonVoid"), new IntType());
         final ReturnNonVoidStmt nonVoid = new ReturnNonVoidStmt(new VariableExp(new Variable("FooNonVoid")));
-        final Map<Variable, Type> receivedStmt = emptyTypechecker().typeOfReturnNonVoid(nonVoid, typeEnvironment, new ClassName("name"), new IntType());
+        final Map<Variable, Type> receivedStmt = emptyTypechecker().returnEnvOfReturnNonVoid(nonVoid, typeEnvironment, new ClassName("name"), new IntType());
         
         assertEquals(expectedStmt, receivedStmt);
     }
