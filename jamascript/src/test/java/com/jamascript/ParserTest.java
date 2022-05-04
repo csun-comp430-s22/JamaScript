@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.lang.model.element.Name;
 
 import org.junit.Test;
 
@@ -79,6 +80,47 @@ public class ParserTest {
 
                 final Parser parser = new Parser(tokens);
                 assertEquals(new ParseResult<Op>(new MinusOp(), 1),
+                                parser.parseOp(0));
+        }
+
+        
+        @Test
+        public void testOpMultiply() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new MultiplyToken());
+
+                final Parser parser = new Parser(tokens);
+                assertEquals(new ParseResult<Op>(new MultiplyOp(), 1),
+                                parser.parseOp(0));
+        }
+
+        @Test
+        public void testOpDivide() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new DivideToken());
+
+                final Parser parser = new Parser(tokens);
+                assertEquals(new ParseResult<Op>(new DivideOp(), 1),
+                                parser.parseOp(0));
+        }
+
+        @Test
+        public void testOpGreaterThanEquals() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new GreaterThanEqualToken());
+
+                final Parser parser = new Parser(tokens);
+                assertEquals(new ParseResult<Op>(new GreaterThanEqualsOp(), 1),
+                                parser.parseOp(0));
+        }
+
+        @Test
+        public void testOpLessThanEquals() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new LessThanEqualToken());
+
+                final Parser parser = new Parser(tokens);
+                assertEquals(new ParseResult<Op>(new LessThanEqualsOp(), 1),
                                 parser.parseOp(0));
         }
 
@@ -271,6 +313,53 @@ public class ParserTest {
                                 parser.parseStmt(0));
 
         }
+
+        // if("yup"=="yup"){println("yup");} else{println("nah");}
+        // doesn't work 
+        // @Test
+        // public void testIfStmtString() throws ParseException {
+        //        List<Token> tokens = new ArrayList<Token>();
+        //
+        //        tokens.add(new IfToken());
+        //       tokens.add(new LeftParenthesisToken());
+        //       tokens.add(new StringValToken("yup"));
+        //       tokens.add(new EqualEqualToken());
+        //      tokens.add(new StringValToken("yup"));
+        //        tokens.add(new RightParenthesisToken());
+        //        tokens.add(new LeftCurlyBracketToken());
+        //        tokens.add(new PrintlnToken());
+        //        tokens.add(new LeftParenthesisToken());
+        //        tokens.add(new StringValToken("yup"));
+        //        tokens.add(new RightParenthesisToken());
+        //        tokens.add(new SemicolonToken());
+        //        tokens.add(new RightCurlyBracketToken());
+        //        tokens.add(new ElseToken());
+        //        tokens.add(new LeftCurlyBracketToken());
+        //        tokens.add(new PrintlnToken());
+        //        tokens.add(new LeftParenthesisToken());
+        //        tokens.add(new StringValToken("nah"));
+        //        tokens.add(new RightParenthesisToken());
+        //        tokens.add(new SemicolonToken());
+        //        tokens.add(new RightCurlyBracketToken());
+        //
+        //        final Parser parser = new Parser(tokens);
+        //
+        //        List<Stmt> trueStmts = new ArrayList<Stmt>();
+        //        trueStmts.add(new PrintlnStmt(new StringLiteralExp("yup")));
+        //
+        //        List<Stmt> falseStmts = new ArrayList<Stmt>();
+        //        falseStmts.add(new PrintlnStmt(new StringLiteralExp("nah")));
+        //
+        //        final IfStmt expected = new IfStmt(
+        //                        new OpExp(new StringLiteralExp("yup"),
+        //                                        new EqualsEqualsOp(), new StringLiteralExp("yup")),
+        //                        new BlockStmt(trueStmts),
+        //                      new BlockStmt(falseStmts));
+        //
+        //        assertEquals(new ParseResult<Stmt>(expected, 20),
+        //                        parser.parseStmt(0));
+        //
+        // } 
 
         // if(1==1){println("yup");} else{println("nah");}
 
