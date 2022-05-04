@@ -306,9 +306,8 @@ public class TypeChecking {
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
         if (typeofExp(stmt.guard, typeEnvironment, classWeAreIn) instanceof BoolType) {
-            // typeOfStmt(stmt.body, typeEnvironment, classWeAreIn, functionReturnType);
-            // get checked
-            return typeOfStmt(stmt.body, typeEnvironment, classWeAreIn, functionReturnType);
+            typeOfStmt(stmt.body, typeEnvironment, classWeAreIn, functionReturnType);
+            return typeEnvironment;
         } else {
             throw new TypeErrorException("guard on while is not a boolean: " + stmt);
         }
@@ -320,10 +319,10 @@ public class TypeChecking {
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
         if (typeofExp(stmt.guard, typeEnvironment, classWeAreIn) instanceof BoolType) {
-            Map<Variable, Type> branches = new HashMap<Variable, Type>();
-            branches.putAll(typeOfStmt(stmt.trueBranch, typeEnvironment, classWeAreIn, functionReturnType));
-            branches.putAll(typeOfStmt(stmt.falseBranch, typeEnvironment, classWeAreIn, functionReturnType));
-            return branches;
+            typeOfStmt(stmt.trueBranch, typeEnvironment, classWeAreIn, functionReturnType);
+            typeOfStmt(stmt.falseBranch, typeEnvironment, classWeAreIn, functionReturnType);
+
+            return typeEnvironment;
         } else {
             throw new TypeErrorException("guard of if is not a boolean: " + stmt);
         }
@@ -340,14 +339,14 @@ public class TypeChecking {
 
     // type of block stmt
     public Map<Variable, Type> typeOfBlock(final BlockStmt stmt,
-            Map<Variable, Type> typeEnvironment,
+            final Map<Variable, Type> initialEnvironment,
             final ClassName classWeAreIn,
             final Type functionReturnType) throws TypeErrorException {
+        Map<Variable, Type> typeEnvironment = initialEnvironment;
         for (Stmt bodyStmt : stmt.stmts) {
             typeEnvironment = typeOfStmt(bodyStmt, typeEnvironment, classWeAreIn, functionReturnType);
         }
-        // System.out.println(typeEnvironment);
-        return typeEnvironment;
+        return initialEnvironment;
     }
 
     // type of Return NON VOID stmt

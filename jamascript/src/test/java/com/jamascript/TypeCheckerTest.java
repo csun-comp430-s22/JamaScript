@@ -332,7 +332,6 @@ public class TypeCheckerTest {
     @Test
     public void testWhileStmt() throws TypeErrorException {
         final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
-        expectedStmt.put(new Variable("FooWhile"), new IntType());
 
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
         final Type type = new BoolType();
@@ -341,10 +340,6 @@ public class TypeCheckerTest {
         bodyStmts.add(new PrintlnStmt(new StringLiteralExp("ahhh")));
         bodyStmts.add(new VariableInitializationStmt(new Vardec(new IntType(), new Variable("FooWhile")),
                 new IntegerLiteralExp(1)));
-
-        // final Stmt bodyResult = new BlockStmt(bodyStmts);
-
-        // final Exp guard = new BooleanLiteralExp(true);
 
         final Stmt whileStmt = new WhileStmt(new BooleanLiteralExp(true), new BlockStmt(bodyStmts));
 
@@ -360,8 +355,6 @@ public class TypeCheckerTest {
     @Test
     public void testIfStmt() throws TypeErrorException {
         final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
-        expectedStmt.put(new Variable("FooTrue"), new IntType());
-        expectedStmt.put(new Variable("FooFalse"), new IntType());
 
         List<Stmt> trueStmts = new ArrayList<Stmt>();
         trueStmts.add(new PrintlnStmt(new StringLiteralExp("yup")));
@@ -387,13 +380,13 @@ public class TypeCheckerTest {
         assertEquals(expectedStmt, receivedStmt);
     }
 
-    // test block stmt
+    // test block stmt: { println(1); }
     @Test
     public void testBlockStmt() throws TypeErrorException {
         final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
-        expectedStmt.put(new Variable("FooBlock"), new IntType());
 
         final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+
         final List<Stmt> stmts = new ArrayList<Stmt>();
         stmts.add(new PrintlnStmt(new IntegerLiteralExp(1)));
         stmts.add(new VariableInitializationStmt(new Vardec(new IntType(), new Variable("FooBlock")),
