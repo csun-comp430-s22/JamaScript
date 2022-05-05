@@ -124,12 +124,6 @@ public class Tokenizer {
                 return new StringToken();
             } else if (name.equals("while")) {
                 return new WhileToken();
-            } else if (name.equals("class")) {
-                return new ClassToken();
-            } else if (name.equals("constructor")) {
-                return new ConstructorToken();
-            } else if (name.equals("super")) {
-                return new SuperToken();
             } else {
                 return new VariableToken(name);
             }

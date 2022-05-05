@@ -16,7 +16,7 @@ public class StringValToken implements Token{
     }
 
     public int hashCode(){
-        return 33 + value.hashCode();
+        return 34;
     }
 
     public String toString(){

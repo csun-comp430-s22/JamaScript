@@ -6,7 +6,7 @@ public class ExtendsToken implements Token {
     }
 
     public int hashCode() {
-        return 9;
+        return 8;
     }
 
     public String toString() {

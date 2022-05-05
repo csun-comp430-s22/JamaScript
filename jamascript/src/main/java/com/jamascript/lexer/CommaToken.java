@@ -6,7 +6,7 @@ public class CommaToken implements Token {
     }
 
     public int hashCode() {
-        return 3;
+        return 2;
     }
 
     public String toString() {

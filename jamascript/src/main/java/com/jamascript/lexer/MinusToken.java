@@ -6,7 +6,7 @@ public class MinusToken implements Token {
     }
 
     public int hashCode() {
-        return 20;
+        return 19;
     }
 
     public String toString() {

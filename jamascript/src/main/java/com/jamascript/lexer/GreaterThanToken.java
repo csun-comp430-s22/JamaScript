@@ -6,7 +6,7 @@ public class GreaterThanToken implements Token {
     }
 
     public int hashCode() {
-        return 12;
+        return 11;
     }
 
     public String toString() {

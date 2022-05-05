@@ -6,7 +6,7 @@ public class LeftSquaredBracketToken implements Token {
     }
 
     public int hashCode() {
-        return 17;
+        return 16;
     }
 
     public String toString() {

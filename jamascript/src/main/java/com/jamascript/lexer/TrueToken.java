@@ -6,7 +6,7 @@ public class TrueToken implements Token {
     }
 
     public int hashCode() {
-        return 34;
+        return 32;
     }
 
     public String toString() {

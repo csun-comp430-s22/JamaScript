@@ -6,7 +6,7 @@ public class MultiplyToken implements Token {
     }
 
     public int hashCode() {
-        return 21;
+        return 20;
     }
 
     public String toString() {

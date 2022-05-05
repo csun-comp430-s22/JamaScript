@@ -6,7 +6,7 @@ public class DotToken implements Token {
     }
 
     public int hashCode() {
-        return 5;
+        return 4;
     }
 
     public String toString() {

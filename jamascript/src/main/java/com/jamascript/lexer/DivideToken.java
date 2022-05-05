@@ -6,7 +6,7 @@ public class DivideToken implements Token {
     }
 
     public int hashCode() {
-        return 4;
+        return 3;
     }
 
     public String toString() {

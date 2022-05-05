@@ -6,7 +6,7 @@ public class NotToken implements Token {
     }
 
     public int hashCode() {
-        return 23;
+        return 22;
     }
 
     public String toString() {
