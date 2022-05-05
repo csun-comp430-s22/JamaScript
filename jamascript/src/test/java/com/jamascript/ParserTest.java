@@ -760,7 +760,7 @@ public class ParserTest {
 
                 
                 ClassName className = new ClassName("Test");
-                ClassName extendsClassName = new ClassName("Object");;
+                ClassName extendsClassName = new ClassName("Object");
 
                 List<Vardec> instanceVariables = new ArrayList<Vardec>();
                 instanceVariables.add(new Vardec(new IntType(), new Variable("x")));
