@@ -6,7 +6,7 @@ public class NewToken implements Token {
     }
 
     public int hashCode() {
-        return 21;
+        return 22;
     }
 
     public String toString() {

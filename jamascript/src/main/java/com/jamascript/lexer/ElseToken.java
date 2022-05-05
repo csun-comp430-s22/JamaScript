@@ -6,7 +6,7 @@ public class ElseToken implements Token {
     }
 
     public int hashCode() {
-        return 5;
+        return 6;
     }
 
     public String toString() {

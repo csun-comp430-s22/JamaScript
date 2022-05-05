@@ -6,7 +6,7 @@ public class LeftCurlyBracketToken implements Token {
     }
 
     public int hashCode() {
-        return 14;
+        return 15;
     }
 
     public String toString() {

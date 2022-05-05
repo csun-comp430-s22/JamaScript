@@ -6,7 +6,7 @@ public class EqualToken implements Token {
     }
 
     public int hashCode() {
-        return 7;
+        return 8;
     }
 
     public String toString() {

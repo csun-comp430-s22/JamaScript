@@ -1,15 +1,15 @@
 package com.jamascript.lexer;
 
-public class RightParenthesisToken implements Token {
+public class ConstructorToken implements Token {
     public boolean equals(final Object other) {
-        return other instanceof RightParenthesisToken;
+        return other instanceof ConstructorToken;
     }
 
     public int hashCode() {
-        return 29;
+        return 36;
     }
 
     public String toString() {
-        return ")";
+        return "constructor";
     }
 }

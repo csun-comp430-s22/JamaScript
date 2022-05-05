@@ -3,30 +3,38 @@ package com.jamascript.parser.expressions;
 import java.util.List;
 
 import com.jamascript.parser.methodInformation.MethodName;
+import com.jamascript.typechecker.types.*;
 
 public class MethodCallExp implements Exp {
     public final Exp target;
-    public final MethodName mname;
+    public ClassType targetType; // filled in by the typechecker
+    public final MethodName methodName;
     public final List<Exp> params;
 
-    public MethodCallExp(final Exp target, final MethodName mname,
-            final List<Exp> params) {
+    public MethodCallExp(final Exp target,
+                         final MethodName methodName,
+                         final List<Exp> params) {
         this.target = target;
-        this.mname = mname;
+        targetType = null;
+        this.methodName = methodName;
         this.params = params;
     }
 
     public int hashCode() {
         return (target.hashCode() +
-                mname.hashCode() +
+                ((targetType == null) ? 0 : targetType.hashCode()) +
+                methodName.hashCode() +
                 params.hashCode());
     }
 
     public boolean equals(final Object other) {
         if (other instanceof MethodCallExp) {
-            final MethodCallExp call = (MethodCallExp) other;
+            final MethodCallExp call = (MethodCallExp)other;
             return (target.equals(call.target) &&
-                    mname.equals(call.mname) &&
+                    ((targetType == null && call.targetType == null) ||
+                     (targetType != null && call.targetType != null &&
+                      targetType.equals(call.targetType))) &&
+                    methodName.equals(call.methodName) &&
                     params.equals(call.params));
         } else {
             return false;
@@ -35,7 +43,8 @@ public class MethodCallExp implements Exp {
 
     public String toString() {
         return ("MethodCallExp(" + target.toString() + ", " +
-                mname.toString() + ", " +
+                targetType + ", " +
+                methodName.toString() + ", " +
                 params.toString() + ")");
     }
 }

@@ -17,7 +17,7 @@ public class MethodNameToken implements Token{
     }
 
     public int hashCode() {
-        return 1;
+        return 20 + name.hashCode();
     }
 
     public String toString() {
