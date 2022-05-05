@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.lang.model.element.Name;
 
 import org.junit.Test;
 
@@ -79,6 +80,47 @@ public class ParserTest {
 
                 final Parser parser = new Parser(tokens);
                 assertEquals(new ParseResult<Op>(new MinusOp(), 1),
+                                parser.parseOp(0));
+        }
+
+        
+        @Test
+        public void testOpMultiply() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new MultiplyToken());
+
+                final Parser parser = new Parser(tokens);
+                assertEquals(new ParseResult<Op>(new MultiplyOp(), 1),
+                                parser.parseOp(0));
+        }
+
+        @Test
+        public void testOpDivide() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new DivideToken());
+
+                final Parser parser = new Parser(tokens);
+                assertEquals(new ParseResult<Op>(new DivideOp(), 1),
+                                parser.parseOp(0));
+        }
+
+        @Test
+        public void testOpGreaterThanEquals() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new GreaterThanEqualToken());
+
+                final Parser parser = new Parser(tokens);
+                assertEquals(new ParseResult<Op>(new GreaterThanEqualsOp(), 1),
+                                parser.parseOp(0));
+        }
+
+        @Test
+        public void testOpLessThanEquals() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new LessThanEqualToken());
+
+                final Parser parser = new Parser(tokens);
+                assertEquals(new ParseResult<Op>(new LessThanEqualsOp(), 1),
                                 parser.parseOp(0));
         }
 
@@ -271,6 +313,53 @@ public class ParserTest {
                                 parser.parseStmt(0));
 
         }
+
+        // if("yup"=="yup"){println("yup");} else{println("nah");}
+        // doesn't work 
+        // @Test
+        // public void testIfStmtString() throws ParseException {
+        //        List<Token> tokens = new ArrayList<Token>();
+        //
+        //        tokens.add(new IfToken());
+        //       tokens.add(new LeftParenthesisToken());
+        //       tokens.add(new StringValToken("yup"));
+        //       tokens.add(new EqualEqualToken());
+        //      tokens.add(new StringValToken("yup"));
+        //        tokens.add(new RightParenthesisToken());
+        //        tokens.add(new LeftCurlyBracketToken());
+        //        tokens.add(new PrintlnToken());
+        //        tokens.add(new LeftParenthesisToken());
+        //        tokens.add(new StringValToken("yup"));
+        //        tokens.add(new RightParenthesisToken());
+        //        tokens.add(new SemicolonToken());
+        //        tokens.add(new RightCurlyBracketToken());
+        //        tokens.add(new ElseToken());
+        //        tokens.add(new LeftCurlyBracketToken());
+        //        tokens.add(new PrintlnToken());
+        //        tokens.add(new LeftParenthesisToken());
+        //        tokens.add(new StringValToken("nah"));
+        //        tokens.add(new RightParenthesisToken());
+        //        tokens.add(new SemicolonToken());
+        //        tokens.add(new RightCurlyBracketToken());
+        //
+        //        final Parser parser = new Parser(tokens);
+        //
+        //        List<Stmt> trueStmts = new ArrayList<Stmt>();
+        //        trueStmts.add(new PrintlnStmt(new StringLiteralExp("yup")));
+        //
+        //        List<Stmt> falseStmts = new ArrayList<Stmt>();
+        //        falseStmts.add(new PrintlnStmt(new StringLiteralExp("nah")));
+        //
+        //        final IfStmt expected = new IfStmt(
+        //                        new OpExp(new StringLiteralExp("yup"),
+        //                                        new EqualsEqualsOp(), new StringLiteralExp("yup")),
+        //                        new BlockStmt(trueStmts),
+        //                      new BlockStmt(falseStmts));
+        //
+        //        assertEquals(new ParseResult<Stmt>(expected, 20),
+        //                        parser.parseStmt(0));
+        //
+        // } 
 
         // if(1==1){println("yup");} else{println("nah");}
 
@@ -659,7 +748,7 @@ public class ParserTest {
                                 new ParseResult<Exp>(expected, 5),
                                 parser.parseMethodCallExp(0));
         }
-
+        
         // test program: noclass println(1);
         @Test
         public void testProgramNoClass() throws ParseException {
@@ -790,4 +879,334 @@ public class ParserTest {
                 Parser parser = new Parser(tokens);
                 assertEquals(parser.parseClass(0), classes);
         }
+
+        @Test
+        public void testAClassString() throws ParseException {
+
+               // class Test extends Object {
+                //     String Test = Hello;
+                //     constructor(String Test = Hello;) {
+                //         super(cat);
+                //         Boolean y = true; 
+                //     }
+
+                //     String test(String jon = dog;) {
+                //         String gomez = six;
+                //     }
+
+                // }
+
+     
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new ClassToken());
+                tokens.add(new ClassNameToken("Test"));
+                tokens.add(new ExtendsToken());
+                tokens.add(new ClassNameToken("Object"));
+
+                tokens.add(new LeftCurlyBracketToken());
+
+                tokens.add(new StringToken());
+                tokens.add(new VariableToken("Test"));
+                tokens.add(new EqualToken());
+                tokens.add(new StringValToken("Hello"));
+                tokens.add(new SemicolonToken());
+
+                tokens.add(new ConstructorToken());
+                tokens.add(new LeftParenthesisToken());
+
+                tokens.add(new StringToken());
+                tokens.add(new VariableToken("Test"));
+                tokens.add(new EqualToken());
+                tokens.add(new StringValToken("Hello"));
+                tokens.add(new SemicolonToken());
+
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new LeftCurlyBracketToken());
+                
+                tokens.add(new SuperToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new StringValToken("cat"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+
+                tokens.add(new BooleanToken());
+                tokens.add(new VariableToken("y"));
+                tokens.add(new EqualToken());
+                tokens.add(new TrueToken());
+                tokens.add(new SemicolonToken());
+
+                tokens.add(new RightCurlyBracketToken());
+
+                tokens.add(new StringToken());
+                tokens.add(new MethodNameToken("test"));
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new StringToken());
+                tokens.add(new VariableToken("jon"));
+                tokens.add(new EqualToken());
+                tokens.add(new StringValToken("dog"));
+                tokens.add(new SemicolonToken());
+                tokens.add(new RightParenthesisToken());
+
+                tokens.add(new LeftCurlyBracketToken());
+                tokens.add(new StringToken());
+                tokens.add(new VariableToken("gomez"));
+                tokens.add(new EqualToken());
+                tokens.add(new StringValToken("six"));
+                tokens.add(new SemicolonToken());
+                tokens.add(new RightCurlyBracketToken());
+
+                tokens.add(new RightCurlyBracketToken());
+
+                
+                ClassName className = new ClassName("Test");
+                ClassName extendsClassName = new ClassName("Object");;
+
+                List<Vardec> instanceVariables = new ArrayList<Vardec>();
+                instanceVariables.add(new Vardec(new StringType(), new Variable("Test")));
+
+                List<Vardec> constructorArguments = new ArrayList<Vardec>();
+                constructorArguments.add(new Vardec(new StringType(), new Variable("Test")));
+
+                List<Exp> superParams = new ArrayList<Exp>();
+                superParams.add(new StringLiteralExp("cat"));
+
+                List<Stmt> constructorBody = new ArrayList<Stmt>();
+                constructorBody.add(new VariableInitializationStmt(new Vardec(new BoolType(), new Variable("y")),
+                                                                new BooleanLiteralExp(true)));
+
+                List<MethodDef> methods = new ArrayList<MethodDef>();
+                List<Vardec> methodArguments = new ArrayList<Vardec>();
+                methodArguments.add(new Vardec(new StringType(), new Variable("jon")));
+
+                methods.add(new MethodDef(new StringType(), new MethodName("test"), methodArguments,
+                new VariableInitializationStmt(new Vardec(new StringType(), new Variable("gomez")), new StringLiteralExp("six"))));
+
+                ClassDef classDef = new ClassDef(className, extendsClassName, 
+                instanceVariables, constructorArguments, superParams, constructorBody, methods);
+
+                ParseResult<ClassDef> classes = new ParseResult<>(classDef, 47); // bc 46 is } and 47 is nothing
+
+                Parser parser = new Parser(tokens);
+                assertEquals(parser.parseClass(0), classes);
+        }
+
+        @Test
+        public void testAClassBoolean() throws ParseException {
+
+              // class Test extends Object {
+                //     Boolean x = true;
+                //     constructor(Boolean x = truetrue;) {
+                //         super(true);
+                //         Boolean y = true; 
+                //     }
+
+                //     Boolean test(Boolean jon = true;) {
+                //         Boolean gomez = true;
+                //     }
+
+                // }
+
+     
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.add(new ClassToken());
+                tokens.add(new ClassNameToken("Test"));
+                tokens.add(new ExtendsToken());
+                tokens.add(new ClassNameToken("Object"));
+
+                tokens.add(new LeftCurlyBracketToken());
+
+                tokens.add(new BooleanToken());
+                tokens.add(new VariableToken("Test"));
+                tokens.add(new EqualToken());
+                tokens.add(new TrueToken());
+                tokens.add(new SemicolonToken());
+
+                tokens.add(new ConstructorToken());
+                tokens.add(new LeftParenthesisToken());
+
+                tokens.add(new BooleanToken());
+                tokens.add(new VariableToken("Test"));
+                tokens.add(new EqualToken());
+                tokens.add(new TrueToken());
+                tokens.add(new SemicolonToken());
+
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new LeftCurlyBracketToken());
+                
+                tokens.add(new SuperToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new TrueToken());
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+
+                tokens.add(new BooleanToken());
+                tokens.add(new VariableToken("y"));
+                tokens.add(new EqualToken());
+                tokens.add(new TrueToken());
+                tokens.add(new SemicolonToken());
+
+                tokens.add(new RightCurlyBracketToken());
+
+                tokens.add(new BooleanToken());
+                tokens.add(new MethodNameToken("test"));
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new BooleanToken());
+                tokens.add(new VariableToken("jon"));
+                tokens.add(new EqualToken());
+                tokens.add(new TrueToken());
+                tokens.add(new SemicolonToken());
+                tokens.add(new RightParenthesisToken());
+
+                tokens.add(new LeftCurlyBracketToken());
+                tokens.add(new BooleanToken());
+                tokens.add(new VariableToken("gomez"));
+                tokens.add(new EqualToken());
+                tokens.add(new TrueToken());
+                tokens.add(new SemicolonToken());
+                tokens.add(new RightCurlyBracketToken());
+
+                tokens.add(new RightCurlyBracketToken());
+
+                
+                ClassName className = new ClassName("Test");
+                ClassName extendsClassName = new ClassName("Object");;
+
+                List<Vardec> instanceVariables = new ArrayList<Vardec>();
+                instanceVariables.add(new Vardec(new BoolType(), new Variable("Test")));
+
+                List<Vardec> constructorArguments = new ArrayList<Vardec>();
+                constructorArguments.add(new Vardec(new BoolType(), new Variable("Test")));
+
+                List<Exp> superParams = new ArrayList<Exp>();
+                superParams.add(new BooleanLiteralExp(true));
+
+                List<Stmt> constructorBody = new ArrayList<Stmt>();
+                constructorBody.add(new VariableInitializationStmt(new Vardec(new BoolType(), new Variable("y")),
+                                                                new BooleanLiteralExp(true)));
+
+                List<MethodDef> methods = new ArrayList<MethodDef>();
+                List<Vardec> methodArguments = new ArrayList<Vardec>();
+                methodArguments.add(new Vardec(new BoolType(), new Variable("jon")));
+
+                methods.add(new MethodDef(new BoolType(), new MethodName("test"), methodArguments,
+                new VariableInitializationStmt(new Vardec(new BoolType(), new Variable("gomez")), new BooleanLiteralExp(true))));
+
+                ClassDef classDef = new ClassDef(className, extendsClassName, 
+                instanceVariables, constructorArguments, superParams, constructorBody, methods);
+
+                ParseResult<ClassDef> classes = new ParseResult<>(classDef, 47); // bc 46 is } and 47 is nothing
+
+                Parser parser = new Parser(tokens);
+                assertEquals(parser.parseClass(0), classes);
+        }
+
+//         @Test
+//         public void testAClassNameToken() throws ParseException {
+
+//               // class Test extends Object {
+//                 //     ClassNameToken classNameType = (ClassNameToken) currToken;
+//                 //     constructor(ClassName x = Hello;) {
+//                 //         super(cat);
+//                 //         ClassName y = Bye; 
+//                 //     }
+
+//                 //     ClassName test(ClassName jon = dog;) {
+//                 //         ClassName gomez = six;
+//                 //     }
+
+//                 // }
+     
+                 
+//                 List<Token> tokens = new ArrayList<Token>();
+//                 tokens.add(new ClassToken());
+//                 tokens.add(new ClassNameToken("Test"));
+//                 tokens.add(new ExtendsToken());
+//                 tokens.add(new ClassNameToken("Object"));
+
+//                 tokens.add(new LeftCurlyBracketToken());
+
+//                 tokens.add(new ClassToken());
+//                 tokens.add(new VariableToken("classNameType"));
+//                 tokens.add(new EqualToken());
+//                 tokens.add(new ClassToken());
+//                 tokens.add(new SemicolonToken());
+
+//                 tokens.add(new ConstructorToken());
+//                 tokens.add(new LeftParenthesisToken());
+
+//                 tokens.add(new ClassToken());
+//                 tokens.add(new ClassNameToken("className"));
+//                 tokens.add(new EqualToken());
+//                 tokens.add(new ClassNameToken("classNameType"));
+//                 tokens.add(new SemicolonToken());
+
+//                 tokens.add(new RightParenthesisToken());
+//                 tokens.add(new LeftCurlyBracketToken());
+                
+//                 tokens.add(new SuperToken());
+//                 tokens.add(new LeftParenthesisToken());
+//                 tokens.add(new StringValToken("cat"));
+//                 tokens.add(new RightParenthesisToken());
+//                 tokens.add(new SemicolonToken());
+
+//                 tokens.add(new BooleanToken());
+//                 tokens.add(new VariableToken("y"));
+//                 tokens.add(new EqualToken());
+//                 tokens.add(new TrueToken());
+//                 tokens.add(new SemicolonToken());
+
+//                 tokens.add(new RightCurlyBracketToken());
+
+//                 tokens.add(new StringToken());
+//                 tokens.add(new MethodNameToken("test"));
+//                 tokens.add(new LeftParenthesisToken());
+//                 tokens.add(new StringToken());
+//                 tokens.add(new VariableToken("jon"));
+//                 tokens.add(new EqualToken());
+//                 tokens.add(new StringValToken("dog"));
+//                 tokens.add(new SemicolonToken());
+//                 tokens.add(new RightParenthesisToken());
+
+//                 tokens.add(new LeftCurlyBracketToken());
+//                 tokens.add(new StringToken());
+//                 tokens.add(new VariableToken("gomez"));
+//                 tokens.add(new EqualToken());
+//                 tokens.add(new StringValToken("six"));
+//                 tokens.add(new SemicolonToken());
+//                 tokens.add(new RightCurlyBracketToken());
+
+//                 tokens.add(new RightCurlyBracketToken());
+
+                
+//                 ClassName className = new ClassName("Test");
+//                 ClassName extendsClassName = new ClassName("Object");;
+
+//                 List<Vardec> instanceVariables = new ArrayList<Vardec>();
+//                 instanceVariables.add(new Vardec(new StringType(), new Variable("Test")));
+
+//                 List<Vardec> constructorArguments = new ArrayList<Vardec>();
+//                 constructorArguments.add(new Vardec(new StringType(), new Variable("Test")));
+
+//                 List<Exp> superParams = new ArrayList<Exp>();
+//                 superParams.add(new StringLiteralExp("cat"));
+
+//                 List<Stmt> constructorBody = new ArrayList<Stmt>();
+//                 constructorBody.add(new VariableInitializationStmt(new Vardec(new BoolType(), new Variable("y")),
+//                                                                 new BooleanLiteralExp(true)));
+
+//                 List<MethodDef> methods = new ArrayList<MethodDef>();
+//                 List<Vardec> methodArguments = new ArrayList<Vardec>();
+//                 methodArguments.add(new Vardec(new StringType(), new Variable("jon")));
+
+//                 methods.add(new MethodDef(new StringType(), new MethodName("test"), methodArguments,
+//                 new VariableInitializationStmt(new Vardec(new StringType(), new Variable("gomez")), new StringLiteralExp("six"))));
+
+//                 ClassDef classDef = new ClassDef(className, extendsClassName, 
+//                 instanceVariables, constructorArguments, superParams, constructorBody, methods);
+
+//                 ParseResult<ClassDef> classes = new ParseResult<>(classDef, 47); // bc 46 is } and 47 is nothing
+
+//                 Parser parser = new Parser(tokens);
+//                 assertEquals(parser.parseClass(0), classes);
+//         }
 }
