@@ -118,6 +118,70 @@ public class TypeChecking {
         return retval;
     }
 
+    public List<Type> expectedConstructorTypesForClass(final ClassName className)
+        throws TypeErrorException {
+        final ClassDef classDef = getClass(className);
+        final List<Type> retval = new ArrayList<Type>();
+        if (classDef == null) { // Object
+            return retval;
+        } else {
+            for (final Vardec vardec : classDef.constructorArguments) {
+                retval.add(vardec.type);
+            }
+            return retval;
+        }
+    }
+
+    public void expressionsOk(final List<Type> expectedTypes,
+                              final List<Exp> receivedExpressions,
+                              final Map<Variable, Type> typeEnvironment,
+                              final ClassName classWeAreIn) throws TypeErrorException {
+        if (expectedTypes.size() != receivedExpressions.size()) {
+            throw new TypeErrorException("Wrong number of parameters");
+        }
+        for (int index = 0; index < expectedTypes.size(); index++) {
+            final Type paramType = typeofExp(receivedExpressions.get(index), typeEnvironment, classWeAreIn);
+            final Type expectedType = expectedTypes.get(index);
+            // myMethod(int, bool, int)
+            // myMethod(  2, true,   3)
+            //
+            // myMethod2(BaseClass)
+            // myMethod2(new SubClass())
+            isEqualOrSubtypeOf(paramType, expectedType);
+        }
+    }
+
+    public List<Type> expectedParameterTypesForClassAndMethod(final ClassName className,
+                                                              final MethodName methodName)
+        throws TypeErrorException {
+        final MethodDef methodDef = getMethodDef(className, methodName);
+        final List<Type> retval = new ArrayList<Type>();
+        for (final Vardec vardec : methodDef.arguments) {
+            retval.add(vardec.type);
+        }
+        return retval;
+    }
+
+    public MethodDef getMethodDef(final ClassName className,
+                                  final MethodName methodName) throws TypeErrorException {
+        final Map<MethodName, MethodDef> methodMap = methods.get(className);
+        if (methodMap == null) {
+            throw new TypeErrorException("Unknown class name: " + className);
+        } else {
+            final MethodDef methodDef = methodMap.get(methodName);
+            if (methodDef == null) {
+                throw new TypeErrorException("Unknown method name " + methodName + " for class " + className);
+            } else {
+                return methodDef;
+            }
+        }
+    }
+
+    public Type expectedReturnTypeForClassAndMethod(final ClassName className,
+                                                    final MethodName methodName) throws TypeErrorException {
+        return getMethodDef(className, methodName).returnType;
+    }
+
     public TypeChecking(final Program program) throws TypeErrorException {
         this.program = program;
         classes = makeClassMap(program.classes);
@@ -226,22 +290,31 @@ public class TypeChecking {
 
     // type of method call
     public Type typeofMethodCall(final MethodCallExp exp,
-            final Map<Variable, Type> typeEnvironment,
-            final ClassName classWeAreIn) throws TypeErrorException {
+                                 final Map<Variable, Type> typeEnvironment,
+                                 final ClassName classWeAreIn) throws TypeErrorException {
         final Type targetType = typeofExp(exp.target, typeEnvironment, classWeAreIn);
-        if (targetType instanceof ClassNameType) {
-            final ClassName className = ((ClassNameType) targetType).className;
-            // final List<Type> expectedTypes =
-
+        if (targetType instanceof ClassType) {
+            final ClassType asClassType = (ClassType)targetType;
+            exp.targetType = asClassType;
+            final ClassName className = asClassType.className;
+            final List<Type> expectedTypes =
+                expectedParameterTypesForClassAndMethod(className, exp.methodName);
+            expressionsOk(expectedTypes, exp.params, typeEnvironment, classWeAreIn);
+            return expectedReturnTypeForClassAndMethod(className, exp.methodName);
+        } else {
+            throw new TypeErrorException("Called method on non-class type: " + targetType);
         }
-        throw new TypeErrorException("message");
     }
+
 
     // type of new
     public Type typeofNew(final NewExp exp,
-            final Map<Variable, Type> typeEnvironment,
-            final ClassName classWeAreIn) throws TypeErrorException {
-        throw new TypeErrorException("message");
+                          final Map<Variable, Type> typeEnvironment,
+                          final ClassName classWeAreIn) throws TypeErrorException {
+        // need to know what the constructor arguments for this class are
+        final List<Type> expectedTypes = expectedConstructorTypesForClass(exp.className);
+        expressionsOk(expectedTypes, exp.params, typeEnvironment, classWeAreIn);
+        return new ClassType(exp.className);
     }
 
     // type of stmt
@@ -272,10 +345,10 @@ public class TypeChecking {
     public void isEqualOrSubtypeOf(final Type first, final Type second) throws TypeErrorException {
         if (first.equals(second)) {
             return;
-        } else if (first instanceof ClassNameType &&
-                second instanceof ClassNameType) {
-            final ClassDef parentClassDef = getParent(((ClassNameType) first).className);
-            isEqualOrSubtypeOf(new ClassNameType(parentClassDef.className), second);
+        } else if (first instanceof ClassType &&
+                second instanceof ClassType) {
+            final ClassDef parentClassDef = getParent(((ClassType) first).className);
+            isEqualOrSubtypeOf(new ClassType(parentClassDef.className), second);
         } else {
             throw new TypeErrorException("incompatible types: " + first + ", " + second);
         }
