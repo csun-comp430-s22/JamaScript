@@ -98,7 +98,7 @@ public class Parser {
                     try {
                         final ParseResult<Exp> exp = parseExp(curPosition);
                         params.add(exp.result);
-                        curPosition = exp.position;
+                        curPosition = exp.position + 1; // was exp.position
                     } catch (final ParseException e) {
                         shouldRun = false;
                     }
@@ -210,14 +210,14 @@ public class Parser {
             }
         } else if (token instanceof ClassNameToken) {
             final ClassNameToken cName = (ClassNameToken) token;
+
             final VariableExp varExp = (VariableExp) (parseExp(position + 1).result);
-            // Test
             final Variable var = varExp.variable;
-            // Dog
             final ClassName name = new ClassName(cName.name);
-            // Dog Test
             final Vardec vardec = new Vardec(new ClassType(name), var);
-            // ("Sparky")
+
+            assertTokenHereIs(position + 2, new EqualToken());
+
             final Token nextToken = getToken(position + 3);
             if (nextToken instanceof NewToken) {
                 final ParseResult<Exp> exp = parseClassExp(position + 3);
@@ -321,7 +321,7 @@ public class Parser {
                     parameters.add(currInitStmt.vardec); 
                     currPosition = parameter.position + 2;
                     currToken = getToken(currPosition - 1);
-
+                    return new ParseResult<List<Vardec>>(parameters, currPosition);
                 } else {
                     throw new ParseException("Expected right paren or comma. Recieved: " + commaOrRightParen);
                 }   
@@ -331,7 +331,7 @@ public class Parser {
         }
         // constructor(int x = 4;, int y = 5;, int z = 6;) {
         
-        return new ParseResult<List<Vardec>>(parameters, currPosition);
+        return new ParseResult<List<Vardec>>(parameters, currPosition + 1);
     }
 
     // String jon() { stmt* return exp*;}
@@ -402,28 +402,28 @@ public class Parser {
             }
             throw new ParseException("Expected MethodNameToken. Recieved " + currToken);
         }
-        // if(currToken instanceof ClassNameToken) {
-        //     ClassNameToken classNameType = (ClassNameToken) currToken;
-        //     ClassName className = new ClassName(classNameType.name);
+        if(currToken instanceof ClassNameToken) {
+            ClassNameToken classNameType = (ClassNameToken) currToken;
+            ClassName className = new ClassName(classNameType.name);
 
-        //     currToken = getToken(currPosition + 1);
-        //     if(currToken instanceof MethodNameToken) {
-        //         final MethodNameToken currMethodNameToken = (MethodNameToken) currToken;
-        //         mname = new MethodName(currMethodNameToken.name);
+            currToken = getToken(currPosition + 1);
+            if(currToken instanceof MethodNameToken) {
+                final MethodNameToken currMethodNameToken = (MethodNameToken) currToken;
+                mname = new MethodName(currMethodNameToken.name);
                 
-        //         assertTokenHereIs(currPosition + 2, new LeftParenthesisToken());
-        //         currToken = getToken(currPosition + 3);
+                assertTokenHereIs(currPosition + 2, new LeftParenthesisToken());
+                currToken = getToken(currPosition + 3);
 
-        //         final ParseResult<List<Vardec>> argumentResults = returnMethodParameters(currToken, currPosition + 3);
-        //         assertTokenHereIs(argumentResults.position, new LeftCurlyBracketToken());
-        //         arguments = argumentResults.result;
+                final ParseResult<List<Vardec>> argumentResults = returnMethodParameters(currToken, currPosition + 3);
+                assertTokenHereIs(argumentResults.position, new LeftCurlyBracketToken());
+                arguments = argumentResults.result;
 
-        //         ParseResult<Stmt> bodyResults = parseStmt(argumentResults.position);
-        //         body = bodyResults.result;
-        //         return new ParseResult<MethodDef>(new MethodDef(new ClassNameType(className), mname, arguments, body), bodyResults.position + 1);
-        //     }
-        //     throw new ParseException("Expected MethodNameToken. Recieved " + currToken);
-        // }
+                ParseResult<Stmt> bodyResults = parseStmt(argumentResults.position);
+                body = bodyResults.result;
+                return new ParseResult<MethodDef>(new MethodDef(new ClassType(className), mname, arguments, body), bodyResults.position);
+            }
+            throw new ParseException("Expected MethodNameToken. Recieved " + currToken);
+        }
         throw new ParseException("Expected method type. Recieved: " + currToken);
     }
 
