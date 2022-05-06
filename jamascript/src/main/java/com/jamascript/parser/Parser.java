@@ -177,7 +177,7 @@ public class Parser {
             final Token nextToken = getToken(exp.position - 1);
             if (nextToken instanceof NumberToken) {
                 return new ParseResult<Stmt>(
-                        new VariableInitializationStmt(vardec, exp.result),
+                        new VariableInitializationStmt(vardec, exp.result), // was exp.position
                         exp.position);
             } else {
                 throw new ParseException("Expected: NumberToken; received : " + nextToken);
@@ -262,13 +262,14 @@ public class Parser {
                 try {
                     final ParseResult<Stmt> stmt = parseStmt(curPosition);
                     stmts.add(stmt.result);
-                    curPosition = stmt.position;
+                    curPosition = stmt.position + 1; // was stmt.position
+
                 } catch (final ParseException e) {
                     shouldRun = false;
                 }
             }
             return new ParseResult<Stmt>(new BlockStmt(stmts),
-                    curPosition + 1);
+                    curPosition); // was curPosition + 1
         } else if (token instanceof PrintlnToken) {
             assertTokenHereIs(position + 1, new LeftParenthesisToken());
             final ParseResult<Exp> exp = parseExp(position + 2);
@@ -333,6 +334,7 @@ public class Parser {
         return new ParseResult<List<Vardec>>(parameters, currPosition);
     }
 
+    // String jon() { stmt* return exp*;}
     public ParseResult<MethodDef> parseMethod(Token currToken, int currPosition) throws ParseException {
         
         MethodName mname = null;
@@ -352,10 +354,11 @@ public class Parser {
                 assertTokenHereIs(argumentResults.position, new LeftCurlyBracketToken());
                 arguments = argumentResults.result;
 
-                ParseResult<Stmt> bodyResults = parseStmt(argumentResults.position + 1);
+                // Will give you a block stmt because of "{ }"
+                ParseResult<Stmt> bodyResults = parseStmt(argumentResults.position);
                 body = bodyResults.result;
 
-                return new ParseResult<MethodDef>(new MethodDef(new StringType(), mname, arguments, body), bodyResults.position + 1);
+                return new ParseResult<MethodDef>(new MethodDef(new StringType(), mname, arguments, body), bodyResults.position);
             }
             throw new ParseException("Expected MethodNameToken. Recieved " + currToken);
         }
@@ -372,10 +375,10 @@ public class Parser {
                 assertTokenHereIs(argumentResults.position, new LeftCurlyBracketToken());
                 arguments = argumentResults.result;
 
-                ParseResult<Stmt> bodyResults = parseStmt(argumentResults.position + 1);
+                ParseResult<Stmt> bodyResults = parseStmt(argumentResults.position);
                 body = bodyResults.result;
                 
-                return new ParseResult<MethodDef>(new MethodDef(new BoolType(), mname, arguments, body), bodyResults.position + 1);
+                return new ParseResult<MethodDef>(new MethodDef(new BoolType(), mname, arguments, body), bodyResults.position);
             }
             throw new ParseException("Expected MethodNameToken. Recieved " + currToken);
         }
@@ -392,9 +395,10 @@ public class Parser {
                 assertTokenHereIs(argumentResults.position, new LeftCurlyBracketToken());
                 arguments = argumentResults.result;
 
-                ParseResult<Stmt> bodyResults = parseStmt(argumentResults.position + 1);
+                ParseResult<Stmt> bodyResults = parseStmt(argumentResults.position);
+                System.out.println(bodyResults.result);
                 body = bodyResults.result;
-                return new ParseResult<MethodDef>(new MethodDef(new IntType(), mname, arguments, body), bodyResults.position + 1);
+                return new ParseResult<MethodDef>(new MethodDef(new IntType(), mname, arguments, body), bodyResults.position);
             }
             throw new ParseException("Expected MethodNameToken. Recieved " + currToken);
         }
@@ -414,7 +418,7 @@ public class Parser {
         //         assertTokenHereIs(argumentResults.position, new LeftCurlyBracketToken());
         //         arguments = argumentResults.result;
 
-        //         ParseResult<Stmt> bodyResults = parseStmt(argumentResults.position + 1);
+        //         ParseResult<Stmt> bodyResults = parseStmt(argumentResults.position);
         //         body = bodyResults.result;
         //         return new ParseResult<MethodDef>(new MethodDef(new ClassNameType(className), mname, arguments, body), bodyResults.position + 1);
         //     }
@@ -434,6 +438,10 @@ public class Parser {
             ParseResult<MethodDef> methodDefResult = parseMethod(currToken, currPosition);
             methodDefs.add(methodDefResult.result);
             assertTokenHereIs(methodDefResult.position, new RightCurlyBracketToken());
+
+            System.out.println("1: " + getToken(methodDefResult.position));
+            System.out.println("0: " + getToken(methodDefResult.position - 1));
+            System.out.println("-1: " + getToken(methodDefResult.position - 2));
 
             // pos: } or type methodname(vardec*)
             currPosition = methodDefResult.position + 1;
