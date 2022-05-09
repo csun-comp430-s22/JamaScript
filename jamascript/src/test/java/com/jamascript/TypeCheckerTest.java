@@ -861,13 +861,29 @@ public class TypeCheckerTest {
                 map.put(methodSig, m1);
 
 
+                List<Vardec> methodArguments2 = new ArrayList<Vardec>();
+                methodArguments2.add(new Vardec(new IntType(), new Variable("jon")));
+                MethodDef m2 = new MethodDef(new IntType(), new MethodName("test"), methodArguments2,
+                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6)));
+
+                List<Type> types2 = new ArrayList<Type>();
+                types2.add(new IntType());
+                MethodSignature methodSig2 = new MethodSignature(m2.mname, types2);
+                System.out.println("h`: " + methodSig.hashCode());
+
+                map.put(methodSig2, m2);
+
+
+
+
+
                 Exp exp = new VariableExp(new Variable("bo"));
                 List<Exp> params = new ArrayList<Exp>();
                 params.add(new VariableExp(new Variable("bo3")));
                 MethodCallExp mexp = new MethodCallExp(exp, new MethodName("test"), params);
 
                 List<Type> typesmexp = new ArrayList<Type>();
-                typesmexp.add(new BoolType());
+                typesmexp.add(new IntType());
                 
                 System.out.println("SSSSSS" + map.get(
                         new MethodSignature(new MethodName("test"), typesmexp)
