@@ -869,9 +869,9 @@ public class TypeCheckerTest {
                 List<Type> typesmexp = new ArrayList<Type>();
                 typesmexp.add(new BoolType());
                 
-                System.out.println("h2: " + mexp.methodSig.hashCode());
-                System.out.println("equals: " + mexp.methodSig.equals(methodSig));
-                System.out.println("SSSSSS" + map.get(new MethodSignature(mexp.methodName, typesmexp)));
+                System.out.println("SSSSSS" + map.get(
+                        new MethodSignature(new MethodName("test"), typesmexp)
+                ));
         }
 
         // NOT ALLOWED
