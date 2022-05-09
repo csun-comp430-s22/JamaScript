@@ -825,4 +825,70 @@ public class TypeCheckerTest {
                 ClassType second = new ClassType(new ClassName("second"));
                 methodCallTypechecker().isEqualOrSubtypeOf(first, second);
         }
+
+        // test method call exp : husky.test(1);
+        @Test
+        public void testMethodCallExp2() throws TypeErrorException {
+                // final Type expectedType = new IntType();
+                // final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+                // typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
+
+                // Exp target = new VariableExp(new Variable("husky"));
+                // MethodName methodName = new MethodName("test");
+                // List<Exp> params = new ArrayList<Exp>();
+                // params.add(new IntegerLiteralExp(1));
+
+                // final Type receivedType = methodCallTypechecker().typeofExp(
+                //                 new MethodCallExp(target, methodName, params),
+                //                 typeEnvironment, new ClassName(""));
+                // assertEquals(expectedType, receivedType);
+
+
+
+                final Map<MethodSignature, MethodDef> map = new HashMap<>();
+
+
+                List<Vardec> methodArguments = new ArrayList<Vardec>();
+                methodArguments.add(new Vardec(new BoolType(), new Variable("jon")));
+                MethodDef m1 = new MethodDef(new BoolType(), new MethodName("test"), methodArguments,
+                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6)));
+
+                List<Type> types = new ArrayList<Type>();
+                types.add(new BoolType());
+                MethodSignature methodSig = new MethodSignature(m1.mname, types);
+                System.out.println("h`: " + methodSig.hashCode());
+
+                map.put(methodSig, m1);
+
+
+                Exp exp = new VariableExp(new Variable("bo"));
+                List<Exp> params = new ArrayList<Exp>();
+                params.add(new VariableExp(new Variable("bo3")));
+                MethodCallExp mexp = new MethodCallExp(exp, new MethodName("test"), params);
+
+                List<Type> typesmexp = new ArrayList<Type>();
+                typesmexp.add(new BoolType());
+                
+                System.out.println("h2: " + mexp.methodSig.hashCode());
+                System.out.println("equals: " + mexp.methodSig.equals(methodSig));
+                System.out.println("SSSSSS" + map.get(new MethodSignature(mexp.methodName, typesmexp)));
+        }
+
+        // NOT ALLOWED
+        // public int hey(int x) {
+        //     return 2;
+        // }
+
+        // public boolean hey(int x) {
+        //     return true;
+        // }
+
+        // ALLOWED
+        // public int hey(int x) {
+        //     return 2;
+        // }
+
+        // public boolean hey(int x, int y) {
+        //     return true;
+        // }
 }
