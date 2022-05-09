@@ -642,6 +642,9 @@ public class TypeCheckerTest {
                 //         Int gomez = 6;
                 //     }
 
+                //     Boolean test(Boolean jon = true;) {
+                //         Int gomez = 6;
+                //     }
                 // }
                 ClassName className = new ClassName("Test");
                 ClassName extendsClassName = new ClassName("Object");
@@ -660,11 +663,20 @@ public class TypeCheckerTest {
                                                                 new BooleanLiteralExp(true)));
 
                 List<MethodDef> methods = new ArrayList<MethodDef>();
+
                 List<Vardec> methodArguments = new ArrayList<Vardec>();
                 methodArguments.add(new Vardec(new IntType(), new Variable("jon")));
 
                 methods.add(new MethodDef(new IntType(), new MethodName("test"), methodArguments,
                 new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6))));
+
+                List<Vardec> methodArguments2 = new ArrayList<Vardec>();
+                methodArguments2.add(new Vardec(new BoolType(), new Variable("jon")));
+
+                methods.add(new MethodDef(new BoolType(), new MethodName("test"), methodArguments2,
+                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6))));
+
+
 
                 ClassDef classDef = new ClassDef(className, extendsClassName, 
                 instanceVariables, constructorArguments, superParams, constructorBody, methods);
@@ -826,68 +838,116 @@ public class TypeCheckerTest {
                 methodCallTypechecker().isEqualOrSubtypeOf(first, second);
         }
 
-        // test method call exp : husky.test(1);
-        @Test
-        public void testMethodCallExp2() throws TypeErrorException {
-                // final Type expectedType = new IntType();
-                // final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-                // typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
+        //program with class
+        public static TypeChecking methodCallTypechecker2() throws TypeErrorException {
+                // class Test extends Object {
+                //     Int x = 5;
+                //     constructor(Int x = 5;) {
+                //         super(4);
+                //         Boolean y = true; 
+                //     }
 
-                // Exp target = new VariableExp(new Variable("husky"));
-                // MethodName methodName = new MethodName("test");
-                // List<Exp> params = new ArrayList<Exp>();
-                // params.add(new IntegerLiteralExp(1));
+                //     Int test(Int jon = 1;) {
+                //         Int gomez = 6;
+                //     }
 
-                // final Type receivedType = methodCallTypechecker().typeofExp(
-                //                 new MethodCallExp(target, methodName, params),
-                //                 typeEnvironment, new ClassName(""));
-                // assertEquals(expectedType, receivedType);
+                //     Boolean test(Boolean jon = true;) {
+                //         Int gomez = 6;
+                //     }
+                // }
+                ClassName className = new ClassName("Test");
+                ClassName extendsClassName = new ClassName("Object");
 
+                List<Vardec> instanceVariables = new ArrayList<Vardec>();
+                instanceVariables.add(new Vardec(new IntType(), new Variable("x")));
 
+                List<Vardec> constructorArguments = new ArrayList<Vardec>();
+                constructorArguments.add(new Vardec(new IntType(), new Variable("x")));
 
-                final Map<MethodSignature, MethodDef> map = new HashMap<>();
+                List<Exp> superParams = new ArrayList<Exp>();
+                superParams.add(new IntegerLiteralExp(4));
 
+                List<Stmt> constructorBody = new ArrayList<Stmt>();
+                constructorBody.add(new VariableInitializationStmt(new Vardec(new BoolType(), new Variable("y")),
+                                                                new BooleanLiteralExp(true)));
+
+                List<MethodDef> methods = new ArrayList<MethodDef>();
 
                 List<Vardec> methodArguments = new ArrayList<Vardec>();
-                methodArguments.add(new Vardec(new BoolType(), new Variable("jon")));
-                MethodDef m1 = new MethodDef(new BoolType(), new MethodName("test"), methodArguments,
-                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6)));
+                methodArguments.add(new Vardec(new IntType(), new Variable("jon")));
 
-                List<Type> types = new ArrayList<Type>();
-                types.add(new BoolType());
-                MethodSignature methodSig = new MethodSignature(m1.mname, types);
-                System.out.println("h`: " + methodSig.hashCode());
-
-                map.put(methodSig, m1);
-
+                methods.add(new MethodDef(new IntType(), new MethodName("test"), methodArguments,
+                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6))));
 
                 List<Vardec> methodArguments2 = new ArrayList<Vardec>();
                 methodArguments2.add(new Vardec(new IntType(), new Variable("jon")));
-                MethodDef m2 = new MethodDef(new IntType(), new MethodName("test"), methodArguments2,
-                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6)));
 
-                List<Type> types2 = new ArrayList<Type>();
-                types2.add(new IntType());
-                MethodSignature methodSig2 = new MethodSignature(m2.mname, types2);
-                System.out.println("h`: " + methodSig.hashCode());
-
-                map.put(methodSig2, m2);
+                methods.add(new MethodDef(new BoolType(), new MethodName("test"), methodArguments2,
+                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6))));
 
 
 
+                ClassDef classDef = new ClassDef(className, extendsClassName, 
+                instanceVariables, constructorArguments, superParams, constructorBody, methods);
+                List<ClassDef> classList = new ArrayList<ClassDef>();
+                classList.add(classDef);
+                return new TypeChecking(new Program(classList, new ExpStmt(new IntegerLiteralExp(1))));
+        }
 
+        @Test (expected = TypeErrorException.class)
+        public void testDuplicateMethodSignatures() throws TypeErrorException {
+        
+                final Type expectedType = new IntType();
+                final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
 
-                Exp exp = new VariableExp(new Variable("bo"));
+                Exp target = new VariableExp(new Variable("husky"));
+                MethodName methodName = new MethodName("test");
                 List<Exp> params = new ArrayList<Exp>();
-                params.add(new VariableExp(new Variable("bo3")));
-                MethodCallExp mexp = new MethodCallExp(exp, new MethodName("test"), params);
+                params.add(new IntegerLiteralExp(1));
 
-                List<Type> typesmexp = new ArrayList<Type>();
-                typesmexp.add(new IntType());
-                
-                System.out.println("SSSSSS" + map.get(
-                        new MethodSignature(new MethodName("test"), typesmexp)
-                ));
+                final Type receivedType = methodCallTypechecker2().typeofExp(
+                                new MethodCallExp(target, methodName, params),
+                                typeEnvironment, new ClassName("Test"));
+                assertEquals(expectedType, receivedType);
+        }
+
+        // test method call exp : husky.test(true);
+        @Test
+        public void testOverloading1() throws TypeErrorException {
+        
+                final Type expectedType = new BoolType();
+                final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
+
+                Exp target = new VariableExp(new Variable("husky"));
+                MethodName methodName = new MethodName("test");
+                List<Exp> params = new ArrayList<Exp>();
+                params.add(new BooleanLiteralExp(true));
+
+                final Type receivedType = methodCallTypechecker().typeofExp(
+                                new MethodCallExp(target, methodName, params),
+                                typeEnvironment, new ClassName("Test"));
+                assertEquals(expectedType, receivedType);
+        }
+
+        // test method call exp : husky.test(1);
+        @Test
+        public void testOverloading2() throws TypeErrorException {
+        
+                final Type expectedType = new IntType();
+                final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
+
+                Exp target = new VariableExp(new Variable("husky"));
+                MethodName methodName = new MethodName("test");
+                List<Exp> params = new ArrayList<Exp>();
+                params.add(new IntegerLiteralExp(1));
+
+                final Type receivedType = methodCallTypechecker().typeofExp(
+                                new MethodCallExp(target, methodName, params),
+                                typeEnvironment, new ClassName("Test"));
+                assertEquals(expectedType, receivedType);
         }
 
         // NOT ALLOWED
@@ -904,7 +964,9 @@ public class TypeCheckerTest {
         //     return 2;
         // }
 
-        // public boolean hey(int x, int y) {
+        // public boolean hey() {
         //     return true;
         // }
+        // Method overloading only allows duplicate names if parameters are different
+        
 }
