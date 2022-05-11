@@ -3,11 +3,13 @@ package com.jamascript.parser.expressions;
 import java.util.List;
 
 import com.jamascript.parser.methodInformation.MethodName;
+import com.jamascript.parser.methodInformation.MethodSignature;
 import com.jamascript.typechecker.types.*;
 
 public class MethodCallExp implements Exp {
     public final Exp target;
     public ClassType targetType; // filled in by the typechecker
+    public MethodSignature methodSig;
     public final MethodName methodName;
     public final List<Exp> params;
 

@@ -4,6 +4,7 @@ import com.jamascript.parser.*;
 import com.jamascript.parser.expressions.*;
 import com.jamascript.parser.methodInformation.MethodDef;
 import com.jamascript.parser.methodInformation.MethodName;
+import com.jamascript.parser.methodInformation.MethodSignature;
 import com.jamascript.parser.operators.*;
 import com.jamascript.parser.statements.*;
 import com.jamascript.typechecker.types.*;
@@ -22,7 +23,7 @@ public class TypeChecking {
 
     public final Map<ClassName, ClassDef> classes;
 
-    public final Map<ClassName, Map<MethodName, MethodDef>> methods;
+    public final Map<ClassName, Map<MethodSignature, MethodDef>> methods;
 
     public static ClassDef getClass(final ClassName className,
             final Map<ClassName, ClassDef> classes) throws TypeErrorException {
@@ -73,29 +74,36 @@ public class TypeChecking {
         }
     }
 
-    public static Map<MethodName, MethodDef> methodsForClass(final ClassName className,
+    public Map<MethodSignature, MethodDef> methodsForClass(final ClassName className,
             final Map<ClassName, ClassDef> classes) throws TypeErrorException {
         final ClassDef classDef = getClass(className, classes);
         if (classDef == null) {
-            return new HashMap<MethodName, MethodDef>();
+            return new HashMap<MethodSignature, MethodDef>();
         } else {
-            final Map<MethodName, MethodDef> retval = methodsForClass(classDef.extendsClassName, classes);
-            final Set<MethodName> methodsOnThisClass = new HashSet<MethodName>();
+            final Map<MethodSignature, MethodDef> retval = methodsForClass(classDef.extendsClassName, classes);
+            final Set<MethodSignature> methodsSigOnThisClass = new HashSet<MethodSignature>();
+                        
             for (final MethodDef methodDef : classDef.methods) {
-                final MethodName methodName = methodDef.mname;
-                if (methodsOnThisClass.contains(methodName)) {
-                    throw new TypeErrorException("duplicate method: " + methodName);
+                
+                final MethodSignature methodSignature = 
+                    new MethodSignature(methodDef.mname, getMethodDefArgumentTypes(methodDef));
+
+                if (methodsSigOnThisClass.contains(methodSignature)) {
+                    throw new TypeErrorException("duplicate method signature: " + methodSignature);
                 }
-                methodsOnThisClass.add(methodName);
-                retval.put(methodName, methodDef);
+                methodsSigOnThisClass.add(methodSignature);
+            
+                retval.put(methodSignature, methodDef);
+
             }
+            System.out.println("Retval: " + retval);
             return retval;
         }
     }
 
-    public static Map<ClassName, Map<MethodName, MethodDef>> makeMethodMap(final Map<ClassName, ClassDef> classes)
+    public Map<ClassName, Map<MethodSignature, MethodDef>> makeMethodMap(final Map<ClassName, ClassDef> classes)
             throws TypeErrorException {
-        final Map<ClassName, Map<MethodName, MethodDef>> retval = new HashMap<ClassName, Map<MethodName, MethodDef>>();
+        final Map<ClassName, Map<MethodSignature, MethodDef>> retval = new HashMap<ClassName, Map<MethodSignature, MethodDef>>();
         for (final ClassName className : classes.keySet()) {
             retval.put(className, methodsForClass(className, classes));
         }
@@ -151,24 +159,40 @@ public class TypeChecking {
         }
     }
 
-    public List<Type> expectedParameterTypesForClassAndMethod(final ClassName className,
-                                                              final MethodName methodName)
-        throws TypeErrorException {
-        final MethodDef methodDef = getMethodDef(className, methodName);
-        final List<Type> retval = new ArrayList<Type>();
-        for (final Vardec vardec : methodDef.arguments) {
-            retval.add(vardec.type);
+    // public static List<Type> expectedParameterTypesForClassAndMethod(final ClassName className,
+    //                                                           final MethodName methodName)
+    //     throws TypeErrorException {
+    //     final MethodDef methodDef = getMethodDef(className, methodName);
+    //     final List<Type> retval = new ArrayList<Type>();
+    //     for (final Vardec vardec : methodDef.arguments) {
+    //         retval.add(vardec.type);
+    //     }
+    //     return retval;
+    // }
+
+    public static List<Type> getMethodDefArgumentTypes(MethodDef methodDef) throws TypeErrorException {
+        final List<Type> methodArgumentTypes = new ArrayList<Type>();
+        if(methodDef == null) {
+            throw new TypeErrorException("MethodDef is null.");
         }
-        return retval;
+        for(final Vardec vardec : methodDef.arguments) {
+            methodArgumentTypes.add(vardec.type);
+        }
+        return methodArgumentTypes;
     }
 
     public MethodDef getMethodDef(final ClassName className,
-                                  final MethodName methodName) throws TypeErrorException {
-        final Map<MethodName, MethodDef> methodMap = methods.get(className);
+                                  final MethodName methodName, List<Type> mTypes) throws TypeErrorException {
+
+        // Will check if this MethodSignature exists in the context of this Class
+        final Map<MethodSignature, MethodDef> methodMap = methods.get(className);
         if (methodMap == null) {
             throw new TypeErrorException("Unknown class name: " + className);
         } else {
-            final MethodDef methodDef = methodMap.get(methodName);
+            MethodSignature mSig = new MethodSignature(methodName, mTypes);
+            
+            final MethodDef methodDef = methodMap.get(mSig);
+
             if (methodDef == null) {
                 throw new TypeErrorException("Unknown method name " + methodName + " for class " + className);
             } else {
@@ -178,8 +202,8 @@ public class TypeChecking {
     }
 
     public Type expectedReturnTypeForClassAndMethod(final ClassName className,
-                                                    final MethodName methodName) throws TypeErrorException {
-        return getMethodDef(className, methodName).returnType;
+                                                    final MethodName methodName, List<Type> expectedTypes) throws TypeErrorException {
+        return getMethodDef(className, methodName, expectedTypes).returnType;
     }
 
     public TypeChecking(final Program program) throws TypeErrorException {
@@ -288,6 +312,15 @@ public class TypeChecking {
         }
     }
 
+    public List<Type> getTypesOfMethodCall(List<Exp> arguments, 
+        Map<Variable, Type> typeEnvironment, ClassName classWeAreIn) throws TypeErrorException{
+        final List<Type> types = new ArrayList<>();
+        for(Exp exp : arguments) {
+            types.add(typeofExp(exp, typeEnvironment, classWeAreIn));
+        }
+        return types;
+    }
+
     // type of method call
     public Type typeofMethodCall(final MethodCallExp exp,
                                  final Map<Variable, Type> typeEnvironment,
@@ -297,15 +330,21 @@ public class TypeChecking {
             final ClassType asClassType = (ClassType)targetType;
             exp.targetType = asClassType;
             final ClassName className = asClassType.className;
-            final List<Type> expectedTypes =
-                expectedParameterTypesForClassAndMethod(className, exp.methodName);
+            
+            final List<Type> argTypes = getTypesOfMethodCall(exp.params, typeEnvironment, classWeAreIn);
+            final MethodDef mDef = getMethodDef(className, exp.methodName, argTypes);
+            final List<Type> expectedTypes = getMethodDefArgumentTypes(mDef);
+
+            // Do the parameters inserted into the method call match that of its definition
             expressionsOk(expectedTypes, exp.params, typeEnvironment, classWeAreIn);
-            return expectedReturnTypeForClassAndMethod(className, exp.methodName);
+
+            // If it does, return the method defintion return type
+            // int test(){...} -> "int" is the type
+            return expectedReturnTypeForClassAndMethod(className, exp.methodName, expectedTypes);
         } else {
             throw new TypeErrorException("Called method on non-class type: " + targetType);
         }
     }
-
 
     // type of new
     public Type typeofNew(final NewExp exp,
