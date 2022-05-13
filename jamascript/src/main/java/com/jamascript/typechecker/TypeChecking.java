@@ -96,7 +96,6 @@ public class TypeChecking {
                 retval.put(methodSignature, methodDef);
 
             }
-            System.out.println("Retval: " + retval);
             return retval;
         }
     }
