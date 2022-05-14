@@ -860,6 +860,43 @@ public class ParserTest {
                 assertEquals(new ParseResult<MethodDef>(expected, 17), parser.parseMethodDef(0));
         }
 
+        @Test
+        // class Car extends Object{
+        // Int a;
+        // constructor(Int b){
+        // super(b);
+        // Println("You made it!");
+        // }
+        // Int doSomething(Int a){
+        // Println(a);
+        // return (1);}
+        // }
+        public void testClass() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+
+                tokens.add(new ClassToken());
+                tokens.add(new ClassNameToken("Car"));
+                tokens.add(new ExtendsToken());
+                tokens.add(new ClassNameToken("Object"));
+                tokens.add(new LeftCurlyBracketToken());
+
+                tokens.add(new IntToken());
+                tokens.add(new VariableToken("a"));
+                tokens.add(new SemicolonToken());
+
+                tokens.add(new StringToken());
+                tokens.add(new VariableToken("b"));
+                tokens.add(new SemicolonToken());
+
+
+                tokens.add(new ConstructorToken());
+                tokens.add(new LeftParenthesisToken());
+
+
+                Parser parser = new Parser(tokens);
+                parser.parseClassDef(0);
+        }
+
         // // test program: noclass println(1);
         // @Test
         // public void testProgramNoClass() throws ParseException {
