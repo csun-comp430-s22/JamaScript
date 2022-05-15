@@ -4,7 +4,6 @@ import java.util.List;
 import com.jamascript.lexer.*;
 
 import static org.junit.Assert.assertArrayEquals;
-//import static org.junit.Assert.fail;
 import org.junit.Test;
 
 public class TokenizerTest {
@@ -14,16 +13,6 @@ public class TokenizerTest {
         final List<Token> received = tokenizer.tokenize();
         assertArrayEquals(expected, received.toArray(new Token[received.size()]));
 
-        // Can use this instead of we remove the testInvalid function later on
-        /*
-         * try {
-         * final Tokenizer tokenizer = new Tokenizer(input);
-         * final List<Token> received = tokenizer.tokenize();
-         * assertArrayEquals(expected, received.toArray(new Token[received.size()]));
-         * } catch(final TokenizerException e) {
-         * fail("Tokenizer threw exception");
-         * }
-         */
     }
 
     public void assertClassTokenize(final String input, final Token[] expected) throws TokenizerException {
@@ -253,15 +242,4 @@ public class TokenizerTest {
         assertMethodTokenize("Cat", new Token[] { new MethodNameToken("Cat") });
     }
 
-    // WORKING ON IT
-    // @Test
-    // public void testNumberFollowedByLetter() throws TokenizerException {
-
-    // assertTokenizes("1abc",
-    // new Token[] {
-    // new NumberToken("1abc"),
-
-    // });
-
-    // }
 }

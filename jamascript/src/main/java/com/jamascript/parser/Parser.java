@@ -496,7 +496,7 @@ public class Parser {
             try {
                 final ParseResult<ClassDef> classDef = parseClassDef(position);
                 classDefs.add(classDef.result);
-                position = classDef.position;
+                position = classDef.position + 1;
             } catch (final ParseException e) {
                 shouldRun = false;
             }

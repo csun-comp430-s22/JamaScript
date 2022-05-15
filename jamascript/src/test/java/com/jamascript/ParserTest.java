@@ -860,7 +860,7 @@ public class ParserTest {
                 assertEquals(new ParseResult<MethodDef>(expected, 17), parser.parseMethodDef(0));
         }
 
-        @Test
+        // Car Class Non-Overloaded
         // class Car extends Object{
         // Int a;
         // String d;
@@ -878,7 +878,7 @@ public class ParserTest {
         // return (e);
         // }
         // }
-        public void testClass() throws ParseException {
+        public List<Token> CarClassTokens() throws ParseException {
                 List<Token> tokens = new ArrayList<Token>();
 
                 tokens.add(new ClassToken());
@@ -951,7 +951,6 @@ public class ParserTest {
                 tokens.add(new RightParenthesisToken());
                 tokens.add(new SemicolonToken());
                 tokens.add(new RightCurlyBracketToken());
-                
 
                 // second method
                 tokens.add(new StringToken());
@@ -978,8 +977,11 @@ public class ParserTest {
 
                 tokens.add(new RightCurlyBracketToken());
 
-                Parser parser = new Parser(tokens);
+                
+                return tokens;
+        }
 
+        public ClassDef CarClass() throws ParseException {
                 List<Vardec> instanceVariables = new ArrayList<Vardec>();
                 instanceVariables.add(new Vardec(new IntType(), new Variable("a")));
                 instanceVariables.add(new Vardec(new StringType(), new Variable("d")));
@@ -1037,11 +1039,10 @@ public class ParserTest {
                                 superParams,
                                 constructorBody,
                                 methods);
-
-                assertEquals(new ParseResult<ClassDef>(expected, 74), parser.parseClassDef(0));
+                return expected;
         }
 
-        @Test
+        // Car class overloaded
         // class Car extends Object{
         // Int a;
         // String d;
@@ -1059,7 +1060,8 @@ public class ParserTest {
         // return (e);
         // }
         // }
-        public void testClassOverloaded() throws ParseException {
+        public List<Token> CarClassOverloadedTokens() throws ParseException
+        {
                 List<Token> tokens = new ArrayList<Token>();
 
                 tokens.add(new ClassToken());
@@ -1132,7 +1134,6 @@ public class ParserTest {
                 tokens.add(new RightParenthesisToken());
                 tokens.add(new SemicolonToken());
                 tokens.add(new RightCurlyBracketToken());
-                
 
                 // second method
                 tokens.add(new StringToken());
@@ -1159,8 +1160,10 @@ public class ParserTest {
 
                 tokens.add(new RightCurlyBracketToken());
 
-                Parser parser = new Parser(tokens);
+                return tokens;
+        }
 
+        public ClassDef CarClassOverloaded() throws ParseException {
                 List<Vardec> instanceVariables = new ArrayList<Vardec>();
                 instanceVariables.add(new Vardec(new IntType(), new Variable("a")));
                 instanceVariables.add(new Vardec(new StringType(), new Variable("d")));
@@ -1218,6 +1221,27 @@ public class ParserTest {
                                 superParams,
                                 constructorBody,
                                 methods);
+                return expected;
+        }
+
+        @Test
+        // test Car class
+        public void testClass() throws ParseException {
+
+                Parser parser = new Parser(CarClassTokens());
+
+                ClassDef expected = CarClass();
+
+                assertEquals(new ParseResult<ClassDef>(expected, 74), parser.parseClassDef(0));
+        }
+
+        @Test
+        // test Car Overloaded
+        public void testClassOverloaded() throws ParseException {
+
+                Parser parser = new Parser(CarClassOverloadedTokens());
+
+                ClassDef expected = CarClassOverloaded();
 
                 assertEquals(new ParseResult<ClassDef>(expected, 74), parser.parseClassDef(0));
         }
@@ -1241,6 +1265,61 @@ public class ParserTest {
 
                 assertEquals(
                                 new ParseResult<Program>(expected, 4),
+                                parser.parseProgram(0));
+        }
+
+        // test program: Car println(1);
+        @Test
+        public void testProgramOneClass() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.addAll(CarClassTokens());
+
+                tokens.add(new PrintlnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new NumberToken("1"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+
+                final Parser parser = new Parser(tokens);
+
+                final List<ClassDef> classes = new ArrayList<ClassDef>();
+                classes.add(CarClass());
+
+                final Stmt entryPoint = new PrintlnStmt(new IntegerLiteralExp(1));
+
+                final Program expected = new Program(classes, entryPoint);
+
+                assertEquals(
+                                new ParseResult<Program>(expected, 79),
+                                parser.parseProgram(0));
+        }
+
+        // test program: Car CarOverloaded println(1);
+        @Test
+        public void testProgramTwoClass() throws ParseException {
+                List<Token> tokens = new ArrayList<Token>();
+                tokens.addAll(CarClassTokens());
+
+                tokens.addAll(CarClassOverloadedTokens());
+
+                tokens.add(new PrintlnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new NumberToken("1"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+
+                final Parser parser = new Parser(tokens);
+
+                final List<ClassDef> classes = new ArrayList<ClassDef>();
+                classes.add(CarClass());
+                classes.add(CarClassOverloaded());
+
+                final Stmt entryPoint = new PrintlnStmt(new IntegerLiteralExp(1));
+
+                final Program expected = new Program(classes, entryPoint);
+
+                assertEquals(
+                                new ParseResult<Program>(expected, 154),
                                 parser.parseProgram(0));
         }
 
