@@ -863,8 +863,9 @@ public class ParserTest {
         @Test
         // class Car extends Object{
         // Int a;
-        // constructor(Int b){
-        // super(b);
+        // String d;
+        // constructor(Int b, Boolean c){
+        // super(b, c);
         // Println("You made it!");
         // }
         // Int doSomething(Int a){
@@ -885,12 +886,30 @@ public class ParserTest {
                 tokens.add(new SemicolonToken());
 
                 tokens.add(new StringToken());
-                tokens.add(new VariableToken("b"));
+                tokens.add(new VariableToken("d"));
                 tokens.add(new SemicolonToken());
-
 
                 tokens.add(new ConstructorToken());
                 tokens.add(new LeftParenthesisToken());
+
+                tokens.add(new IntToken());
+                tokens.add(new VariableToken("b"));
+                tokens.add(new CommaToken());
+
+                tokens.add(new BooleanToken());
+                tokens.add(new VariableToken("c"));
+
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new LeftCurlyBracketToken());
+
+                tokens.add(new SuperToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new VariableToken("b"));
+                
+                tokens.add(new CommaToken());
+                tokens.add(new VariableToken("c"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
 
 
                 Parser parser = new Parser(tokens);

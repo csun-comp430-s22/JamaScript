@@ -322,6 +322,7 @@ public class Parser {
     public ParseResult<Type> parseType(int position) throws ParseException {
         final Token token = getToken(position);
         Type type = null;
+        // try{}catch(ParseException e){}
         if (token instanceof IntToken) {
             type = new IntType();
             position++;
@@ -331,7 +332,7 @@ public class Parser {
         } else if (token instanceof BooleanToken) {
             type = new BoolType();
             position++;
-        } else {
+        } else if(token instanceof ClassNameToken){
             ClassNameToken cName = (ClassNameToken) token;
             ClassName className = new ClassName(cName.name);
             type = new ClassType(className);
@@ -368,41 +369,21 @@ public class Parser {
 
     // vardecs_semicolon ::= (vardec `;`)*
     public ParseResult<List<Vardec>> parseVardecsSemicolon(int position) throws ParseException {
-        // final List<Vardec> vardecs = new ArrayList<Vardec>();
-        // boolean shouldRun = true;
-        // while (shouldRun) {
-        //     try {
-        //         final ParseResult<Vardec> vardec = parseVardec(position);
-        //         assertTokenHereIs(vardec.position, new SemicolonToken());
-        //         vardecs.add(vardec.result);
-        //         position = vardec.position + 1;
-        //     } catch (final ParseException e) {
-        //         shouldRun = false;
-        //     }
-        // }
-
-        // return new ParseResult<List<Vardec>>(vardecs, position);
         final List<Vardec> vardecs = new ArrayList<Vardec>();
-
-        try {
-            ParseResult<Vardec> vardec = parseVardec(position);
-            vardecs.add(vardec.result);
-            position = vardec.position;
-            boolean shouldRun = true;
-            while (shouldRun) {
-                try {
-                    assertTokenHereIs(position, new SemicolonToken());
-                    vardec = parseVardec(position + 1);
-                    vardecs.add(vardec.result);
-                    position = vardec.position;
-                } catch (final ParseException e) {
-                    shouldRun = false;
-                }
+        boolean shouldRun = true;
+        while (shouldRun) {
+            try {
+                final ParseResult<Vardec> vardec = parseVardec(position);
+                assertTokenHereIs(vardec.position, new SemicolonToken());
+                vardecs.add(vardec.result);
+                position = vardec.position + 1;
+            } catch (final ParseException e) {
+                shouldRun = false;
             }
-        } catch (final ParseException e) {
         }
 
         return new ParseResult<List<Vardec>>(vardecs, position);
+        
     }
 
     // methoddef ::= type methodname(vardecs*) stmt
