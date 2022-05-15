@@ -249,6 +249,23 @@ public class Parser {
         }
     }
 
+    ParseResult<List<Stmt>> parseBlockStmts(int position) throws ParseException {
+        final List<Stmt> stmts = new ArrayList<Stmt>();
+        boolean shouldRun = true;
+        while (shouldRun) {
+            try {
+                final ParseResult<Stmt> stmt = parseStmt(position);
+                stmts.add(stmt.result);
+                position = stmt.position + 1; // was stmt.position
+
+            } catch (final ParseException e) {
+                shouldRun = false;
+            }
+        }
+
+        return new ParseResult<List<Stmt>>(stmts, position);
+    }
+
     // stmt ::= while (exp) stmt | if (exp)stmt else stmt; | { stmt* } |
     // println(exp);| return (exp) |
     public ParseResult<Stmt> parseStmt(final int position) throws ParseException {
@@ -272,21 +289,10 @@ public class Parser {
                     falseBranch.result),
                     falseBranch.position);
         } else if (token instanceof LeftCurlyBracketToken) {
-            final List<Stmt> stmts = new ArrayList<Stmt>();
-            int curPosition = position + 1;
-            boolean shouldRun = true;
-            while (shouldRun) {
-                try {
-                    final ParseResult<Stmt> stmt = parseStmt(curPosition);
-                    stmts.add(stmt.result);
-                    curPosition = stmt.position + 1; // was stmt.position
-
-                } catch (final ParseException e) {
-                    shouldRun = false;
-                }
-            }
-            return new ParseResult<Stmt>(new BlockStmt(stmts),
-                    curPosition); // was curPosition + 1
+            final ParseResult<List<Stmt>> stmts = parseBlockStmts(position + 1);
+            assertTokenHereIs(stmts.position, new RightCurlyBracketToken());
+            return new ParseResult<Stmt>(new BlockStmt(stmts.result),
+                    stmts.position);
         } else if (token instanceof PrintlnToken) {
             assertTokenHereIs(position + 1, new LeftParenthesisToken());
             final ParseResult<Exp> exp = parseExp(position + 2);
@@ -332,7 +338,7 @@ public class Parser {
         } else if (token instanceof BooleanToken) {
             type = new BoolType();
             position++;
-        } else if(token instanceof ClassNameToken){
+        } else if (token instanceof ClassNameToken) {
             ClassNameToken cName = (ClassNameToken) token;
             ClassName className = new ClassName(cName.name);
             type = new ClassType(className);
@@ -383,7 +389,7 @@ public class Parser {
         }
 
         return new ParseResult<List<Vardec>>(vardecs, position);
-        
+
     }
 
     // methoddef ::= type methodname(vardecs*) stmt
@@ -393,7 +399,6 @@ public class Parser {
         if (token instanceof MethodNameToken) {
             MethodNameToken mName = (MethodNameToken) token;
             MethodName methodName = new MethodName(mName.name);
-            // final ParseResult<MethodName> methodName = parseMethodName(type.position);
             assertTokenHereIs(position + 2, new LeftParenthesisToken());
             final ParseResult<List<Vardec>> arguments = parseVardecsComma(position + 3);
             assertTokenHereIs(arguments.position, new RightParenthesisToken());
@@ -436,13 +441,11 @@ public class Parser {
     public ParseResult<ClassDef> parseClassDef(final int position) throws ParseException {
         // header
         assertTokenHereIs(position, new ClassToken());
-        // final ParseResult<ClassName> className = parseClassName(position + 1);
         final Token token = getToken(position + 1);
         ClassNameToken cName = (ClassNameToken) token;
         ClassName className = new ClassName(cName.name);
 
         assertTokenHereIs(position + 2, new ExtendsToken());
-        // final ParseResult<ClassName> extendsClassName = parseClassName(position + 2);
         final Token token2 = getToken(position + 3);
         ClassNameToken ecName = (ClassNameToken) token2;
         ClassName extendsClassName = new ClassName(ecName.name);
@@ -466,9 +469,7 @@ public class Parser {
         assertTokenHereIs(superParams.position, new RightParenthesisToken());
         assertTokenHereIs(superParams.position + 1, new SemicolonToken());
 
-        // check////////////////////////////////
-        final ParseResult<Stmt> constructorBody = parseStmt(superParams.position + 2);
-        final BlockStmt constructorStmts = (BlockStmt) constructorBody.result;
+        final ParseResult<List<Stmt>> constructorBody = parseBlockStmts(superParams.position + 2);
 
         assertTokenHereIs(constructorBody.position, new RightCurlyBracketToken());
 
@@ -481,42 +482,42 @@ public class Parser {
                 instanceVariables.result,
                 constructorArguments.result,
                 superParams.result,
-                constructorStmts.stmts,
+                constructorBody.result,
                 methodDefs.result),
                 methodDefs.position + 1);
     }
 
+    public ParseResult<List<ClassDef>> parseClassDefs(int position) throws ParseException {
+        final List<ClassDef> classDefs = new ArrayList<ClassDef>();
+        boolean shouldRun = true;
+
+        while (shouldRun) {
+            try {
+                final ParseResult<ClassDef> classDef = parseClassDef(position);
+                classDefs.add(classDef.result);
+                position = classDef.position;
+            } catch (final ParseException e) {
+                shouldRun = false;
+            }
+        }
+
+        return new ParseResult<List<ClassDef>>(classDefs, position);
+    }
+
     // program ::= classdef* stmt
-    // public ParseResult<Program> parseProgram(final int position) throws
-    // ParseException{
-    // final List<ClassDef> classes = new ArrayList<ClassDef>();
-    // int currPosition = position;
-    // boolean shouldRun = true;
-    // while (shouldRun) {
-    // try {
-    // final ParseResult<ClassDef> exp = parseClass(currPosition);
-    // classes.add(exp.result);
-    // currPosition = exp.position;
-    // // throw new ParseException("no classes");
-    // } catch (final ParseException e) {
-    // shouldRun = false;
-    // }
-    // }
-    // final ParseResult<Stmt> stmt = parseStmt(currPosition);
+    public ParseResult<Program> parseProgram(final int position) throws ParseException {
+        final ParseResult<List<ClassDef>> classDefs = parseClassDefs(position);
+        final ParseResult<Stmt> entryPoint = parseStmt(classDefs.position);
+        return new ParseResult<Program>(new Program(classDefs.result, entryPoint.result),
+                entryPoint.position);
+    }
 
-    // return new ParseResult<Program>(new Program(classes, stmt.result),
-    // stmt.position);
-    // }
-
-    // public Program parseProgram() throws ParseException {
-    // final ParseResult<Program> program = parseProgram(0);
-    // // make sure all tokens were read in
-    // // if any tokens remain, then there is something extra at the end
-    // // of the program, which should be a syntax error
-    // if (program.position == tokens.size()) {
-    // return program.result;
-    // } else {
-    // throw new ParseException("Remaining tokens at end");
-    // }
-    // }
+    public Program parseProgram() throws ParseException {
+        final ParseResult<Program> program = parseProgram(0);
+        if (program.position == tokens.size()) {
+            return program.result;
+        } else {
+            throw new ParseException("remaining tokens at end");
+        }
+    }
 }
