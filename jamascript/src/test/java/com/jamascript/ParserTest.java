@@ -873,6 +873,10 @@ public class ParserTest {
         // Println(e);
         // return (e);
         // }
+        // String doSomething2(String e){
+        // Println(e);
+        // return (e);
+        // }
         // }
         public void testClass() throws ParseException {
                 List<Token> tokens = new ArrayList<Token>();
@@ -927,49 +931,49 @@ public class ParserTest {
                 tokens.add(new RightCurlyBracketToken());
 
                 // first method
-                // tokens.add(new IntToken());
-                // tokens.add(new MethodNameToken("doSomething"));
-                // tokens.add(new LeftParenthesisToken());
-                // tokens.add(new IntToken());
-                // tokens.add(new VariableToken("e"));
-                // tokens.add(new RightParenthesisToken());
-                // tokens.add(new LeftCurlyBracketToken());
+                tokens.add(new IntToken());
+                tokens.add(new MethodNameToken("doSomething"));
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new IntToken());
+                tokens.add(new VariableToken("e"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new LeftCurlyBracketToken());
 
-                // tokens.add(new PrintlnToken());
-                // tokens.add(new LeftParenthesisToken());
-                // tokens.add(new VariableToken("e"));
-                // tokens.add(new RightParenthesisToken());
-                // tokens.add(new SemicolonToken());
+                tokens.add(new PrintlnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new VariableToken("e"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
 
-                // tokens.add(new ReturnToken());
-                // tokens.add(new LeftParenthesisToken());
-                // tokens.add(new VariableToken("e"));
-                // tokens.add(new RightParenthesisToken());
-                // tokens.add(new SemicolonToken());
-                // tokens.add(new RightCurlyBracketToken());
-                //
+                tokens.add(new ReturnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new VariableToken("e"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+                tokens.add(new RightCurlyBracketToken());
+                
 
                 // second method
-                // tokens.add(new StringToken());
-                // tokens.add(new MethodNameToken("do"));
-                // tokens.add(new LeftParenthesisToken());
-                // tokens.add(new StringToken());
-                // tokens.add(new VariableToken("e"));
-                // tokens.add(new RightParenthesisToken());
-                // tokens.add(new LeftCurlyBracketToken());
+                tokens.add(new StringToken());
+                tokens.add(new MethodNameToken("doSomething2"));
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new StringToken());
+                tokens.add(new VariableToken("e"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new LeftCurlyBracketToken());
 
-                // tokens.add(new PrintlnToken());
-                // tokens.add(new LeftParenthesisToken());
-                // tokens.add(new VariableToken("e"));
-                // tokens.add(new RightParenthesisToken());
-                // tokens.add(new SemicolonToken());
+                tokens.add(new PrintlnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new VariableToken("e"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
 
-                // tokens.add(new ReturnToken());
-                // tokens.add(new LeftParenthesisToken());
-                // tokens.add(new VariableToken("e"));
-                // tokens.add(new RightParenthesisToken());
-                // tokens.add(new SemicolonToken());
-                // tokens.add(new RightCurlyBracketToken());
+                tokens.add(new ReturnToken());
+                tokens.add(new LeftParenthesisToken());
+                tokens.add(new VariableToken("e"));
+                tokens.add(new RightParenthesisToken());
+                tokens.add(new SemicolonToken());
+                tokens.add(new RightCurlyBracketToken());
                 //
 
                 tokens.add(new RightCurlyBracketToken());
@@ -1009,7 +1013,7 @@ public class ParserTest {
                                 methodOneBody);
 
                 List<Vardec> methodTwoArguments = new ArrayList<Vardec>();
-                methodTwoArguments.add(new Vardec(new IntType(), new Variable("e")));
+                methodTwoArguments.add(new Vardec(new StringType(), new Variable("e")));
 
                 List<Stmt> methodTwoBodyStmts = new ArrayList<Stmt>();
                 methodTwoBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
@@ -1017,14 +1021,14 @@ public class ParserTest {
 
                 Stmt methodTwoBody = new BlockStmt(methodTwoBodyStmts);
 
-                MethodDef secondMethod = new MethodDef(new IntType(),
-                                new MethodName("doSomething"),
+                MethodDef secondMethod = new MethodDef(new StringType(),
+                                new MethodName("doSomething2"),
                                 methodTwoArguments,
                                 methodTwoBody);
 
                 List<MethodDef> methods = new ArrayList<MethodDef>();
                 methods.add(firstMethod);
-                // methods.add(secondMethod);
+                methods.add(secondMethod);
 
                 final ClassDef expected = new ClassDef(new ClassName("Car"),
                                 new ClassName("Object"),
@@ -1034,7 +1038,7 @@ public class ParserTest {
                                 constructorBody,
                                 methods);
 
-                assertEquals(new ParseResult<ClassDef>(expected, 56), parser.parseClassDef(0));
+                assertEquals(new ParseResult<ClassDef>(expected, 74), parser.parseClassDef(0));
         }
 
         // test program: noclass println(1);
