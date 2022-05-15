@@ -907,13 +907,21 @@ public class TypeCheckerTest {
                 new TypeChecking(new Program(classList, new ExpStmt(new IntegerLiteralExp(1))));
         }
 
-        // test class is equal or subtype don't actually know how to hit it normally
-        @Test(expected = NullPointerException.class)
-        public void testClassIsEqualOrSubtype() throws TypeErrorException {
-                ClassType first = new ClassType(new ClassName("Test"));
-                ClassType second = new ClassType(new ClassName("second"));
-                methodCallTypechecker().isEqualOrSubtypeOf(first, second);
-        }
+        // // program with class FOR TESTING
+        // public static TypeChecking isEqualOrSubtypeTypechecker() throws TypeErrorException {
+        //         List<ClassDef> classList = new ArrayList<ClassDef>();
+        //         classList.add(parentClass());
+        //         classList.add(subClass());
+        //         return new TypeChecking(new Program(classList, new ExpStmt(new IntegerLiteralExp(1))));
+        // }
+
+        // // test class is equal or subtype don't actually know how to hit it normally
+        // @Test //(expected = NullPointerException.class)
+        // public void testClassIsEqualOrSubtype() throws TypeErrorException {
+        //         ClassType first = new ClassType(new ClassName("Car"));
+        //         ClassType second = new ClassType(new ClassName("Honda"));
+        //         isEqualOrSubtypeTypechecker().isEqualOrSubtypeOf(first, second);
+        // }
 
         // program with class FOR TESTING
         public static TypeChecking methodCallTypechecker2() throws TypeErrorException {
