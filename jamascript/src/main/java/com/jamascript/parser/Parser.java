@@ -399,10 +399,11 @@ public class Parser {
         if (token instanceof MethodNameToken) {
             MethodNameToken mName = (MethodNameToken) token;
             MethodName methodName = new MethodName(mName.name);
-            assertTokenHereIs(position + 2, new LeftParenthesisToken());
-            final ParseResult<List<Vardec>> arguments = parseVardecsComma(position + 3);
+            assertTokenHereIs(type.position + 1, new LeftParenthesisToken());
+            final ParseResult<List<Vardec>> arguments = parseVardecsComma(type.position + 2);
             assertTokenHereIs(arguments.position, new RightParenthesisToken());
             final ParseResult<Stmt> body = parseStmt(arguments.position + 1);
+            assertTokenHereIs(body.position, new RightCurlyBracketToken());
             return new ParseResult<MethodDef>(new MethodDef(type.result,
                     methodName,
                     arguments.result,
@@ -420,7 +421,7 @@ public class Parser {
             try {
                 final ParseResult<MethodDef> methodDef = parseMethodDef(position);
                 methodDefs.add(methodDef.result);
-                position = methodDef.position;
+                position = methodDef.position + 1;
             } catch (final ParseException e) {
                 shouldRun = false;
             }
@@ -484,7 +485,7 @@ public class Parser {
                 superParams.result,
                 constructorBody.result,
                 methodDefs.result),
-                methodDefs.position + 1);
+                methodDefs.position);
     }
 
     public ParseResult<List<ClassDef>> parseClassDefs(int position) throws ParseException {
