@@ -15,7 +15,6 @@ import org.junit.Test;
 import java.util.Map;
 
 import com.jamascript.typechecker.TypeChecking;
-import com.jamascript.lexer.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,12 +27,13 @@ public class TypeCheckerTest {
         }
 
         // test exp error: exp doesn't exist
-        @Test (expected = TypeErrorException.class)
+        @Test(expected = TypeErrorException.class)
         public void testExpError() throws TypeErrorException {
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
                 typeEnvironment.put(new Variable("x"), new ClassNameType(new ClassName("Dog")));
 
-                final Type receivedType = emptyTypechecker().typeofExp(new Exp(){},
+                final Type receivedType = emptyTypechecker().typeofExp(new Exp() {
+                },
                                 typeEnvironment, new ClassName(""));
         }
 
@@ -83,12 +83,13 @@ public class TypeCheckerTest {
         }
 
         // test op error: op doesn't exist
-        @Test (expected = TypeErrorException.class)
+        @Test(expected = TypeErrorException.class)
         public void testOpError() throws TypeErrorException {
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
                 final Type receivedType = emptyTypechecker().typeofExp(new OpExp(new IntegerLiteralExp(1),
-                                new Op() {},
+                                new Op() {
+                                },
                                 new IntegerLiteralExp(1)),
                                 typeEnvironment, new ClassName(""));
         }
@@ -429,7 +430,7 @@ public class TypeCheckerTest {
         }
 
         // test stmt mismatch
-        @Test (expected = TypeErrorException.class)
+        @Test(expected = TypeErrorException.class)
         public void testStmtMismatch() throws TypeErrorException {
 
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
@@ -438,7 +439,8 @@ public class TypeCheckerTest {
                                 new IntegerLiteralExp(1));
                 final Type type = new IntType();
 
-                final Map<Variable, Type> receivedStmt = emptyTypechecker().returnEnvOfStmt(new Stmt() {},
+                final Map<Variable, Type> receivedStmt = emptyTypechecker().returnEnvOfStmt(new Stmt() {
+                },
                                 typeEnvironment,
                                 new ClassName("name"),
                                 type);
@@ -473,7 +475,7 @@ public class TypeCheckerTest {
         }
 
         // test while error: guard = String
-        @Test (expected = TypeErrorException.class)
+        @Test(expected = TypeErrorException.class)
         public void testWhileStmtError() throws TypeErrorException {
 
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
@@ -529,7 +531,7 @@ public class TypeCheckerTest {
         }
 
         // test if stmt error: guard not bool
-        @Test (expected = TypeErrorException.class)
+        @Test(expected = TypeErrorException.class)
         public void testIfStmtError() throws TypeErrorException {
                 final Map<Variable, Type> expectedStmt = new HashMap<Variable, Type>();
 
@@ -597,7 +599,7 @@ public class TypeCheckerTest {
         }
 
         // test non void error: no return type
-        @Test (expected = TypeErrorException.class)
+        @Test(expected = TypeErrorException.class)
         public void TestNonVoidError() throws TypeErrorException {
 
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
@@ -629,70 +631,341 @@ public class TypeCheckerTest {
                                 typeEnvironment);
         }
 
-        //program with class
-        public static TypeChecking methodCallTypechecker() throws TypeErrorException {
-                // class Test extends Object {
-                //     Int x = 5;
-                //     constructor(Int x = 5;) {
-                //         super(4);
-                //         Boolean y = true; 
-                //     }
-
-                //     Int test(Int jon = 1;) {
-                //         Int gomez = 6;
-                //     }
-
-                //     Boolean test(Boolean jon = true;) {
-                //         Int gomez = 6;
-                //     }
-                // }
-                ClassName className = new ClassName("Test");
-                ClassName extendsClassName = new ClassName("Object");
-
-                List<Vardec> instanceVariables = new ArrayList<Vardec>();
-                instanceVariables.add(new Vardec(new IntType(), new Variable("x")));
-
-                List<Vardec> constructorArguments = new ArrayList<Vardec>();
-                constructorArguments.add(new Vardec(new IntType(), new Variable("x")));
-
-                List<Exp> superParams = new ArrayList<Exp>();
-                superParams.add(new IntegerLiteralExp(4));
-
-                List<Stmt> constructorBody = new ArrayList<Stmt>();
-                constructorBody.add(new VariableInitializationStmt(new Vardec(new BoolType(), new Variable("y")),
-                                                                new BooleanLiteralExp(true)));
-
-                List<MethodDef> methods = new ArrayList<MethodDef>();
-
-                List<Vardec> methodArguments = new ArrayList<Vardec>();
-                methodArguments.add(new Vardec(new IntType(), new Variable("jon")));
-
-                methods.add(new MethodDef(new IntType(), new MethodName("test"), methodArguments,
-                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6))));
-
-                List<Vardec> methodArguments2 = new ArrayList<Vardec>();
-                methodArguments2.add(new Vardec(new BoolType(), new Variable("jon")));
-
-                methods.add(new MethodDef(new BoolType(), new MethodName("test"), methodArguments2,
-                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6))));
-
-
-
-                ClassDef classDef = new ClassDef(className, extendsClassName, 
-                instanceVariables, constructorArguments, superParams, constructorBody, methods);
+        // program with class FOR TESTING
+        public static TypeChecking CarClassTypechecker() throws TypeErrorException {
                 List<ClassDef> classList = new ArrayList<ClassDef>();
-                classList.add(classDef);
+                classList.add(parentClass());
                 return new TypeChecking(new Program(classList, new ExpStmt(new IntegerLiteralExp(1))));
         }
 
+        public static ClassDef parentClass() throws TypeErrorException {
+                // Car Class Non-Overloaded
+                // class Car extends Object{
+                // Int a;
+                // String d;
+                // constructor(Int b, Boolean c){
+                // super(b, c);
+                // Println("You made it!");
+                // String hey = "blah";
+                // }
+                // Int doSomething(Int e){
+                // Println(e);
+                // return (e);
+                // }
+                // String doSomething2(String e){
+                // Println(e);
+                // return (e);
+                // }
+                // }
+                List<Vardec> instanceVariables = new ArrayList<Vardec>();
+                instanceVariables.add(new Vardec(new IntType(), new Variable("a")));
+                instanceVariables.add(new Vardec(new StringType(), new Variable("d")));
+
+                List<Vardec> constructorArguments = new ArrayList<Vardec>();
+                constructorArguments.add(new Vardec(new IntType(), new Variable("b")));
+                constructorArguments.add(new Vardec(new BoolType(), new Variable("c")));
+
+                List<Exp> superParams = new ArrayList<Exp>();
+                superParams.add(new VariableExp(new Variable("b")));
+                superParams.add(new VariableExp(new Variable("c")));
+
+                List<Stmt> constructorBody = new ArrayList<Stmt>();
+                constructorBody.add(new PrintlnStmt(new StringLiteralExp("You made it!")));
+                constructorBody.add(new VariableInitializationStmt(new Vardec(new StringType(), new Variable("hey")),
+                                new StringLiteralExp("blah")));
+
+                // methods
+                List<Vardec> methodOneArguments = new ArrayList<Vardec>();
+                methodOneArguments.add(new Vardec(new IntType(), new Variable("e")));
+
+                List<Stmt> methodOneBodyStmts = new ArrayList<Stmt>();
+                methodOneBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodOneBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodOneBody = new BlockStmt(methodOneBodyStmts);
+
+                MethodDef firstMethod = new MethodDef(new IntType(),
+                                new MethodName("doSomething"),
+                                methodOneArguments,
+                                methodOneBody);
+
+                List<Vardec> methodTwoArguments = new ArrayList<Vardec>();
+                methodTwoArguments.add(new Vardec(new StringType(), new Variable("e")));
+
+                List<Stmt> methodTwoBodyStmts = new ArrayList<Stmt>();
+                methodTwoBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodTwoBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodTwoBody = new BlockStmt(methodTwoBodyStmts);
+
+                MethodDef secondMethod = new MethodDef(new StringType(),
+                                new MethodName("doSomething2"),
+                                methodTwoArguments,
+                                methodTwoBody);
+
+                List<MethodDef> methods = new ArrayList<MethodDef>();
+                methods.add(firstMethod);
+                methods.add(secondMethod);
+
+                final ClassDef carClass = new ClassDef(new ClassName("Car"),
+                                new ClassName("Object"),
+                                instanceVariables,
+                                constructorArguments,
+                                superParams,
+                                constructorBody,
+                                methods);
+
+                return carClass;
+        }
+
+        public static ClassDef subClass() throws TypeErrorException {
+                // Car Class Non-Overloaded
+                // class Honda extends Car{
+                // Int a;
+                // String d;
+                // constructor(Int b, Boolean c){
+                // super(b, c);
+                // Println("You made it!");
+                // String hey = "blah";
+                // }
+                // Int doSomething(Int e){
+                // Println(e);
+                // return (e);
+                // }
+                // String doSomething2(String e){
+                // Println(e);
+                // return (e);
+                // }
+                // }
+                List<Vardec> instanceVariables = new ArrayList<Vardec>();
+                instanceVariables.add(new Vardec(new IntType(), new Variable("a")));
+                instanceVariables.add(new Vardec(new StringType(), new Variable("d")));
+
+                List<Vardec> constructorArguments = new ArrayList<Vardec>();
+                constructorArguments.add(new Vardec(new IntType(), new Variable("b")));
+                constructorArguments.add(new Vardec(new BoolType(), new Variable("c")));
+
+                List<Exp> superParams = new ArrayList<Exp>();
+                superParams.add(new VariableExp(new Variable("b")));
+                superParams.add(new VariableExp(new Variable("c")));
+
+                List<Stmt> constructorBody = new ArrayList<Stmt>();
+                constructorBody.add(new PrintlnStmt(new StringLiteralExp("You made it!")));
+                constructorBody.add(new VariableInitializationStmt(new Vardec(new StringType(), new Variable("hey")),
+                                new StringLiteralExp("blah")));
+
+                // methods
+                List<Vardec> methodOneArguments = new ArrayList<Vardec>();
+                methodOneArguments.add(new Vardec(new IntType(), new Variable("e")));
+
+                List<Stmt> methodOneBodyStmts = new ArrayList<Stmt>();
+                methodOneBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodOneBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodOneBody = new BlockStmt(methodOneBodyStmts);
+
+                MethodDef firstMethod = new MethodDef(new IntType(),
+                                new MethodName("doSomething"),
+                                methodOneArguments,
+                                methodOneBody);
+
+                List<Vardec> methodTwoArguments = new ArrayList<Vardec>();
+                methodTwoArguments.add(new Vardec(new StringType(), new Variable("e")));
+
+                List<Stmt> methodTwoBodyStmts = new ArrayList<Stmt>();
+                methodTwoBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodTwoBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodTwoBody = new BlockStmt(methodTwoBodyStmts);
+
+                MethodDef secondMethod = new MethodDef(new StringType(),
+                                new MethodName("doSomething2"),
+                                methodTwoArguments,
+                                methodTwoBody);
+
+                List<MethodDef> methods = new ArrayList<MethodDef>();
+                methods.add(firstMethod);
+                methods.add(secondMethod);
+
+                final ClassDef carClass = new ClassDef(new ClassName("Honda"),
+                                new ClassName("Car"),
+                                instanceVariables,
+                                constructorArguments,
+                                superParams,
+                                constructorBody,
+                                methods);
+
+                return carClass;
+        }
+
+        public static ClassDef ParentClass2() throws TypeErrorException {
+                // Car Class Non-Overloaded
+                // class Dog extends Object{
+                // Int a;
+                // String d;
+                // constructor(Int b, Boolean c){
+                // super(b, c);
+                // Println("You made it!");
+                // String hey = "blah";
+                // }
+                // Int doSomething(Int e){
+                // Println(e);
+                // return (e);
+                // }
+                // String doSomething2(String e){
+                // Println(e);
+                // return (e);
+                // }
+                // }
+                List<Vardec> instanceVariables = new ArrayList<Vardec>();
+                instanceVariables.add(new Vardec(new IntType(), new Variable("a")));
+                instanceVariables.add(new Vardec(new StringType(), new Variable("d")));
+
+                List<Vardec> constructorArguments = new ArrayList<Vardec>();
+                constructorArguments.add(new Vardec(new IntType(), new Variable("b")));
+                constructorArguments.add(new Vardec(new BoolType(), new Variable("c")));
+
+                List<Exp> superParams = new ArrayList<Exp>();
+                superParams.add(new VariableExp(new Variable("b")));
+                superParams.add(new VariableExp(new Variable("c")));
+
+                List<Stmt> constructorBody = new ArrayList<Stmt>();
+                constructorBody.add(new PrintlnStmt(new StringLiteralExp("You made it!")));
+                constructorBody.add(new VariableInitializationStmt(new Vardec(new StringType(), new Variable("hey")),
+                                new StringLiteralExp("blah")));
+
+                // methods
+                List<Vardec> methodOneArguments = new ArrayList<Vardec>();
+                methodOneArguments.add(new Vardec(new IntType(), new Variable("e")));
+
+                List<Stmt> methodOneBodyStmts = new ArrayList<Stmt>();
+                methodOneBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodOneBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodOneBody = new BlockStmt(methodOneBodyStmts);
+
+                MethodDef firstMethod = new MethodDef(new IntType(),
+                                new MethodName("doSomething"),
+                                methodOneArguments,
+                                methodOneBody);
+
+                List<Vardec> methodTwoArguments = new ArrayList<Vardec>();
+                methodTwoArguments.add(new Vardec(new StringType(), new Variable("e")));
+
+                List<Stmt> methodTwoBodyStmts = new ArrayList<Stmt>();
+                methodTwoBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodTwoBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodTwoBody = new BlockStmt(methodTwoBodyStmts);
+
+                MethodDef secondMethod = new MethodDef(new StringType(),
+                                new MethodName("doSomething2"),
+                                methodTwoArguments,
+                                methodTwoBody);
+
+                List<MethodDef> methods = new ArrayList<MethodDef>();
+                methods.add(firstMethod);
+                methods.add(secondMethod);
+
+                final ClassDef carClass = new ClassDef(new ClassName("Dog"),
+                                new ClassName("Object"),
+                                instanceVariables,
+                                constructorArguments,
+                                superParams,
+                                constructorBody,
+                                methods);
+
+                return carClass;
+        }
+
+        public static ClassDef SubClass2() throws TypeErrorException {
+                // Car Class Non-Overloaded
+                // class Husky extends Dog{
+                // Int a;
+                // String d;
+                // constructor(Int b, Boolean c){
+                // super(b, c);
+                // Println("You made it!");
+                // String hey = "blah";
+                // }
+                // Int doSomething(Int e){
+                // Println(e);
+                // return (e);
+                // }
+                // String doSomething2(String e){
+                // Println(e);
+                // return (e);
+                // }
+                // }
+                List<Vardec> instanceVariables = new ArrayList<Vardec>();
+                instanceVariables.add(new Vardec(new IntType(), new Variable("a")));
+                instanceVariables.add(new Vardec(new StringType(), new Variable("d")));
+
+                List<Vardec> constructorArguments = new ArrayList<Vardec>();
+                constructorArguments.add(new Vardec(new IntType(), new Variable("b")));
+                constructorArguments.add(new Vardec(new BoolType(), new Variable("c")));
+
+                List<Exp> superParams = new ArrayList<Exp>();
+                superParams.add(new VariableExp(new Variable("b")));
+                superParams.add(new VariableExp(new Variable("c")));
+
+                List<Stmt> constructorBody = new ArrayList<Stmt>();
+                constructorBody.add(new PrintlnStmt(new StringLiteralExp("You made it!")));
+                constructorBody.add(new VariableInitializationStmt(new Vardec(new StringType(), new Variable("hey")),
+                                new StringLiteralExp("blah")));
+
+                // methods
+                List<Vardec> methodOneArguments = new ArrayList<Vardec>();
+                methodOneArguments.add(new Vardec(new IntType(), new Variable("e")));
+
+                List<Stmt> methodOneBodyStmts = new ArrayList<Stmt>();
+                methodOneBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodOneBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodOneBody = new BlockStmt(methodOneBodyStmts);
+
+                MethodDef firstMethod = new MethodDef(new IntType(),
+                                new MethodName("doSomething"),
+                                methodOneArguments,
+                                methodOneBody);
+
+                List<Vardec> methodTwoArguments = new ArrayList<Vardec>();
+                methodTwoArguments.add(new Vardec(new StringType(), new Variable("e")));
+
+                List<Stmt> methodTwoBodyStmts = new ArrayList<Stmt>();
+                methodTwoBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodTwoBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodTwoBody = new BlockStmt(methodTwoBodyStmts);
+
+                MethodDef secondMethod = new MethodDef(new StringType(),
+                                new MethodName("doSomething2"),
+                                methodTwoArguments,
+                                methodTwoBody);
+
+                List<MethodDef> methods = new ArrayList<MethodDef>();
+                methods.add(firstMethod);
+                methods.add(secondMethod);
+
+                final ClassDef carClass = new ClassDef(new ClassName("Husky"),
+                                new ClassName("Dog"),
+                                instanceVariables,
+                                constructorArguments,
+                                superParams,
+                                constructorBody,
+                                methods);
+
+                return carClass;
+        }
+
         // test method def error: unknown class
-        @Test (expected = TypeErrorException.class)
+        @Test(expected = TypeErrorException.class)
         public void testMethodDefError1() throws TypeErrorException {
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
+                typeEnvironment.put(new Variable("myCar"), new ClassType(new ClassName("Car")));
 
-                Exp target = new VariableExp(new Variable("husky"));
-                MethodName methodName = new MethodName("test");
+                Exp target = new VariableExp(new Variable("myCar"));
+                MethodName methodName = new MethodName("doSomething");
                 List<Exp> params = new ArrayList<Exp>();
                 params.add(new IntegerLiteralExp(1));
 
@@ -702,271 +975,378 @@ public class TypeCheckerTest {
         }
 
         // test method def error: unknown method
-        @Test (expected = TypeErrorException.class)
+        @Test(expected = TypeErrorException.class)
         public void testMethodDefError2() throws TypeErrorException {
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
+                typeEnvironment.put(new Variable("myCar"), new ClassType(new ClassName("Car")));
 
-                Exp target = new VariableExp(new Variable("husky"));
-                MethodName methodName = new MethodName("bark");
+                Exp target = new VariableExp(new Variable("myCar"));
+                MethodName methodName = new MethodName("notHere");
                 List<Exp> params = new ArrayList<Exp>();
                 params.add(new IntegerLiteralExp(1));
 
-                final Type receivedType = methodCallTypechecker().typeofExp(
+                final Type receivedType = CarClassTypechecker().typeofExp(
                                 new MethodCallExp(target, methodName, params),
                                 typeEnvironment, new ClassName(""));
         }
 
-        // test method call exp : husky.test(1);
+        // test method call exp : myCar.doSomething(1);
         @Test
         public void testMethodCallExp() throws TypeErrorException {
                 final Type expectedType = new IntType();
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
+                typeEnvironment.put(new Variable("myCar"), new ClassType(new ClassName("Car")));
 
-                Exp target = new VariableExp(new Variable("husky"));
-                MethodName methodName = new MethodName("test");
+                Exp target = new VariableExp(new Variable("myCar"));
+                MethodName methodName = new MethodName("doSomething");
                 List<Exp> params = new ArrayList<Exp>();
                 params.add(new IntegerLiteralExp(1));
 
-                final Type receivedType = methodCallTypechecker().typeofExp(
+                final Type receivedType = CarClassTypechecker().typeofExp(
                                 new MethodCallExp(target, methodName, params),
                                 typeEnvironment, new ClassName(""));
                 assertEquals(expectedType, receivedType);
         }
 
-        // test method call exp error: husky.test(1, "value"); wrong # of params
-        @Test (expected = TypeErrorException.class)
+        // test method call exp error: myCar.doSomething(1, "value"); wrong # of params
+        @Test(expected = TypeErrorException.class)
         public void testMethodCallExpError() throws TypeErrorException {
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
+                typeEnvironment.put(new Variable("myCar"), new ClassType(new ClassName("Car")));
 
-                Exp target = new VariableExp(new Variable("husky"));
-                MethodName methodName = new MethodName("test");
+                Exp target = new VariableExp(new Variable("myCar"));
+                MethodName methodName = new MethodName("doSomething");
                 List<Exp> params = new ArrayList<Exp>();
                 params.add(new IntegerLiteralExp(1));
                 params.add(new StringLiteralExp("value"));
 
-                final Type receivedType = methodCallTypechecker().typeofExp(
+                final Type receivedType = CarClassTypechecker().typeofExp(
                                 new MethodCallExp(target, methodName, params),
                                 typeEnvironment, new ClassName(""));
         }
 
-        // test method call exp error: 1.test(1); method call on non class
-        @Test (expected = TypeErrorException.class)
+        // test method call exp error: 1.doSomething(1); method call on non class
+        @Test(expected = TypeErrorException.class)
         public void testMethodCallExpError2() throws TypeErrorException {
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
+                typeEnvironment.put(new Variable("myCar"), new ClassType(new ClassName("Car")));
 
                 Exp target = new IntegerLiteralExp(1);
-                MethodName methodName = new MethodName("test");
+                MethodName methodName = new MethodName("doSomething");
                 List<Exp> params = new ArrayList<Exp>();
                 params.add(new IntegerLiteralExp(1));
 
-                final Type receivedType = methodCallTypechecker().typeofExp(
+                final Type receivedType = CarClassTypechecker().typeofExp(
                                 new MethodCallExp(target, methodName, params),
                                 typeEnvironment, new ClassName(""));
         }
 
-        //test new exp: new Test(1)
+        // test new exp: new Car(1, true)
         @Test
-        public void testNewExp() throws TypeErrorException{
-                final Type expectedType = new ClassType(new ClassName("Test"));
+        public void testNewExp() throws TypeErrorException {
+                final Type expectedType = new ClassType(new ClassName("Car"));
                 final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
 
-                ClassName className = new ClassName("Test");
+                ClassName className = new ClassName("Car");
                 List<Exp> params = new ArrayList<Exp>();
                 params.add(new IntegerLiteralExp(1));
+                params.add(new BooleanLiteralExp(true));
 
-                final Type receivedType = methodCallTypechecker().typeofExp(
+                final Type receivedType = CarClassTypechecker().typeofExp(
                                 new NewExp(className, params),
                                 typeEnvironment, new ClassName(""));
                 assertEquals(expectedType, receivedType);
         }
 
         // test program error: no such class that it extends from
-        @Test (expected = TypeErrorException.class)
-        public void getClassError() throws TypeErrorException{
-                //program with class
-                // class Test extends Whatev {
-                //     Int x = 5;
-                //     constructor(Int x = 5;) {
-                //         super(4);
-                //         Boolean y = true; 
-                //     }
+        @Test(expected = TypeErrorException.class)
+        public void getClassError() throws TypeErrorException {
 
-                //     Int test(Int jon = 1;) {
-                //         Int gomez = 6;
-                //     }
-
-                // }
-                ClassName className = new ClassName("Test");
-                ClassName extendsClassName = new ClassName("Whatev");
-
-                List<Vardec> instanceVariables = new ArrayList<Vardec>();
-                instanceVariables.add(new Vardec(new IntType(), new Variable("x")));
-
-                List<Vardec> constructorArguments = new ArrayList<Vardec>();
-                constructorArguments.add(new Vardec(new IntType(), new Variable("x")));
-
-                List<Exp> superParams = new ArrayList<Exp>();
-                superParams.add(new IntegerLiteralExp(4));
-
-                List<Stmt> constructorBody = new ArrayList<Stmt>();
-                constructorBody.add(new VariableInitializationStmt(new Vardec(new BoolType(), new Variable("y")),
-                                                                new BooleanLiteralExp(true)));
-
-                List<MethodDef> methods = new ArrayList<MethodDef>();
-                List<Vardec> methodArguments = new ArrayList<Vardec>();
-                methodArguments.add(new Vardec(new IntType(), new Variable("jon")));
-
-                methods.add(new MethodDef(new IntType(), new MethodName("test"), methodArguments,
-                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6))));
-
-                ClassDef classDef = new ClassDef(className, extendsClassName, 
-                instanceVariables, constructorArguments, superParams, constructorBody, methods);
                 List<ClassDef> classList = new ArrayList<ClassDef>();
-                classList.add(classDef);
+                classList.add(subClass());
                 new TypeChecking(new Program(classList, new ExpStmt(new IntegerLiteralExp(1))));
         }
-        
-        // test class is equal or subtype don't actually know how to hit it normally
-        @Test (expected = NullPointerException.class)
-        public void testClassIsEqualOrSubtype() throws TypeErrorException{
-                ClassType first = new ClassType(new ClassName("Test"));
-                ClassType second = new ClassType(new ClassName("second"));
-                methodCallTypechecker().isEqualOrSubtypeOf(first, second);
+
+        // program with class FOR TESTING
+        public static TypeChecking isEqualOrSubtypeTypechecker() throws TypeErrorException {
+                List<ClassDef> classList = new ArrayList<ClassDef>();
+                classList.add(parentClass());
+                classList.add(subClass());
+                classList.add(ParentClass2());
+                classList.add(SubClass2());
+                return new TypeChecking(new Program(classList, new ExpStmt(new IntegerLiteralExp(1))));
         }
 
-        //program with class
-        public static TypeChecking methodCallTypechecker2() throws TypeErrorException {
-                // class Test extends Object {
-                //     Int x = 5;
-                //     constructor(Int x = 5;) {
-                //         super(4);
-                //         Boolean y = true; 
-                //     }
+        // test class is equal or subtype don't actually know how to hit it normally
+        @Test //(expected = NullPointerException.class)
+        public void testClassIsEqualOrSubtype() throws TypeErrorException {
+                ClassType first = new ClassType(new ClassName("Honda"));
+                ClassType second = new ClassType(new ClassName("Car"));
+                isEqualOrSubtypeTypechecker().isEqualOrSubtypeOf(first, second);
+        }
 
-                //     Int test(Int jon = 1;) {
-                //         Int gomez = 6;
-                //     }
+        @Test
+        public void testClassIsEqualOrSubtype2() throws TypeErrorException {
+                ClassType first = new ClassType(new ClassName("Husky"));
+                ClassType second = new ClassType(new ClassName("Dog"));
+                isEqualOrSubtypeTypechecker().isEqualOrSubtypeOf(first, second);
+        }
 
-                //     Boolean test(Boolean jon = true;) {
-                //         Int gomez = 6;
-                //     }
+        @Test (expected = TypeErrorException.class)
+        public void testClassIsEqualOrSubtype3() throws TypeErrorException {
+                ClassType first = new ClassType(new ClassName("Husky"));
+                isEqualOrSubtypeTypechecker().isEqualOrSubtypeOf(first, new IntType());
+        }
+
+        // program with class FOR TESTING
+        public static TypeChecking OverloadedTypechecker() throws TypeErrorException {
+                List<ClassDef> classList = new ArrayList<ClassDef>();
+                classList.add(parentClassOverloaded());
+                return new TypeChecking(new Program(classList, new ExpStmt(new IntegerLiteralExp(1))));
+        }
+
+        public static TypeChecking DuplicateSignatureTypechecker() throws TypeErrorException {
+                List<ClassDef> classList = new ArrayList<ClassDef>();
+                classList.add(parentClassOverloadedDupSig());
+                return new TypeChecking(new Program(classList, new ExpStmt(new IntegerLiteralExp(1))));
+        }
+
+        public static ClassDef parentClassOverloaded() throws TypeErrorException {
+                // Car class overloaded
+                // class Car extends Object{
+                // Int a;
+                // String d;
+                // constructor(Int b, Boolean c){
+                // super(b, c);
+                // Println("You made it!");
+                // String hey = "blah";
                 // }
-                ClassName className = new ClassName("Test");
-                ClassName extendsClassName = new ClassName("Object");
-
+                // Int doSomething(Int e){
+                // Println(e);
+                // return (e);
+                // }
+                // String doSomething(String e){
+                // Println(e);
+                // return (e);
+                // }
+                // }
                 List<Vardec> instanceVariables = new ArrayList<Vardec>();
-                instanceVariables.add(new Vardec(new IntType(), new Variable("x")));
+                instanceVariables.add(new Vardec(new IntType(), new Variable("a")));
+                instanceVariables.add(new Vardec(new StringType(), new Variable("d")));
 
                 List<Vardec> constructorArguments = new ArrayList<Vardec>();
-                constructorArguments.add(new Vardec(new IntType(), new Variable("x")));
+                constructorArguments.add(new Vardec(new IntType(), new Variable("b")));
+                constructorArguments.add(new Vardec(new BoolType(), new Variable("c")));
 
                 List<Exp> superParams = new ArrayList<Exp>();
-                superParams.add(new IntegerLiteralExp(4));
+                superParams.add(new VariableExp(new Variable("b")));
+                superParams.add(new VariableExp(new Variable("c")));
 
                 List<Stmt> constructorBody = new ArrayList<Stmt>();
-                constructorBody.add(new VariableInitializationStmt(new Vardec(new BoolType(), new Variable("y")),
-                                                                new BooleanLiteralExp(true)));
+                constructorBody.add(new PrintlnStmt(new StringLiteralExp("You made it!")));
+                constructorBody.add(new VariableInitializationStmt(new Vardec(new StringType(), new Variable("hey")),
+                                new StringLiteralExp("blah")));
+
+                // methods
+                List<Vardec> methodOneArguments = new ArrayList<Vardec>();
+                methodOneArguments.add(new Vardec(new IntType(), new Variable("e")));
+
+                List<Stmt> methodOneBodyStmts = new ArrayList<Stmt>();
+                methodOneBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodOneBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodOneBody = new BlockStmt(methodOneBodyStmts);
+
+                MethodDef firstMethod = new MethodDef(new IntType(),
+                                new MethodName("doSomething"),
+                                methodOneArguments,
+                                methodOneBody);
+
+                List<Vardec> methodTwoArguments = new ArrayList<Vardec>();
+                methodTwoArguments.add(new Vardec(new StringType(), new Variable("e")));
+
+                List<Stmt> methodTwoBodyStmts = new ArrayList<Stmt>();
+                methodTwoBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodTwoBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodTwoBody = new BlockStmt(methodTwoBodyStmts);
+
+                MethodDef secondMethod = new MethodDef(new StringType(),
+                                new MethodName("doSomething"),
+                                methodTwoArguments,
+                                methodTwoBody);
 
                 List<MethodDef> methods = new ArrayList<MethodDef>();
+                methods.add(firstMethod);
+                methods.add(secondMethod);
 
-                List<Vardec> methodArguments = new ArrayList<Vardec>();
-                methodArguments.add(new Vardec(new IntType(), new Variable("jon")));
+                final ClassDef carClass = new ClassDef(new ClassName("Car"),
+                                new ClassName("Object"),
+                                instanceVariables,
+                                constructorArguments,
+                                superParams,
+                                constructorBody,
+                                methods);
 
-                methods.add(new MethodDef(new IntType(), new MethodName("test"), methodArguments,
-                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6))));
+                return carClass;
+        }
 
-                List<Vardec> methodArguments2 = new ArrayList<Vardec>();
-                methodArguments2.add(new Vardec(new IntType(), new Variable("jon")));
+        public static ClassDef parentClassOverloadedDupSig() throws TypeErrorException {
+                // Car class overloaded
+                // class Car extends Object{
+                // Int a;
+                // String d;
+                // constructor(Int b, Boolean c){
+                // super(b, c);
+                // Println("You made it!");
+                // String hey = "blah";
+                // }
+                // Int doSomething(Int e){
+                // Println(e);
+                // return (e);
+                // }
+                // String doSomething(Int e){
+                // Println(e);
+                // return (e);
+                // }
+                // }
+                List<Vardec> instanceVariables = new ArrayList<Vardec>();
+                instanceVariables.add(new Vardec(new IntType(), new Variable("a")));
+                instanceVariables.add(new Vardec(new StringType(), new Variable("d")));
 
-                methods.add(new MethodDef(new BoolType(), new MethodName("test"), methodArguments2,
-                new VariableInitializationStmt(new Vardec(new IntType(), new Variable("gomez")), new IntegerLiteralExp(6))));
+                List<Vardec> constructorArguments = new ArrayList<Vardec>();
+                constructorArguments.add(new Vardec(new IntType(), new Variable("b")));
+                constructorArguments.add(new Vardec(new BoolType(), new Variable("c")));
 
+                List<Exp> superParams = new ArrayList<Exp>();
+                superParams.add(new VariableExp(new Variable("b")));
+                superParams.add(new VariableExp(new Variable("c")));
 
+                List<Stmt> constructorBody = new ArrayList<Stmt>();
+                constructorBody.add(new PrintlnStmt(new StringLiteralExp("You made it!")));
+                constructorBody.add(new VariableInitializationStmt(new Vardec(new StringType(), new Variable("hey")),
+                                new StringLiteralExp("blah")));
 
-                ClassDef classDef = new ClassDef(className, extendsClassName, 
-                instanceVariables, constructorArguments, superParams, constructorBody, methods);
-                List<ClassDef> classList = new ArrayList<ClassDef>();
-                classList.add(classDef);
-                return new TypeChecking(new Program(classList, new ExpStmt(new IntegerLiteralExp(1))));
+                // methods
+                List<Vardec> methodOneArguments = new ArrayList<Vardec>();
+                methodOneArguments.add(new Vardec(new IntType(), new Variable("e")));
+
+                List<Stmt> methodOneBodyStmts = new ArrayList<Stmt>();
+                methodOneBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodOneBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodOneBody = new BlockStmt(methodOneBodyStmts);
+
+                MethodDef firstMethod = new MethodDef(new IntType(),
+                                new MethodName("doSomething"),
+                                methodOneArguments,
+                                methodOneBody);
+
+                List<Vardec> methodTwoArguments = new ArrayList<Vardec>();
+                methodTwoArguments.add(new Vardec(new IntType(), new Variable("e")));
+
+                List<Stmt> methodTwoBodyStmts = new ArrayList<Stmt>();
+                methodTwoBodyStmts.add(new PrintlnStmt(new VariableExp(new Variable("e"))));
+                methodTwoBodyStmts.add(new ReturnNonVoidStmt(new VariableExp(new Variable("e"))));
+
+                Stmt methodTwoBody = new BlockStmt(methodTwoBodyStmts);
+
+                MethodDef secondMethod = new MethodDef(new StringType(),
+                                new MethodName("doSomething"),
+                                methodTwoArguments,
+                                methodTwoBody);
+
+                List<MethodDef> methods = new ArrayList<MethodDef>();
+                methods.add(firstMethod);
+                methods.add(secondMethod);
+
+                final ClassDef carClass = new ClassDef(new ClassName("Car"),
+                                new ClassName("Object"),
+                                instanceVariables,
+                                constructorArguments,
+                                superParams,
+                                constructorBody,
+                                methods);
+
+                return carClass;
         }
 
         @Test (expected = TypeErrorException.class)
         public void testDuplicateMethodSignatures() throws TypeErrorException {
-        
-                final Type expectedType = new IntType();
-                final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
 
-                Exp target = new VariableExp(new Variable("husky"));
-                MethodName methodName = new MethodName("test");
-                List<Exp> params = new ArrayList<Exp>();
-                params.add(new IntegerLiteralExp(1));
+        final Type expectedType = new IntType();
+        final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+        typeEnvironment.put(new Variable("myCar"), new ClassType(new
+        ClassName("Car")));
 
-                final Type receivedType = methodCallTypechecker2().typeofExp(
-                                new MethodCallExp(target, methodName, params),
-                                typeEnvironment, new ClassName("Test"));
-                assertEquals(expectedType, receivedType);
+        Exp target = new VariableExp(new Variable("myCar"));
+        MethodName methodName = new MethodName("doSomething");
+        List<Exp> params = new ArrayList<Exp>();
+        params.add(new IntegerLiteralExp(1));
+
+        final Type receivedType = DuplicateSignatureTypechecker().typeofExp(
+        new MethodCallExp(target, methodName, params),
+        typeEnvironment, new ClassName("Test"));
+        assertEquals(expectedType, receivedType);
         }
 
-        // test method call exp : husky.test(true);
+        // test method call exp : myCar.doSomething(1);
         @Test
         public void testOverloading1() throws TypeErrorException {
-        
-                final Type expectedType = new BoolType();
-                final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
 
-                Exp target = new VariableExp(new Variable("husky"));
-                MethodName methodName = new MethodName("test");
-                List<Exp> params = new ArrayList<Exp>();
-                params.add(new BooleanLiteralExp(true));
+        final Type expectedType = new IntType();
+        final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+        typeEnvironment.put(new Variable("myCar"), new ClassType(new
+        ClassName("Car")));
 
-                final Type receivedType = methodCallTypechecker().typeofExp(
-                                new MethodCallExp(target, methodName, params),
-                                typeEnvironment, new ClassName("Test"));
-                assertEquals(expectedType, receivedType);
+        Exp target = new VariableExp(new Variable("myCar"));
+        MethodName methodName = new MethodName("doSomething");
+        List<Exp> params = new ArrayList<Exp>();
+        params.add(new IntegerLiteralExp(1));
+
+        final Type receivedType = OverloadedTypechecker().typeofExp(
+        new MethodCallExp(target, methodName, params),
+        typeEnvironment, new ClassName("Car"));
+        assertEquals(expectedType, receivedType);
         }
 
-        // test method call exp : husky.test(1);
+        // test method call exp : myCar.doSomething("hello");
         @Test
         public void testOverloading2() throws TypeErrorException {
-        
-                final Type expectedType = new IntType();
-                final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
-                typeEnvironment.put(new Variable("husky"), new ClassType(new ClassName("Test")));
 
-                Exp target = new VariableExp(new Variable("husky"));
-                MethodName methodName = new MethodName("test");
-                List<Exp> params = new ArrayList<Exp>();
-                params.add(new IntegerLiteralExp(1));
+        final Type expectedType = new StringType();
+        final Map<Variable, Type> typeEnvironment = new HashMap<Variable, Type>();
+        typeEnvironment.put(new Variable("myCar"), new ClassType(new
+        ClassName("Car")));
 
-                final Type receivedType = methodCallTypechecker().typeofExp(
-                                new MethodCallExp(target, methodName, params),
-                                typeEnvironment, new ClassName("Test"));
-                assertEquals(expectedType, receivedType);
+        Exp target = new VariableExp(new Variable("myCar"));
+        MethodName methodName = new MethodName("doSomething");
+        List<Exp> params = new ArrayList<Exp>();
+        params.add(new StringLiteralExp("hello"));
+
+        final Type receivedType = OverloadedTypechecker().typeofExp(
+        new MethodCallExp(target, methodName, params),
+        typeEnvironment, new ClassName("Car"));
+        assertEquals(expectedType, receivedType);
         }
 
         // NOT ALLOWED
         // public int hey(int x) {
-        //     return 2;
+        // return 2;
         // }
 
         // public boolean hey(int x) {
-        //     return true;
+        // return true;
         // }
 
         // ALLOWED
         // public int hey(int x) {
-        //     return 2;
+        // return 2;
         // }
 
         // public boolean hey() {
-        //     return true;
+        // return true;
         // }
         // Method overloading only allows duplicate names if parameters are different
-        
+
 }
